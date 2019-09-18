@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/GSA/grace-inventory-lambda/handler/inv"
-	"github.com/GSA/grace-inventory-lambda/handler/spreadsheet"
+	"github.com/GSA/grace-inventory/handler/inv"
+	"github.com/GSA/grace-inventory/handler/spreadsheet"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 

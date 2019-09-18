@@ -4,7 +4,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/GSA/grace-inventory-lambda/handler/spreadsheet"
+	"github.com/GSA/grace-inventory/handler/spreadsheet"
 )
 
 // Sheet name constants

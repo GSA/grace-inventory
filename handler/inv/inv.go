@@ -28,11 +28,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/caarlos0/env"
 
-	"github.com/GSA/grace-inventory-lambda/handler/helpers"
-	"github.com/GSA/grace-inventory-lambda/handler/helpers/accounts"
-	"github.com/GSA/grace-inventory-lambda/handler/helpers/credmgr"
-	"github.com/GSA/grace-inventory-lambda/handler/helpers/sessionmgr"
-	"github.com/GSA/grace-inventory-lambda/handler/spreadsheet"
+	"github.com/GSA/grace-inventory/handler/helpers"
+	"github.com/GSA/grace-inventory/handler/helpers/accounts"
+	"github.com/GSA/grace-inventory/handler/helpers/credmgr"
+	"github.com/GSA/grace-inventory/handler/helpers/sessionmgr"
+	"github.com/GSA/grace-inventory/handler/spreadsheet"
 )
 
 // config ... struct for holding environment variables

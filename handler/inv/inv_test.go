@@ -1,6 +1,6 @@
 package inv
 
-//"github.com/GSA/grace-inventory-lambda/handler/spreadsheet"
+//"github.com/GSA/grace-inventory/handler/spreadsheet"
 //awstest "github.com/gruntwork-io/terratest/modules/aws"
 
 //var genericRegions = []string{"us-east-1", "us-west-2"}
