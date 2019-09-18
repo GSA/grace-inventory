@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  validate_terraform:
+    environment:
+        AWS_DEFAULT_REGION: us-east-1
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: Install curl
+          command: apk add --update curl
+      - run:
+          name: terraform init
+          command: find . -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && terraform init -input=false -backend=false) || exit 1; done
+      - run:
+          name: Validate Terraform configurations
+          command: find . -name ".terraform" -prune -o -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && terraform validate && echo "√ $m") || exit 1 ; done
+      - run:
+          name: Check if Terraform configurations are properly formatted
+          command: if [[ -n "$(terraform fmt -write=false)" ]]; then echo "Some terraform files need be formatted, run 'terraform fmt' to fix"; exit 1; fi
+      - run:
+          name: Install tflint
+          command: curl -L -o /tmp/tflint.zip https://github.com/wata727/tflint/releases/download/v0.9.2/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
+      - run:
+          name: Check Terraform configurations with tflint
+          command: tflint
+  lint_handler:
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/github.com/GSA/grace-inventory
+    steps:
+      - checkout
+      - run:
+          name: Lint Handler
+          command: make lint_handler
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - validate_terraform
+      - lint_handler

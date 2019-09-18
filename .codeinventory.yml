@@ -1,5 +1,5 @@
-name: 'GSA/[PROJECT]'
-description: '[PROJECT DESCRIPTION]'
+name: 'GSA/grace-inventory'
+description: 'Lambda function to create an inventory report of AWS services as an Excel spreadsheet in an S3 bucket. Includes Terraform code to deploy it.'
 license: cc0-1.0
 openSourceProject: 1
 governmentWideReuseProject: 1
