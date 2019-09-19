@@ -22,7 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 )
 
-const self = "self"
+var self = []*string{aws.String("self")}
 
 // KmsKey ... extends kms.KeyMetadata to add AliasName
 type KmsKey struct {
@@ -227,9 +227,7 @@ func Images(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Im
 		return nil, errors.New("nil ConfigProvider")
 	}
 	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	input := &ec2.DescribeImagesInput{}
-	owner := self
-	input.Owners = []*string{&owner}
+	input := &ec2.DescribeImagesInput{Owners: self}
 	result, err := svc.DescribeImages(input)
 	if err != nil {
 		return nil, err
@@ -262,7 +260,8 @@ func Snapshots(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2
 	}
 	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
 	var results []*ec2.Snapshot
-	err := svc.DescribeSnapshotsPages(&ec2.DescribeSnapshotsInput{},
+	input := &ec2.DescribeSnapshotsInput{OwnerIds: self}
+	err := svc.DescribeSnapshotsPages(input,
 		func(page *ec2.DescribeSnapshotsOutput, lastPage bool) bool {
 			results = append(results, page.Snapshots...)
 			return !lastPage
@@ -405,21 +404,13 @@ func ConfigRules(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*c
 		return nil, err
 	}
 	rules := result.ConfigRules
-	token := ""
-	if result.NextToken != nil {
-		token = *result.NextToken
-	}
-	for token != "" {
-		input.NextToken = &token
-		result, err := svc.DescribeConfigRules(input)
+	for result.NextToken != nil {
+		input.NextToken = result.NextToken
+		result, err = svc.DescribeConfigRules(input)
 		if err != nil {
 			return nil, err
 		}
 		rules = append(rules, result.ConfigRules...)
-		token = ""
-		if result.NextToken != nil {
-			token = *result.NextToken
-		}
 	}
 	return rules, nil
 }
