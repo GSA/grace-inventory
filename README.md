@@ -2,7 +2,7 @@
 
 **Lint Checks:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory.svg?style=svg)](https://circleci.com/gh/GSA/grace-inventory)
 
-**Unit/Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-lambda.svg?style=svg&circle-token=f42001ceadc8013191d56097c18d356b202e706e)](https://circleci.com/gh/GSA/grace-inventory-lambda)
+**Unit/Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-tests.svg?style=svg&circle-token=f86712ce5167665fe0d4a23d4af4fe7e9a20f7de)](https://circleci.com/gh/GSA/grace-inventory-tests)
 
 Lambda function to list all accounts in an organization, inventory the AWS
 services in those accounts and write the results to an S3 bucket as an Excel
@@ -78,7 +78,6 @@ Control    | CSP/AWS | HOST/OS | App/DB | How is it implemented?
 - **terraform**: Terraform module to deploy and configure Lambda function, S3 Bucket and IAM roles and policies
     - **examples**: Examples of how to use the terraform module
     - **tests**: Root module for testing deployment of Lambda function
-- **integration**: Integration tests for resources deployed by Terraform
 
 [top](#top)
 
@@ -94,7 +93,7 @@ download the binary release from Github or compile the handler locally.
 ```bash
 mkdir -p release
 cd release
-wget https://github.com/GSA/grace-inventory/releases/download/v0.1.0/grace-inventory-lambda.zip
+curl -L https://github.com/GSA/grace-inventory/releases/download/v0.1.0/grace-inventory-lambda.zip -o grace-inventory-lambda.zip
 cd ..
 ```
 
