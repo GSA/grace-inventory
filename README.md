@@ -4,9 +4,10 @@
 
 **Unit/Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-tests.svg?style=svg&circle-token=f86712ce5167665fe0d4a23d4af4fe7e9a20f7de)](https://circleci.com/gh/GSA/grace-inventory-tests)
 
-Lambda function to list all accounts in an organization, inventory the AWS
-services in those accounts and write the results to an S3 bucket as an Excel
-spreadsheet.
+Lambda function to inventory AWS services and write the results to an S3 bucket
+as an Excel spreadsheet. Can inventory all accounts in an AWS organization,
+specified organizational units, a specified list of AWS accounts or simply
+services in the account the Lambda function is installed in.
 
 ## Table of Contents
 
@@ -42,7 +43,7 @@ Control    | CSP/AWS | HOST/OS | App/DB | How is it implemented?
 
 [top](#top)
 
-## Inventoried Services
+## Supported Services
 
     - Organization Accounts
     - IAM Roles
@@ -114,12 +115,12 @@ cd ..
 
 #### Build
 
-- After installing all required preprequisites: compile the lambda function and
-put in it a zip compressed archive in `./release/grace-inventory-lambda.zip` by
+- After installing all required prerequisites: compile the lambda function and
+put it in a zip compressed archive in `./release/grace-inventory-lambda.zip` by
 entering the following at a command prompt:
 
 ```bash
-make build_lambda
+make build_handler
 ```
 
 #### Alternative Build
@@ -145,7 +146,7 @@ include the following in your root terraform module:
 
 ```
 module "example_self" {
-  source      = "github.com/GSA/grace-inventory-lambda/terraform?ref=master"
+  source      = "github.com/GSA/grace-inventory/terraform"
   source_file = "../../release/grace-inventory-lambda.zip"
 }
 ```
@@ -181,7 +182,7 @@ See the [examples](terraform/examples) directory for more examples.
 | lambda\_function\_arn | The Amazon Resource Name \(ARN\) identifying the Lambda Function |
 | lambda\_function\_kms\_key\_arn | The ARN for the KMS encryption key |
 | lambda\_function\_last\_modified | The date this resource was last modified |
-| s3\_bucket\_id | The name of the S3 bucket where inventry reports are saved |
+| s3\_bucket\_id | The name of the S3 bucket where inventory reports are saved |
 
 [top](#top)
 
