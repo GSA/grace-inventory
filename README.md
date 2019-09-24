@@ -4,10 +4,12 @@
 
 **Unit/Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-tests.svg?style=svg&circle-token=f86712ce5167665fe0d4a23d4af4fe7e9a20f7de)](https://circleci.com/gh/GSA/grace-inventory-tests)
 
-Lambda function to inventory AWS services and write the results to an S3 bucket
-as an Excel spreadsheet. Can inventory all accounts in an AWS organization,
-specified organizational units, a specified list of AWS accounts or simply
-services in the account the Lambda function is installed in.
+Lambda function to create an inventory report of AWS services as an Excel
+spreadsheet in an S3 bucket. Includes Terraform code to deploy the Lambda
+function and create S3 bucket and necessary IAM roles/permissions. The Lambda
+function can inventory all accounts in an AWS organization, specified
+organizational units, a specified list of AWS accounts or simply services in the
+account the Lambda function is installed in.
 
 ## Table of Contents
 
