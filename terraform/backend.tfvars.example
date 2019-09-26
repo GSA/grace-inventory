@@ -1,3 +1,0 @@
-bucket = "terraform-backend-bucket"
-
-key = "grace_inventory_lambda.tfstate"

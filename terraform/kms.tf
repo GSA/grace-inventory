@@ -2,7 +2,7 @@ resource "aws_kms_key" "kms_key" {
   description             = "Key for GRACE service inventory reporting S3 bucket"
   deletion_window_in_days = 7
   enable_key_rotation     = "true"
-  depends_on              = ["aws_iam_role.iam_role"]
+  depends_on              = [aws_iam_role.iam_role]
 
   policy = <<EOF
 {
@@ -37,9 +37,11 @@ resource "aws_kms_key" "kms_key" {
   ]
 }
 EOF
+
 }
 
 resource "aws_kms_alias" "kms_alias" {
-  name = "alias/${local.app_name}"
-  target_key_id = "${aws_kms_key.kms_key.key_id}"
+  name          = "alias/${local.app_name}"
+  target_key_id = aws_kms_key.kms_key.key_id
 }
+

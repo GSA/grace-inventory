@@ -1,5 +1,5 @@
 resource "aws_iam_role" "iam_role" {
-  name        = "${local.app_name}"
+  name        = local.app_name
   description = "Role for GRACE Inventory Lambda function"
 
   assume_role_policy = <<EOF
@@ -17,10 +17,11 @@ resource "aws_iam_role" "iam_role" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "iam_policy" {
-  name = "${local.app_name}"
+  name        = local.app_name
   description = "Policy to allow creating GRACE service inventory report"
 
   policy = <<EOF
@@ -100,9 +101,11 @@ resource "aws_iam_policy" "iam_policy" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
-  role       = "${aws_iam_role.iam_role.name}"
-  policy_arn = "${aws_iam_policy.iam_policy.arn}"
+  role       = aws_iam_role.iam_role.name
+  policy_arn = aws_iam_policy.iam_policy.arn
 }
+

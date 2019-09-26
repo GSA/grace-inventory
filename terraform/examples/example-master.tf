@@ -5,4 +5,6 @@ module "example_master" {
   source        = "github.com/GSA/grace-inventory/terraform"
   accounts_info = ""
   source_file   = "../../release/grace-inventory-lambda.zip"
+  appenv        = "development"
+  //project_name  = "grace"
 }

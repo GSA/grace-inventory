@@ -3,4 +3,6 @@
 module "example_self" {
   source      = "github.com/GSA/grace-inventory/terraform"
   source_file = "../../release/grace-inventory-lambda.zip"
+  appenv      = "development"
+  //project_name = "grace"
 }

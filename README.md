@@ -148,8 +148,10 @@ include the following in your root terraform module:
 
 ```
 module "example_self" {
-  source      = "github.com/GSA/grace-inventory/terraform"
-  source_file = "../../release/grace-inventory-lambda.zip"
+  source       = "github.com/GSA/grace-inventory/terraform"
+  source_file  = "../../release/grace-inventory-lambda.zip"
+  appenv       = "environment"
+  project_name = "your-project"
 }
 ```
 
@@ -165,14 +167,15 @@ See the [examples](terraform/examples) directory for more examples.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| accounts\_info | \(optional\) Determines which accounts to parse.  Can be "self", comma delimited list of Account IDs or an S3 URI containing JSON output of `aws organizations list-accounts`.  If empty, tries to query accounts with `organizations:ListAccounts` | string | `"self"` | no |
+| source\_file | \(optional\) full or relative path to zipped binary of lambda handler | string | `"../release/grace-inventory-lambda.zip"` | no |
 | appenv | \(optional\) The environment in which the script is running \(development \| test \| production\) | string | `"development"` | no |
+| project_name | \(required\) project name \(e.g. grace, fcs, fas, etc.\). Used as prefix for AWS S3 bucket name | string | `"grace"` | yes |
+| accounts\_info | \(optional\) Determines which accounts to parse.  Can be "self", comma delimited list of Account IDs or an S3 URI containing JSON output of `aws organizations list-accounts`.  If empty, tries to query accounts with `organizations:ListAccounts` | string | `"self"` | no |
 | master\_account\_id | \(optional\) Account ID of AWS Master Payer Account | string | `""` | no |
 | master\_role\_name | \(optional\) Role assumed by lambda function to query organizations in Master Payer account | string | `""` | no |
 | organizational\_units | \(optional\) comma delimited list of organizational units to query for accounts. If set it will only query accounts in those organizational units | string | `""` | no |
 | regions | \(optional\) Comma delimited list of AWS regions to inventory | string | `"us-east-1,us-east-2,us-west-1,us-west-2"` | no |
 | schedule\_expression | \(optional\) Cloudwatch schedule expression for when to run inventory | string | `"cron(5 3 ? * MON-FRI *)"` | no |
-| source\_file | \(optional\) full or relative path to zipped binary of lambda handler | string | `"../release/grace-inventory-lambda.zip"` | no |
 | tenant\_role\_name | \(optional\) Role assumed by lambda function to query tenant accounts | string | `"OrganizationAccountAccessRole"` | no |
 
 [top](#top)
