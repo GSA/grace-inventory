@@ -1,7 +1,0 @@
-master_account_id = "111111111111"
-
-master_role_name = "AssumableRole"
-
-regions = "us-east-1,us-east-2,us-west-1,us-west-2"
-
-tenant_role_name = "AssumableRole"
