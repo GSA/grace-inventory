@@ -96,7 +96,7 @@ download the binary release from Github or compile the handler locally.
 ```bash
 mkdir -p release
 cd release
-curl -L https://github.com/GSA/grace-inventory/releases/download/v0.1.0/grace-inventory-lambda.zip -o grace-inventory-lambda.zip
+curl -L https://github.com/GSA/grace-inventory/releases/download/v0.1.1/grace-inventory-lambda.zip -o grace-inventory-lambda.zip
 cd ..
 ```
 
@@ -148,7 +148,7 @@ include the following in your root terraform module:
 
 ```
 module "example_self" {
-  source       = "github.com/GSA/grace-inventory/terraform"
+  source       = "github.com/GSA/grace-inventory?ref=v0.1.1"
   source_file  = "../../release/grace-inventory-lambda.zip"
   appenv       = "environment"
   project_name = "your-project"
