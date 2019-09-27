@@ -148,7 +148,7 @@ include the following in your root terraform module:
 
 ```
 module "example_self" {
-  source       = "github.com/GSA/grace-inventory/terraform"
+  source       = "github.com/GSA/grace-inventory?ref=v0.1.1"
   source_file  = "../../release/grace-inventory-lambda.zip"
   appenv       = "environment"
   project_name = "your-project"
