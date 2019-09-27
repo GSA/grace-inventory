@@ -9,5 +9,5 @@ module "example_mgmt_all" {
   master_role_name  = "AssumableRole"
   source_file       = "../../release/grace-inventory-lambda.zip"
   appenv            = "development"
-  //project_name      = "grace"
+  project_name      = "grace"
 }

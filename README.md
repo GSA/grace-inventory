@@ -96,7 +96,7 @@ download the binary release from Github or compile the handler locally.
 ```bash
 mkdir -p release
 cd release
-curl -L https://github.com/GSA/grace-inventory/releases/download/v0.1.0/grace-inventory-lambda.zip -o grace-inventory-lambda.zip
+curl -L https://github.com/GSA/grace-inventory/releases/download/v0.1.1/grace-inventory-lambda.zip -o grace-inventory-lambda.zip
 cd ..
 ```
 

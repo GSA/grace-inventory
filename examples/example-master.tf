@@ -6,5 +6,5 @@ module "example_master" {
   accounts_info = ""
   source_file   = "../../release/grace-inventory-lambda.zip"
   appenv        = "development"
-  //project_name  = "grace"
+  project_name  = "grace"
 }
