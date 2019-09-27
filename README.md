@@ -24,7 +24,6 @@ account the Lambda function is installed in.
     - [Example Usage](#example-usage)
 - [Terraform Module Inputs](#terraform-module-inputs)
 - [Terraform Module Outputs](#terraform-module-outputs)
-- [Non-Module Installation](#non-module-installation)
 - [Environment Variables](#environment-variables)
     - [CircleCI Environment Variables](#circleci-environment-variables)
     - [Lambda Function Environment Variables](#lambda-function-environment-variables)
@@ -188,35 +187,6 @@ See the [examples](terraform/examples) directory for more examples.
 | lambda\_function\_kms\_key\_arn | The ARN for the KMS encryption key |
 | lambda\_function\_last\_modified | The date this resource was last modified |
 | s3\_bucket\_id | The name of the S3 bucket where inventory reports are saved |
-
-[top](#top)
-
-## Non-Module Installation
-
-It is also possible to build and apply locally without using as a Terraform
-module.
-
-1. Install system dependencies.
-    1. [Go](https://golang.org/)
-    1. [Dep](https://golang.github.io/dep/docs/installation.html)
-    1. [GolangCI-Lint](https://github.com/golangci/golangci-lint)
-    1. [gosec](https://github.com/securego/gosec)
-    1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
-    1. [Terraform](https://www.terraform.io/)
-1. [Configure AWS](https://www.terraform.io/docs/providers/aws/#authentication) with credentials for your AWS account locally.
-1. Set the the environment variables specified in the CircleCI section below.
-1. Copy the `terrafrom/terraform.tfvars.example` file to `terraform/terraform.tfvars` and set the values as necessary for your environment.
-1. Validate and test the code
-
-    ```bash
-    make test
-    ```
-
-1. Build and deploy
-
-    ```bash
-    make deploy
-    ```
 
 [top](#top)
 
