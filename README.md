@@ -76,10 +76,10 @@ Control    | CSP/AWS | HOST/OS | App/DB | How is it implemented?
 
 ## Repository contents
 
+- **./**: Terraform module to deploy and configure Lambda function, S3 Bucket and IAM roles and policies
 - **handler**: Go code for Lambda function
-- **terraform**: Terraform module to deploy and configure Lambda function, S3 Bucket and IAM roles and policies
-    - **examples**: Examples of how to use the terraform module
-    - **tests**: Root module for testing deployment of Lambda function
+- **examples**: Examples of how to use the terraform module
+- **tests**: Root module for testing deployment of Lambda function
 
 [top](#top)
 
@@ -158,7 +158,7 @@ Ensure the `source_file` parameter is the path to the zip archive containing
 the compiled Lambda function handler downloaded or compiled earlier.
 
 
-See the [examples](terraform/examples) directory for more examples.
+See the [examples](examples) directory for more examples.
 
 [top](#top)
 
