@@ -12,54 +12,6 @@ import (
 
 const defaultRegion = "us-east-1"
 
-// func Roles(sess *session.Session, cred *credentials.Credentials) ([]*iam.Role, error)
-func TestRoles(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Roles(sess, nil)
-	if err != nil {
-		t.Fatalf("Roles() failed: %v", err)
-	}
-}
-
-// func Groups(sess *session.Session, cred *credentials.Credentials) ([]*iam.Group, error)
-func TestGroups(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Groups(sess, nil)
-	if err != nil {
-		t.Fatalf("Groups() failed: %v", err)
-	}
-}
-
-// func Policies(sess *session.Session, cred *credentials.Credentials) ([]*iam.Policy, error)
-func TestPolicies(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Policies(sess, nil)
-	if err != nil {
-		t.Fatalf("Policies() failed: %v", err)
-	}
-}
-
-// func Users(sess *session.Session, cred *credentials.Credentials) ([]*iam.User, error)
-func TestUsers(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Users(sess, nil)
-	if err != nil {
-		t.Fatalf("Users() failed: %v", err)
-	}
-}
-
 // func Buckets(sess *session.Session, cred *credentials.Credentials) ([]*s3.Bucket, error)
 func TestBuckets(t *testing.T) {
 	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
@@ -250,8 +202,8 @@ func (m *mockGlacierClient) listVaultsPagesR(in *glacier.ListVaultsInput, index 
 
 	for i := 0; i < limit; i++ {
 		items = append(items, &glacier.DescribeVaultOutput{
-			NumberOfArchives:  aws.Int64(int64(index)), // store page index
-			SizeInBytes: aws.Int64(int64(i)), // store element index
+			NumberOfArchives: aws.Int64(int64(index)), // store page index
+			SizeInBytes:      aws.Int64(int64(i)),     // store element index
 		})
 	}
 
@@ -272,15 +224,15 @@ func TestVaultsErr(t *testing.T) {
 	}
 }
 
-func TestVaultsPagination(t *testing.T)  {
+func TestVaultsPagination(t *testing.T) {
 	/*
 		TODO: Add ability to set the number of response values
 		enabling more effective testing of ExpectedLastElemIndex
 	*/
-	tt := []struct{
-		Name string
-		Pages int
-		ExpectedLength int
+	tt := []struct {
+		Name                  string
+		Pages                 int
+		ExpectedLength        int
 		ExpectedLastPageIndex int
 		ExpectedLastElemIndex int
 	}{

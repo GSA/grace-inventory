@@ -494,7 +494,10 @@ func (inv *Inv) queryAccounts() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryRoles() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkAccounts(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		roles, err := helpers.Roles(sess, cred)
+		svc := helpers.IamSvc{
+			Client: iam.New(sess, &aws.Config{Credentials: cred}),
+		}
+		roles, err := svc.Roles()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Roles for account: %s -> %v", account, err)
 		}
@@ -511,7 +514,10 @@ func (inv *Inv) queryRoles() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryGroups() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkAccounts(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		groups, err := helpers.Groups(sess, cred)
+		svc := helpers.IamSvc{
+			Client: iam.New(sess, &aws.Config{Credentials: cred}),
+		}
+		groups, err := svc.Groups()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Groups for account: %s -> %v", account, err)
 		}
@@ -528,7 +534,10 @@ func (inv *Inv) queryGroups() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryPolicies() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkAccounts(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		policies, err := helpers.Policies(sess, cred)
+		svc := helpers.IamSvc{
+			Client: iam.New(sess, &aws.Config{Credentials: cred}),
+		}
+		policies, err := svc.Policies()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Policies for account: %s -> %v", account, err)
 		}
@@ -545,7 +554,10 @@ func (inv *Inv) queryPolicies() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryUsers() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkAccounts(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		users, err := helpers.Users(sess, cred)
+		svc := helpers.IamSvc{
+			Client: iam.New(sess, &aws.Config{Credentials: cred}),
+		}
+		users, err := svc.Users()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Users for account: %s -> %v", account, err)
 		}

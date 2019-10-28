@@ -14,7 +14,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
-	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -112,78 +111,6 @@ type SnsTopic struct {
 	SubscriptionsDeleted    *string
 	DeliveryPolicy          *string
 	EffectiveDeliveryPolicy *string
-}
-
-// Roles ... pages through ListRolesPages and returns all IAM roles
-func Roles(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.Role, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.Role
-	err := svc.ListRolesPages(&iam.ListRolesInput{},
-		func(page *iam.ListRolesOutput, lastPage bool) bool {
-			results = append(results, page.Roles...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Groups ... pages through ListGroupsPages and returns all IAM groups
-func Groups(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.Group, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.Group
-	err := svc.ListGroupsPages(&iam.ListGroupsInput{},
-		func(page *iam.ListGroupsOutput, lastPage bool) bool {
-			results = append(results, page.Groups...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Policies ... pages through ListPoliciesPages and returns all IAM policies
-func Policies(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.Policy, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.Policy
-	err := svc.ListPoliciesPages(&iam.ListPoliciesInput{},
-		func(page *iam.ListPoliciesOutput, lastPage bool) bool {
-			results = append(results, page.Policies...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Users ... pages through ListUsersPages and returns all IAM users
-func Users(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.User, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.User
-	err := svc.ListUsersPages(&iam.ListUsersInput{},
-		func(page *iam.ListUsersOutput, lastPage bool) bool {
-			results = append(results, page.Users...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
 }
 
 // Buckets ... performs ListBuckets and returns all S3 buckets
@@ -438,6 +365,7 @@ func LoadBalancers(cfg client.ConfigProvider, cred *credentials.Credentials) ([]
 type GlacierSvc struct {
 	Client glacieriface.GlacierAPI
 }
+
 // Vaults ... pages through ListVaultsPages and returns all Glacier Vaults
 func (svc *GlacierSvc) Vaults() ([]*glacier.DescribeVaultOutput, error) {
 	var results []*glacier.DescribeVaultOutput
