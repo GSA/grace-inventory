@@ -1,6 +1,10 @@
 package helpers
 
 import (
+	"errors"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/glacier"
+	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"testing"
 
 	awstest "github.com/gruntwork-io/terratest/modules/aws"
@@ -224,15 +228,91 @@ func TestLoadBalancers(t *testing.T) {
 	}
 }
 
-// func Vaults(sess *session.Session, cred *credentials.Credentials) ([]*glacier.DescribeVaultOutput, error)
-func TestVaults(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
+type mockGlacierClient struct {
+	glacieriface.GlacierAPI
+	pages int
+}
+
+func (m *mockGlacierClient) ListVaultsPages(in *glacier.ListVaultsInput, fn func(*glacier.ListVaultsOutput, bool) bool) error {
+	for i := 0; i < m.pages; i++ {
+		if !fn(m.listVaultsPagesR(in, i)) {
+			return nil
+		}
 	}
-	_, err = Vaults(sess, nil)
-	if err != nil {
-		t.Fatalf("Vaults() failed: %v", err)
+	return errors.New("function is continuing to request pages after all pages have been consumed")
+}
+
+func (m *mockGlacierClient) listVaultsPagesR(in *glacier.ListVaultsInput, index int) (out *glacier.ListVaultsOutput, lastPage bool) {
+	var (
+		limit = 10 // default items per page
+		items []*glacier.DescribeVaultOutput
+	)
+
+	for i := 0; i < limit; i++ {
+		items = append(items, &glacier.DescribeVaultOutput{
+			NumberOfArchives:  aws.Int64(int64(index)), // store page index
+			SizeInBytes: aws.Int64(int64(i)), // store element index
+		})
+	}
+
+	out = &glacier.ListVaultsOutput{
+		VaultList: items,
+	}
+	if index+1 == m.pages {
+		lastPage = true
+	}
+	return
+}
+
+func TestVaultsErr(t *testing.T) {
+	svc := &GlacierSvc{Client: &mockGlacierClient{pages: 0}}
+	_, err := svc.Vaults()
+	if err == nil {
+		t.Error("err value was nil when failure was expected")
+	}
+}
+
+func TestVaultsPagination(t *testing.T)  {
+	/*
+		TODO: Add ability to set the number of response values
+		enabling more effective testing of ExpectedLastElemIndex
+	*/
+	tt := []struct{
+		Name string
+		Pages int
+		ExpectedLength int
+		ExpectedLastPageIndex int
+		ExpectedLastElemIndex int
+	}{
+		{Name: "validate single page request", Pages: 1, ExpectedLength: 10, ExpectedLastPageIndex: 0, ExpectedLastElemIndex: 9},
+		{Name: "validate two page request", Pages: 2, ExpectedLength: 20, ExpectedLastPageIndex: 1, ExpectedLastElemIndex: 9},
+		{Name: "validate three page request", Pages: 3, ExpectedLength: 30, ExpectedLastPageIndex: 2, ExpectedLastElemIndex: 9},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.Name, func(t *testing.T) {
+			svc := &GlacierSvc{Client: &mockGlacierClient{pages: tc.Pages}}
+			items, err := svc.Vaults()
+			if err != nil {
+				t.Fatalf("Vaults() failed: %v", err)
+			}
+
+			length := len(items)
+			if length != tc.ExpectedLength {
+				t.Errorf("items length invalid, expected: %d, got: %d", tc.ExpectedLength, length)
+			}
+
+			lastItem := items[length-1]
+			lastPageIndex := int(aws.Int64Value(lastItem.NumberOfArchives))
+			if lastPageIndex != tc.ExpectedLastPageIndex {
+				t.Errorf("last page index invalid, expected: %d, got: %d", tc.ExpectedLastPageIndex, lastPageIndex)
+			}
+
+			lastElemIndex := int(aws.Int64Value(lastItem.SizeInBytes))
+			if lastElemIndex != tc.ExpectedLastElemIndex {
+				t.Errorf("last element index invalid, expected: %d, got: %d", tc.ExpectedLastElemIndex, lastElemIndex)
+			}
+		})
 	}
 }
 

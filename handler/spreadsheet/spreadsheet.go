@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -25,6 +26,17 @@ var sheetTypes map[string]SheetFunc
 type Payload struct {
 	Static []string
 	Items  []interface{}
+}
+
+func (p *Payload) String() string {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("Static: %v,\n Items: [", p.Static))
+	for _, i := range p.Items {
+		sb.WriteString(fmt.Sprintf(`%#v`, i))
+		sb.WriteString(",\n")
+	}
+	sb.WriteString("]\n")
+	return sb.String()
 }
 
 // Column ... used to describe a column on a sheet
