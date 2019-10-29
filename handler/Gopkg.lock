@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:a0f946eb939dcad75da88601e675cf48ca698ccf08da4daee90e81843a5dc8c2"
+  digest = "1:d157077dc922c4680638d3353e7ae218d0c643f43ead5a72bc306cef2ca73f75"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -70,6 +70,7 @@
     "service/glacier",
     "service/glacier/glacieriface",
     "service/iam",
+    "service/iam/iamiface",
     "service/kms",
     "service/organizations",
     "service/rds",
@@ -84,8 +85,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "b4225bdde03b756685c89b7db31fe2ffac6d9234"
-  version = "v1.24.0"
+  revision = "c7898ed37bb1004a0a1c024bb3e0d206f07f9299"
+  version = "v1.25.21"
 
 [[projects]]
   digest = "1:7b94d37d65c0445053c6f3e73090e3966c1c29127035492c349e14f25c440359"
@@ -100,12 +101,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:71be6302fa0607e391a2b8a2b763eb5b624ee65add3966984cb3a9465faf51df"
+  digest = "1:2de50460dd6b7b36cb01f2d74f7e1c156b8adbf94f87762dbcb32e537e064246"
   name = "github.com/caarlos0/env"
   packages = ["."]
   pruneopts = "UT"
-  revision = "4bd75bf16b9ef8c1383109b5e4d931bd72c3b6d0"
-  version = "v6.0.0"
+  revision = "b1dce163743c66634eeef5988da14b031b1aa8f6"
+  version = "v6.1.0"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -124,15 +125,15 @@
   version = "v1.4.1"
 
 [[projects]]
-  digest = "1:8f8811f9be822914c3a25c6a071e93beb4c805d7b026cbf298bc577bc1cc945b"
+  digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
   name = "github.com/google/uuid"
   packages = ["."]
   pruneopts = "UT"
-  revision = "064e2069ce9c359c118179501254f67d7d37ba24"
-  version = "0.2"
+  revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
+  version = "v1.1.1"
 
 [[projects]]
-  digest = "1:714bca7e79df5f787d6f018df22c3e789d1c27d6a393be6656e9f97367950024"
+  digest = "1:ebe19550aaa080b7983cc21ee5ddda999fa60be57bdfaba5636682c56bb69a4c"
   name = "github.com/gruntwork-io/terratest"
   packages = [
     "modules/aws",
@@ -145,8 +146,8 @@
     "modules/ssh",
   ]
   pruneopts = "UT"
-  revision = "2ba8cabb767dd7ab1a918138540501fee8d6dd56"
-  version = "v0.19.0"
+  revision = "9f4f4f69d6521e2cb71c872297e8e04a890a5ec7"
+  version = "v0.22.2"
 
 [[projects]]
   digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
@@ -187,16 +188,16 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:e60f2f1cd2e8dfdea48c2440c303d103266e754ab1d8b75796a4e4caddb7a68c"
+  digest = "1:7f60bb033c03f8322869de36b3a063080593d22037c5a117007553441645adaa"
   name = "github.com/tealeg/xlsx"
   packages = ["."]
   pruneopts = "UT"
-  revision = "8be35264fa75a1bbe954ce51eba04f273e2c59e5"
-  version = "v1.0.3"
+  revision = "1b556911422e5b0f499a31ddc028ccc5ad288d4c"
+  version = "v1.0.5"
 
 [[projects]]
   branch = "master"
-  digest = "1:e0346b37c792e4d81c8e7c62c04a37cdecc8579a08d43fcf9666565553ca4d14"
+  digest = "1:4b049aae7a44fb6fb4d8e84355b145e591f686111817c0998fe31a9f8bf226dc"
   name = "golang.org/x/crypto"
   packages = [
     "curve25519",
@@ -209,7 +210,7 @@
     "ssh/agent",
   ]
   pruneopts = "UT"
-  revision = "227b76d455e791cb042b03e633e2f7fbcfdf74a5"
+  revision = "8986dd9e96cf0a6f74da406c005ba3df38527c04"
 
 [[projects]]
   branch = "master"
@@ -217,31 +218,31 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "a8b05e9114ab0cb08faec337c959aed24b68bf50"
+  revision = "fe3aa8a4527195a6057b3fad46619d7d090e99b5"
 
 [[projects]]
   branch = "master"
-  digest = "1:0b9eab718e36091a2b54afb645b0ef42658f544535ea3c7cbff03a9640415a77"
+  digest = "1:95abab3e07422980e85e253e49eb75c05c1dee6e84b50cb0d3353747ef8099eb"
   name = "golang.org/x/sys"
   packages = ["cpu"]
   pruneopts = "UT"
-  revision = "b4ddaad3f8a36719f2b8bc6486c14cc468ca2bb5"
+  revision = "195ce5e7f934b923d8fc432cf5a2561f2b334da9"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
   pruneopts = "UT"
-  revision = "5f2a59506353b8d5ba8cbbcd9f3c1f41f1eaf079"
-  version = "v1.6.2"
+  revision = "971852bfffca25b069c31162ae8f247a3dba083b"
+  version = "v1.6.5"
 
 [[projects]]
-  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
+  digest = "1:59f10c1537d2199d9115d946927fe31165959a95190849c82ff11e05803528b0"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = "UT"
-  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
+  revision = "f221b8435cfb71e54062f6c6e99e9ade30b124d5"
+  version = "v2.2.4"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -263,6 +264,7 @@
     "github.com/aws/aws-sdk-go/service/glacier",
     "github.com/aws/aws-sdk-go/service/glacier/glacieriface",
     "github.com/aws/aws-sdk-go/service/iam",
+    "github.com/aws/aws-sdk-go/service/iam/iamiface",
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/organizations",
     "github.com/aws/aws-sdk-go/service/rds",
