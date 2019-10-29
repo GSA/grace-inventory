@@ -30,12 +30,24 @@ type Payload struct {
 
 func (p *Payload) String() string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("Static: %v,\n Items: [", p.Static))
-	for _, i := range p.Items {
-		sb.WriteString(fmt.Sprintf(`%#v`, i))
-		sb.WriteString(",\n")
+	_, err := sb.WriteString(fmt.Sprintf("Static: %v,\n Items: [", p.Static))
+	if err != nil {
+		fmt.Printf("Warning: Error writing string: %v", err)
 	}
-	sb.WriteString("]\n")
+	for _, i := range p.Items {
+		_, err = sb.WriteString(fmt.Sprintf(`%#v`, i))
+		if err != nil {
+			fmt.Printf("Warning: Error writing string: %v", err)
+		}
+		_, err = sb.WriteString(",\n")
+		if err != nil {
+			fmt.Printf("Warning: Error writing string: %v", err)
+		}
+	}
+	_, err = sb.WriteString("]\n")
+	if err != nil {
+		fmt.Printf("Warning: Error writing string: %v", err)
+	}
 	return sb.String()
 }
 
