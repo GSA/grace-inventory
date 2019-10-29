@@ -5,7 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
 )
 
-// IamSvc
+// IamSvc ... uses an SDK service iface to access SDK service client
 type IamSvc struct {
 	Client iamiface.IAMAPI
 }

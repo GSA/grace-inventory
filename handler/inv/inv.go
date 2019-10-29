@@ -592,7 +592,10 @@ func (inv *Inv) queryBuckets() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryInstances() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkAccounts(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		instances, err := helpers.Instances(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		instances, err := svc.Instances()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Instances for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -610,7 +613,10 @@ func (inv *Inv) queryInstances() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryImages() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		images, err := helpers.Images(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		images, err := svc.Images()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Images for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -628,7 +634,10 @@ func (inv *Inv) queryImages() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryVolumes() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		volumes, err := helpers.Volumes(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		volumes, err := svc.Volumes()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Volumes for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -646,7 +655,10 @@ func (inv *Inv) queryVolumes() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) querySnapshots() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		snapshots, err := helpers.Snapshots(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		snapshots, err := svc.Snapshots()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Snapshots for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -664,7 +676,10 @@ func (inv *Inv) querySnapshots() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryVpcs() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		vpcs, err := helpers.Vpcs(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		vpcs, err := svc.Vpcs()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get VPCs for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -682,7 +697,10 @@ func (inv *Inv) queryVpcs() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) querySubnets() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		subnets, err := helpers.Subnets(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		subnets, err := svc.Subnets()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Subnets for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -700,7 +718,10 @@ func (inv *Inv) querySubnets() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) querySecurityGroups() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		groups, err := helpers.SecurityGroups(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		groups, err := svc.SecurityGroups()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Security Groups for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -718,7 +739,10 @@ func (inv *Inv) querySecurityGroups() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryAddresses() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		addresses, err := helpers.Addresses(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		addresses, err := svc.Addresses()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get EC2 Addresses for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -736,7 +760,10 @@ func (inv *Inv) queryAddresses() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryKeyPairs() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		keyPairs, err := helpers.KeyPairs(sess, cred)
+		svc := helpers.Ec2Svc{
+			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+		}
+		keyPairs, err := svc.KeyPairs()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get EC2 KeyPairs for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}

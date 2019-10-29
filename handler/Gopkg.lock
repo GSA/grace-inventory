@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:d157077dc922c4680638d3353e7ae218d0c643f43ead5a72bc306cef2ca73f75"
+  digest = "1:43503a6162f76b95c3cf816ca58116fce3c658c9424d6214d02a5b3708857648"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -65,6 +65,7 @@
     "service/configservice",
     "service/dynamodb",
     "service/ec2",
+    "service/ec2/ec2iface",
     "service/ecs",
     "service/elbv2",
     "service/glacier",
@@ -85,8 +86,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "c7898ed37bb1004a0a1c024bb3e0d206f07f9299"
-  version = "v1.25.21"
+  revision = "23e996a57757e6b586048809309e3945557c4edb"
+  version = "v1.25.22"
 
 [[projects]]
   digest = "1:7b94d37d65c0445053c6f3e73090e3966c1c29127035492c349e14f25c440359"
@@ -226,7 +227,7 @@
   name = "golang.org/x/sys"
   packages = ["cpu"]
   pruneopts = "UT"
-  revision = "195ce5e7f934b923d8fc432cf5a2561f2b334da9"
+  revision = "f43be2a4598cf3a47be9f94f0c28197ed9eae611"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
@@ -260,6 +261,7 @@
     "github.com/aws/aws-sdk-go/service/cloudwatch",
     "github.com/aws/aws-sdk-go/service/configservice",
     "github.com/aws/aws-sdk-go/service/ec2",
+    "github.com/aws/aws-sdk-go/service/ec2/ec2iface",
     "github.com/aws/aws-sdk-go/service/elbv2",
     "github.com/aws/aws-sdk-go/service/glacier",
     "github.com/aws/aws-sdk-go/service/glacier/glacieriface",
