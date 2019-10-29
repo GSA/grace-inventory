@@ -6,14 +6,37 @@
 .terraform/
 
 ## Go ##
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 grace-inventory-lambda
+integration/integration
+handler/handler
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories
 vendor/
+
+# Release artifacts
 *.zip
 release/
+
+# Mac attributes
 .DS_Store
 */.DS_Store
-integration/integration
-integration/integration.exe
-handler/handler
-handler/handler.exe
+
+# IntelliJ’s project specific settings files/directory (Goland)
+.idea
 .idea/
+
+# vi/GVim/MacVim backup files
+*.swp
