@@ -38,5 +38,5 @@ release/
 .idea
 .idea/
 
-# vi/GVim/MacVim backup files
+# vi/vim/GVim/MacVim backup files
 *.swp
