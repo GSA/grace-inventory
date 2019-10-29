@@ -2,10 +2,11 @@ package helpers
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
-	"testing"
 
 	awstest "github.com/gruntwork-io/terratest/modules/aws"
 )
@@ -194,7 +195,7 @@ func (m *mockGlacierClient) ListVaultsPages(in *glacier.ListVaultsInput, fn func
 	return errors.New("function is continuing to request pages after all pages have been consumed")
 }
 
-func (m *mockGlacierClient) listVaultsPagesR(in *glacier.ListVaultsInput, index int) (out *glacier.ListVaultsOutput, lastPage bool) {
+func (m *mockGlacierClient) listVaultsPagesR(_ *glacier.ListVaultsInput, index int) (out *glacier.ListVaultsOutput, lastPage bool) {
 	var (
 		limit = 10 // default items per page
 		items []*glacier.DescribeVaultOutput
@@ -224,12 +225,13 @@ func TestVaultsErr(t *testing.T) {
 	}
 }
 
+//nolint: godox
 func TestVaultsPagination(t *testing.T) {
 	/*
 		TODO: Add ability to set the number of response values
 		enabling more effective testing of ExpectedLastElemIndex
 	*/
-	tt := []struct {
+	tests := []struct {
 		Name                  string
 		Pages                 int
 		ExpectedLength        int
@@ -241,7 +243,8 @@ func TestVaultsPagination(t *testing.T) {
 		{Name: "validate three page request", Pages: 3, ExpectedLength: 30, ExpectedLastPageIndex: 2, ExpectedLastElemIndex: 9},
 	}
 
-	for _, tc := range tt {
+	for _, tt := range tests {
+		tc := tt
 		t.Run(tc.Name, func(t *testing.T) {
 			svc := &GlacierSvc{Client: &mockGlacierClient{pages: tc.Pages}}
 			items, err := svc.Vaults()

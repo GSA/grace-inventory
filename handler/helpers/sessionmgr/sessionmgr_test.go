@@ -2,11 +2,12 @@ package sessionmgr
 
 import (
 	"errors"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 )
 
 var genericRegions = []string{"us-east-1", "us-west-1"}
@@ -123,9 +124,9 @@ func TestDefaultErr(t *testing.T) {
 //func (mgr *SessionMgr) Region(region string) (*session.Session, error)
 func TestRegion(t *testing.T) {
 	tests := []struct {
-		name     string
-		region   string
-		regions  []string
+		name    string
+		region  string
+		regions []string
 	}{
 		{"test empty region", "", genericRegions},
 		{"test good region", genericRegions[0], genericRegions},
