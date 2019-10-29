@@ -36,6 +36,15 @@ jobs:
       - run:
           name: Lint Handler
           command: make lint_handler
+  test_handler:
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/github.com/GSA/grace-inventory
+    steps:
+      - checkout
+      - run:
+          name: Run Unit Tests
+          command make -C handler test_nocreds
 
 workflows:
   version: 2
@@ -43,3 +52,4 @@ workflows:
     jobs:
       - validate_terraform
       - lint_handler
+      - test_handler

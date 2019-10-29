@@ -36,6 +36,9 @@ clean:
 test: lint
 	go test -v ./...
 
+test_nocreds: lint
+	go test -v --run 'Users|TestGroups|Policies|Roles|Vaults' ./...
+
 lint: Gopkg.toml dependencies
 	dep ensure
 	golangci-lint run ./...
