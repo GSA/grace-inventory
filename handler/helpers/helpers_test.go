@@ -105,6 +105,13 @@ func (m *mockGlacierClient) listVaultsPagesR(_ *glacier.ListVaultsInput, index i
 		items []*glacier.DescribeVaultOutput
 	)
 
+	if in.Limit != nil {
+		l, err := strconv.Atoi(aws.StringValue(in.Limit))
+		if err == nil {
+			limit = l
+		}
+	}
+
 	for i := 0; i < limit; i++ {
 		items = append(items, &glacier.DescribeVaultOutput{
 			NumberOfArchives: aws.Int64(int64(index)), // store page index
@@ -129,13 +136,8 @@ func TestVaultsErr(t *testing.T) {
 	}
 }
 
-//nolint: godox
 func TestVaultsPagination(t *testing.T) {
-	/*
-		TODO: Add ability to set the number of response values
-		enabling more effective testing of ExpectedLastElemIndex
-	*/
-	tests := []struct {
+	tt := []struct {
 		Name                  string
 		Pages                 int
 		ExpectedLength        int
@@ -147,8 +149,8 @@ func TestVaultsPagination(t *testing.T) {
 		{Name: "validate three page request", Pages: 3, ExpectedLength: 30, ExpectedLastPageIndex: 2, ExpectedLastElemIndex: 9},
 	}
 
-	for _, tt := range tests {
-		tc := tt
+	for _, st := range tt {
+		tc := st
 		t.Run(tc.Name, func(t *testing.T) {
 			svc := &GlacierSvc{Client: &mockGlacierClient{pages: tc.Pages}}
 			items, err := svc.Vaults()

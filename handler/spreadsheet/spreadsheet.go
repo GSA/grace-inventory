@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -28,27 +27,13 @@ type Payload struct {
 	Items  []interface{}
 }
 
-func (p *Payload) String() string {
-	var sb strings.Builder
-	_, err := sb.WriteString(fmt.Sprintf("Static: %v,\n Items: [", p.Static))
-	if err != nil {
-		fmt.Printf("Warning: Error writing string: %v", err)
-	}
+func (p *Payload) String() (msg string) {
+	msg = fmt.Sprintf("Static: %v,\n Items: [", p.Static)
 	for _, i := range p.Items {
-		_, err = sb.WriteString(fmt.Sprintf(`%#v`, i))
-		if err != nil {
-			fmt.Printf("Warning: Error writing string: %v", err)
-		}
-		_, err = sb.WriteString(",\n")
-		if err != nil {
-			fmt.Printf("Warning: Error writing string: %v", err)
-		}
+		msg = fmt.Sprintf("%s%#v,\n", msg, i)
 	}
-	_, err = sb.WriteString("]\n")
-	if err != nil {
-		fmt.Printf("Warning: Error writing string: %v", err)
-	}
-	return sb.String()
+	msg = fmt.Sprintf("%s]\n", msg)
+	return
 }
 
 // Column ... used to describe a column on a sheet
