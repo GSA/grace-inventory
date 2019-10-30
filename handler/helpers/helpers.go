@@ -12,10 +12,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 	"github.com/aws/aws-sdk-go/service/configservice"
+	"github.com/aws/aws-sdk-go/service/configservice/configserviceiface"
 	"github.com/aws/aws-sdk-go/service/elbv2"
+	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -153,11 +156,7 @@ func Alarms(svc cloudwatchiface.CloudWatchAPI) ([]*cloudwatch.MetricAlarm, error
 }
 
 // ConfigRules ... performs DescribeConfigRules and returns all Config Service ConfigRules
-func ConfigRules(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*configservice.ConfigRule, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := configservice.New(cfg, &aws.Config{Credentials: cred})
+func ConfigRules(svc configserviceiface.ConfigServiceAPI) ([]*configservice.ConfigRule, error) {
 	input := &configservice.DescribeConfigRulesInput{}
 	result, err := svc.DescribeConfigRules(input)
 	if err != nil {
@@ -176,11 +175,7 @@ func ConfigRules(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*c
 }
 
 // LoadBalancers ... pages through DescribeLoadBalancersPages and returns all ELB v2 LoadBalancers
-func LoadBalancers(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*elbv2.LoadBalancer, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := elbv2.New(cfg, &aws.Config{Credentials: cred})
+func LoadBalancers(svc elbv2iface.ELBV2API) ([]*elbv2.LoadBalancer, error) {
 	var results []*elbv2.LoadBalancer
 	err := svc.DescribeLoadBalancersPages(&elbv2.DescribeLoadBalancersInput{},
 		func(page *elbv2.DescribeLoadBalancersOutput, lastPage bool) bool {
@@ -213,11 +208,7 @@ func (svc *GlacierSvc) Vaults() ([]*glacier.DescribeVaultOutput, error) {
 }
 
 // Keys ... pages over ListKeys results and returns all KMS Keys w/ AliasName
-func Keys(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*KmsKey, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := kms.New(cfg, &aws.Config{Credentials: cred})
+func Keys(svc kmsiface.KMSAPI) ([]*KmsKey, error) {
 	keyList, err := listKeys(svc)
 	if err != nil {
 		return nil, err
@@ -234,7 +225,7 @@ func Keys(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*KmsKey, 
 }
 
 // listKeys ... pages through ListKeysPages to get list of KeyIDs
-func listKeys(svc *kms.KMS) ([]*kms.KeyListEntry, error) {
+func listKeys(svc kmsiface.KMSAPI) ([]*kms.KeyListEntry, error) {
 	var results []*kms.KeyListEntry
 	err := svc.ListKeysPages(&kms.ListKeysInput{},
 		func(page *kms.ListKeysOutput, lastPage bool) bool {
@@ -248,7 +239,7 @@ func listKeys(svc *kms.KMS) ([]*kms.KeyListEntry, error) {
 }
 
 // getKeyDescriptions ... loops through list of KeyIds to get KeyMetadata (kms.DescribeKey)
-func getKeyDescriptions(svc *kms.KMS, keyList []*kms.KeyListEntry) ([]*kms.KeyMetadata, error) {
+func getKeyDescriptions(svc kmsiface.KMSAPI, keyList []*kms.KeyListEntry) ([]*kms.KeyMetadata, error) {
 	var keys []*kms.KeyMetadata
 	for _, key := range keyList {
 		input := &kms.DescribeKeyInput{KeyId: key.KeyId}
@@ -262,7 +253,7 @@ func getKeyDescriptions(svc *kms.KMS, keyList []*kms.KeyListEntry) ([]*kms.KeyMe
 }
 
 // listKeyAliases ... pages over ListAliasesPages and returns list of Aliases
-func listKeyAliases(svc *kms.KMS) ([]*kms.AliasListEntry, error) {
+func listKeyAliases(svc kmsiface.KMSAPI) ([]*kms.AliasListEntry, error) {
 	var results []*kms.AliasListEntry
 	err := svc.ListAliasesPages(&kms.ListAliasesInput{},
 		func(page *kms.ListAliasesOutput, lastPage bool) bool {

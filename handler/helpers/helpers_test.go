@@ -11,8 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
+	"github.com/aws/aws-sdk-go/service/configservice"
+	"github.com/aws/aws-sdk-go/service/configservice/configserviceiface"
+	"github.com/aws/aws-sdk-go/service/elbv2"
+	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
+	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 
@@ -44,6 +50,41 @@ type mockCWClient struct {
 
 func (m mockCWClient) DescribeAlarmsPages(in *cloudwatch.DescribeAlarmsInput, fn func(*cloudwatch.DescribeAlarmsOutput, bool) bool) error {
 	fn(&cloudwatch.DescribeAlarmsOutput{MetricAlarms: []*cloudwatch.MetricAlarm{{}}}, true)
+	return nil
+}
+
+type mockCSClient struct {
+	configserviceiface.ConfigServiceAPI
+}
+
+func (m mockCSClient) DescribeConfigRules(in *configservice.DescribeConfigRulesInput) (*configservice.DescribeConfigRulesOutput, error) {
+	return &configservice.DescribeConfigRulesOutput{ConfigRules: []*configservice.ConfigRule{{}}}, nil
+}
+
+type mockElbClient struct {
+	elbv2iface.ELBV2API
+}
+
+func (m mockElbClient) DescribeLoadBalancersPages(in *elbv2.DescribeLoadBalancersInput, fn func(*elbv2.DescribeLoadBalancersOutput, bool) bool) error {
+	fn(&elbv2.DescribeLoadBalancersOutput{LoadBalancers: []*elbv2.LoadBalancer{{}}}, true)
+	return nil
+}
+
+type mockKmsClient struct {
+	kmsiface.KMSAPI
+}
+
+func (m mockKmsClient) ListKeysPages(in *kms.ListKeysInput, fn func(*kms.ListKeysOutput, bool) bool) error {
+	fn(&kms.ListKeysOutput{Keys: []*kms.KeyListEntry{{}}}, true)
+	return nil
+}
+
+func (m mockKmsClient) DescribeKey(in *kms.DescribeKeyInput) (*kms.DescribeKeyOutput, error) {
+	return &kms.DescribeKeyOutput{KeyMetadata: &kms.KeyMetadata{}}, nil
+}
+
+func (m mockKmsClient) ListAliasesPages(in *kms.ListAliasesInput, fn func(*kms.ListAliasesOutput, bool) bool) error {
+	fn(&kms.ListAliasesOutput{Aliases: []*kms.AliasListEntry{{}}}, true)
 	return nil
 }
 
@@ -86,27 +127,29 @@ func TestAlarms(t *testing.T) {
 	}
 }
 
-// func ConfigRules(sess *session.Session, cred *credentials.Credentials) ([]*configservice.ConfigRule, error)
+// func ConfigRules(svc *configservice.ConfigServiceAPI) ([]*configservice.ConfigRule, error)
 func TestConfigRules(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = ConfigRules(sess, nil)
+	expected := []*configservice.ConfigRule{{}}
+	svc := mockCSClient{}
+	got, err := ConfigRules(svc)
 	if err != nil {
 		t.Fatalf("ConfigRules() failed: %v", err)
 	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("ConfigRules() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
+	}
 }
 
-// func LoadBalancers(sess *session.Session, cred *credentials.Credentials) ([]*elbv2.LoadBalancer, error)
+// func LoadBalancers(svc *elbv2.ELBV2API) ([]*elbv2.LoadBalancer, error)
 func TestLoadBalancers(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = LoadBalancers(sess, nil)
+	expected := []*elbv2.LoadBalancer{{}}
+	svc := mockElbClient{}
+	got, err := LoadBalancers(svc)
 	if err != nil {
 		t.Fatalf("LoadBalancers() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("LoadBalancers() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 
@@ -202,15 +245,16 @@ func TestVaultsPagination(t *testing.T) {
 	}
 }
 
-// func Keys(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*KmsKey, error) {
+// func Keys(svc *kms.ELBV2API) ([]*kms.Key, error)
 func TestKeys(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Keys(sess, nil)
+	expected := []*KmsKey{{}}
+	svc := mockKmsClient{}
+	got, err := Keys(svc)
 	if err != nil {
 		t.Fatalf("Keys() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Keys() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 

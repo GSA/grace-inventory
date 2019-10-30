@@ -17,9 +17,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/configservice"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/organizations"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -819,7 +821,8 @@ func (inv *Inv) queryAlarms() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryConfigRules() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		rules, err := helpers.ConfigRules(sess, cred)
+		svc := configservice.New(sess, &aws.Config{Credentials: cred})
+		rules, err := helpers.ConfigRules(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Config Rules for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -837,7 +840,8 @@ func (inv *Inv) queryConfigRules() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryLoadBalancers() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		loadBalancers, err := helpers.LoadBalancers(sess, cred)
+		svc := elbv2.New(sess, &aws.Config{Credentials: cred})
+		loadBalancers, err := helpers.LoadBalancers(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get ELBv2 Load Balancers for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -880,7 +884,8 @@ func (inv *Inv) queryVaults() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryKeys() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		keys, err := helpers.Keys(sess, cred)
+		svc := kms.New(sess, &aws.Config{Credentials: cred})
+		keys, err := helpers.Keys(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get KMS Keys for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}

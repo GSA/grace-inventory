@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:d3ed415cb0f82ac7f2919bcacb5930afba05b9e1784f8df372952001a48c3e4c"
+  digest = "1:02cf48c27877a04141a7e952a9e9ea307f789e4250214d34a25f9ce551584e1d"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -65,16 +65,19 @@
     "service/cloudwatch/cloudwatchiface",
     "service/cloudwatchlogs",
     "service/configservice",
+    "service/configservice/configserviceiface",
     "service/dynamodb",
     "service/ec2",
     "service/ec2/ec2iface",
     "service/ecs",
     "service/elbv2",
+    "service/elbv2/elbv2iface",
     "service/glacier",
     "service/glacier/glacieriface",
     "service/iam",
     "service/iam/iamiface",
     "service/kms",
+    "service/kms/kmsiface",
     "service/organizations",
     "service/rds",
     "service/s3",
@@ -264,14 +267,17 @@
     "github.com/aws/aws-sdk-go/service/cloudwatch",
     "github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface",
     "github.com/aws/aws-sdk-go/service/configservice",
+    "github.com/aws/aws-sdk-go/service/configservice/configserviceiface",
     "github.com/aws/aws-sdk-go/service/ec2",
     "github.com/aws/aws-sdk-go/service/ec2/ec2iface",
     "github.com/aws/aws-sdk-go/service/elbv2",
+    "github.com/aws/aws-sdk-go/service/elbv2/elbv2iface",
     "github.com/aws/aws-sdk-go/service/glacier",
     "github.com/aws/aws-sdk-go/service/glacier/glacieriface",
     "github.com/aws/aws-sdk-go/service/iam",
     "github.com/aws/aws-sdk-go/service/iam/iamiface",
     "github.com/aws/aws-sdk-go/service/kms",
+    "github.com/aws/aws-sdk-go/service/kms/kmsiface",
     "github.com/aws/aws-sdk-go/service/organizations",
     "github.com/aws/aws-sdk-go/service/rds",
     "github.com/aws/aws-sdk-go/service/s3",
