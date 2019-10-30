@@ -8,9 +8,11 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws/client"
+	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -26,6 +28,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/aws/aws-sdk-go/service/sts/stsiface"
 	"github.com/caarlos0/env"
 
 	"github.com/GSA/grace-inventory/handler/helpers"
@@ -172,17 +175,20 @@ func New() (*Inv, error) {
 		SheetTopics:         inv.queryTopics,
 		SheetParameters:     inv.queryParameters,
 	}
+
 	sess, err := session.NewSession(&aws.Config{Region: &defaultRegion})
 	if err != nil {
 		return nil, err
 	}
-	identity, err := getCurrentIdentity(sess)
+	svc := &stsSvc{Client: sts.New(sess)}
+	identity, err := svc.getCurrentIdentity()
 	if err != nil {
 		return nil, err
 	}
 	// Set mgmtAccount to the current account
 	inv.mgmtAccount = *identity.Account
-	inv.sessionMgr, err = sessionmgr.New(defaultRegion, cfg.Regions)
+	inv.sessionMgr = sessionmgr.New(defaultRegion, cfg.Regions)
+	err = inv.sessionMgr.Init()
 	if err != nil {
 		return nil, err
 	}
@@ -284,11 +290,13 @@ func (inv *Inv) aggregate() error {
 	return nil
 }
 
+type stsSvc struct {
+	Client stsiface.STSAPI
+}
+
 // getCurrentIdentity ... returns the response from GetCallerIdentity
-func getCurrentIdentity(cfg client.ConfigProvider) (output *sts.GetCallerIdentityOutput, err error) {
-	svc := sts.New(cfg)
-	output, err = svc.GetCallerIdentity(&sts.GetCallerIdentityInput{})
-	return
+func (svc *stsSvc) getCurrentIdentity() (*sts.GetCallerIdentityOutput, error) {
+	return svc.Client.GetCallerIdentity(&sts.GetCallerIdentityInput{})
 }
 
 // nolint: gocyclo
@@ -800,13 +808,20 @@ func (inv *Inv) queryLoadBalancers() ([]*spreadsheet.Payload, error) {
 	})
 }
 
+var glacierCreator = glacierClientCreator
+
+func glacierClientCreator(p client.ConfigProvider, cfgs ...*aws.Config) glacieriface.GlacierAPI {
+	return glacier.New(p, cfgs...)
+}
+
 // queryVaults ... queries Glacier Vaults for all organization accounts and
 // all sessions/regions in SessionMgr, pushes them onto a slice of interface
 // then returns a slice of *spreadsheet.Payload
 func (inv *Inv) queryVaults() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		vaults, err := helpers.Vaults(sess, cred)
+		svc := &helpers.GlacierSvc{Client: glacierCreator(sess, &aws.Config{Credentials: cred})}
+		vaults, err := svc.Vaults()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Glacier Vaults for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -814,7 +829,7 @@ func (inv *Inv) queryVaults() ([]*spreadsheet.Payload, error) {
 		for _, g := range vaults {
 			items = append(items, g)
 		}
-		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil
+		return &spreadsheet.Payload{Static: []string{account, aws.StringValue(sess.Config.Region)}, Items: items}, nil
 	})
 }
 

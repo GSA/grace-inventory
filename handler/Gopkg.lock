@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:9925b4856c43276956f39bfe7fe184dbfa5b39373f4302f3b2075425c149123d"
+  digest = "1:a0f946eb939dcad75da88601e675cf48ca698ccf08da4daee90e81843a5dc8c2"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -37,6 +37,7 @@
     "aws/request",
     "aws/session",
     "aws/signer/v4",
+    "awstesting/mock",
     "internal/ini",
     "internal/s3err",
     "internal/sdkio",
@@ -67,6 +68,7 @@
     "service/ecs",
     "service/elbv2",
     "service/glacier",
+    "service/glacier/glacieriface",
     "service/iam",
     "service/kms",
     "service/organizations",
@@ -130,7 +132,7 @@
   version = "0.2"
 
 [[projects]]
-  digest = "1:9d65330a39e0ae2c54c8cf92a4f48896c78f629606734604fd53ec9629339da3"
+  digest = "1:714bca7e79df5f787d6f018df22c3e789d1c27d6a393be6656e9f97367950024"
   name = "github.com/gruntwork-io/terratest"
   packages = [
     "modules/aws",
@@ -252,12 +254,14 @@
     "github.com/aws/aws-sdk-go/aws/credentials",
     "github.com/aws/aws-sdk-go/aws/credentials/stscreds",
     "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/awstesting/mock",
     "github.com/aws/aws-sdk-go/service/cloudformation",
     "github.com/aws/aws-sdk-go/service/cloudwatch",
     "github.com/aws/aws-sdk-go/service/configservice",
     "github.com/aws/aws-sdk-go/service/ec2",
     "github.com/aws/aws-sdk-go/service/elbv2",
     "github.com/aws/aws-sdk-go/service/glacier",
+    "github.com/aws/aws-sdk-go/service/glacier/glacieriface",
     "github.com/aws/aws-sdk-go/service/iam",
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/organizations",
@@ -268,6 +272,7 @@
     "github.com/aws/aws-sdk-go/service/sns",
     "github.com/aws/aws-sdk-go/service/ssm",
     "github.com/aws/aws-sdk-go/service/sts",
+    "github.com/aws/aws-sdk-go/service/sts/stsiface",
     "github.com/caarlos0/env",
     "github.com/gruntwork-io/terratest/modules/aws",
     "github.com/tealeg/xlsx",

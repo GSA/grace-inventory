@@ -8,20 +8,34 @@ import (
 // SessionMgr ... holds one session per region provided to New()
 type SessionMgr struct {
 	defaultRegion string
+	regions       []string
+	fn            Sessioner
 	sessions      []*session.Session
 }
 
-// New ... returns a *SessionMgr after creating one session per region provided
-func New(defaultRegion string, regions []string) (*SessionMgr, error) {
-	mgr := &SessionMgr{defaultRegion: defaultRegion}
-	for _, r := range regions {
-		sess, err := session.NewSession(&aws.Config{Region: aws.String(r)})
+// Sessioner returns a new *session.Session and an error
+type Sessioner func(cfgs ...*aws.Config) (*session.Session, error)
+
+// New ... returns a *SessionMgr
+func New(defaultRegion string, regions []string) *SessionMgr {
+	return &SessionMgr{defaultRegion: defaultRegion, regions: regions, fn: session.NewSession}
+}
+
+// Init ... creates one session per region provided to New()
+func (mgr *SessionMgr) Init() error {
+	for _, r := range mgr.regions {
+		sess, err := mgr.fn(&aws.Config{Region: aws.String(r)})
 		if err != nil {
-			return nil, err
+			return err
 		}
 		mgr.sessions = append(mgr.sessions, sess)
 	}
-	return mgr, nil
+	return nil
+}
+
+// Sessioner ... sets the method to use for creating new sessions
+func (mgr *SessionMgr) Sessioner(sessioner Sessioner) {
+	mgr.fn = sessioner
 }
 
 // All ... returns all sessions stored inside the *SessionMgr
@@ -36,7 +50,7 @@ func (mgr *SessionMgr) Default() (*session.Session, error) {
 			return s, nil
 		}
 	}
-	sess, err := session.NewSession(&aws.Config{
+	sess, err := mgr.fn(&aws.Config{
 		Region: aws.String(mgr.defaultRegion),
 	})
 	if err != nil {
@@ -52,7 +66,7 @@ func (mgr *SessionMgr) Region(region string) (*session.Session, error) {
 			return s, nil
 		}
 	}
-	sess, err := session.NewSession(&aws.Config{
+	sess, err := mgr.fn(&aws.Config{
 		Region: &region,
 	})
 	if err != nil {

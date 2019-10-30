@@ -27,6 +27,15 @@ type Payload struct {
 	Items  []interface{}
 }
 
+func (p *Payload) String() (msg string) {
+	msg = fmt.Sprintf("Static: %v,\n Items: [", p.Static)
+	for _, i := range p.Items {
+		msg = fmt.Sprintf("%s%#v,\n", msg, i)
+	}
+	msg = fmt.Sprintf("%s]\n", msg)
+	return
+}
+
 // Column ... used to describe a column on a sheet
 // if FieldName is empty, the column is considered
 // to be static

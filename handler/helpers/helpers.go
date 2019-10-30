@@ -13,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/glacier"
+	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/rds"
@@ -433,14 +434,15 @@ func LoadBalancers(cfg client.ConfigProvider, cred *credentials.Credentials) ([]
 	return results, nil
 }
 
+// GlacierSvc is used to call glacier functions
+type GlacierSvc struct {
+	Client glacieriface.GlacierAPI
+}
+
 // Vaults ... pages through ListVaultsPages and returns all Glacier Vaults
-func Vaults(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*glacier.DescribeVaultOutput, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := glacier.New(cfg, &aws.Config{Credentials: cred})
+func (svc *GlacierSvc) Vaults() ([]*glacier.DescribeVaultOutput, error) {
 	var results []*glacier.DescribeVaultOutput
-	err := svc.ListVaultsPages(&glacier.ListVaultsInput{},
+	err := svc.Client.ListVaultsPages(&glacier.ListVaultsInput{},
 		func(page *glacier.ListVaultsOutput, lastPage bool) bool {
 			results = append(results, page.VaultList...)
 			return !lastPage
