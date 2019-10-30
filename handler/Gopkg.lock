@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:43503a6162f76b95c3cf816ca58116fce3c658c9424d6214d02a5b3708857648"
+  digest = "1:5a1f00bfb33f91a42df6192a268a9bee5b2c212d1367ad64d1aae75fb84fa34e"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -60,6 +60,7 @@
     "service/acm",
     "service/autoscaling",
     "service/cloudformation",
+    "service/cloudformation/cloudformationiface",
     "service/cloudwatch",
     "service/cloudwatchlogs",
     "service/configservice",
@@ -258,6 +259,7 @@
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/awstesting/mock",
     "github.com/aws/aws-sdk-go/service/cloudformation",
+    "github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface",
     "github.com/aws/aws-sdk-go/service/cloudwatch",
     "github.com/aws/aws-sdk-go/service/configservice",
     "github.com/aws/aws-sdk-go/service/ec2",

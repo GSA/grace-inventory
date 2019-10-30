@@ -8,11 +8,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/client"
-	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -20,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/configservice"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/glacier"
+	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/organizations"
 	"github.com/aws/aws-sdk-go/service/rds"
@@ -782,7 +781,8 @@ func (inv *Inv) queryKeyPairs() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryStacks() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		stacks, err := helpers.Stacks(sess, cred)
+		svc := cloudformation.New(sess, &aws.Config{Credentials: cred})
+		stacks, err := helpers.Stacks(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get CloudFormation Stacks for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}

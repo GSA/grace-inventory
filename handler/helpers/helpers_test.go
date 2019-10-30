@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -25,6 +27,15 @@ func (m mockS3Client) ListBuckets(in *s3.ListBucketsInput) (*s3.ListBucketsOutpu
 	return &s3.ListBucketsOutput{Buckets: []*s3.Bucket{{}}}, nil
 }
 
+type mockCFClient struct {
+	cloudformationiface.CloudFormationAPI
+}
+
+func (m mockIamClient) DescribeStacksPages(in *cloudformation.DescribeStacksInput, fn func(*cloudformation.DescribeStacksOutput, bool) bool) error {
+	fn(&cloudformation.DescribeStacksOutput{Stacks: []*cloudformation.Stack{{}}}, true)
+	return nil
+}
+
 // func Buckets(sess *session.Session, cred *credentials.Credentials) ([]*s3.Bucket, error)
 func TestBuckets(t *testing.T) {
 	svc := mockS3Client{}
@@ -40,13 +51,14 @@ func TestBuckets(t *testing.T) {
 
 // func Stacks(sess *session.Session, cred *credentials.Credentials) ([]*cloudformation.Stack, error)
 func TestStacks(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Stacks(sess, nil)
+	expected := []*cloudformation.Stack{{}}
+	svc := mockCFClient{}
+	got, err := Stacks(svc)
 	if err != nil {
 		t.Fatalf("Stacks() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Stacks() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 

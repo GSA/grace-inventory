@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/configservice"
 	"github.com/aws/aws-sdk-go/service/elbv2"
@@ -123,11 +124,7 @@ func Buckets(svc s3iface.S3API) ([]*s3.Bucket, error) {
 }
 
 // Stacks ... pages through DescribeStacksPages and returns all CloudFormation Stacks
-func Stacks(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*cloudformation.Stack, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := cloudformation.New(cfg, &aws.Config{Credentials: cred})
+func Stacks(svc cloudformationiface.CloudFormationAPI) ([]*cloudformation.Stack, error) {
 	var results []*cloudformation.Stack
 	err := svc.DescribeStacksPages(&cloudformation.DescribeStacksInput{},
 		func(page *cloudformation.DescribeStacksOutput, lastPage bool) bool {
