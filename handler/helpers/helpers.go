@@ -438,6 +438,7 @@ func LoadBalancers(cfg client.ConfigProvider, cred *credentials.Credentials) ([]
 type GlacierSvc struct {
 	Client glacieriface.GlacierAPI
 }
+
 // Vaults ... pages through ListVaultsPages and returns all Glacier Vaults
 func (svc *GlacierSvc) Vaults() ([]*glacier.DescribeVaultOutput, error) {
 	var results []*glacier.DescribeVaultOutput

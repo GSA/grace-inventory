@@ -2,10 +2,12 @@ package helpers
 
 import (
 	"errors"
+	"strconv"
+	"testing"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
-	"testing"
 
 	awstest "github.com/gruntwork-io/terratest/modules/aws"
 )
@@ -248,10 +250,17 @@ func (m *mockGlacierClient) listVaultsPagesR(in *glacier.ListVaultsInput, index 
 		items []*glacier.DescribeVaultOutput
 	)
 
+	if in.Limit != nil {
+		l, err := strconv.Atoi(aws.StringValue(in.Limit))
+		if err == nil {
+			limit = l
+		}
+	}
+
 	for i := 0; i < limit; i++ {
 		items = append(items, &glacier.DescribeVaultOutput{
-			NumberOfArchives:  aws.Int64(int64(index)), // store page index
-			SizeInBytes: aws.Int64(int64(i)), // store element index
+			NumberOfArchives: aws.Int64(int64(index)), // store page index
+			SizeInBytes:      aws.Int64(int64(i)),     // store element index
 		})
 	}
 
@@ -272,15 +281,11 @@ func TestVaultsErr(t *testing.T) {
 	}
 }
 
-func TestVaultsPagination(t *testing.T)  {
-	/*
-		TODO: Add ability to set the number of response values
-		enabling more effective testing of ExpectedLastElemIndex
-	*/
-	tt := []struct{
-		Name string
-		Pages int
-		ExpectedLength int
+func TestVaultsPagination(t *testing.T) {
+	tt := []struct {
+		Name                  string
+		Pages                 int
+		ExpectedLength        int
 		ExpectedLastPageIndex int
 		ExpectedLastElemIndex int
 	}{
@@ -289,7 +294,8 @@ func TestVaultsPagination(t *testing.T)  {
 		{Name: "validate three page request", Pages: 3, ExpectedLength: 30, ExpectedLastPageIndex: 2, ExpectedLastElemIndex: 9},
 	}
 
-	for _, tc := range tt {
+	for _, st := range tt {
+		tc := st
 		t.Run(tc.Name, func(t *testing.T) {
 			svc := &GlacierSvc{Client: &mockGlacierClient{pages: tc.Pages}}
 			items, err := svc.Vaults()

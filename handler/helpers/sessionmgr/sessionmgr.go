@@ -8,8 +8,8 @@ import (
 // SessionMgr ... holds one session per region provided to New()
 type SessionMgr struct {
 	defaultRegion string
-	regions []string
-	fn     Sessioner
+	regions       []string
+	fn            Sessioner
 	sessions      []*session.Session
 }
 
