@@ -16,6 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -113,13 +114,8 @@ type SnsTopic struct {
 }
 
 // Buckets ... performs ListBuckets and returns all S3 buckets
-func Buckets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*s3.Bucket, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := s3.New(cfg, &aws.Config{Credentials: cred})
-	input := &s3.ListBucketsInput{}
-	result, err := svc.ListBuckets(input)
+func Buckets(svc s3iface.S3API) ([]*s3.Bucket, error) {
+	result, err := svc.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		return nil, err
 	}

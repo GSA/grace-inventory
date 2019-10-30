@@ -2,26 +2,38 @@ package helpers
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 
 	awstest "github.com/gruntwork-io/terratest/modules/aws"
 )
 
 const defaultRegion = "us-east-1"
 
+type mockS3Client struct {
+	s3iface.S3API
+}
+
+func (m mockS3Client) ListBuckets(in *s3.ListBucketsInput) (*s3.ListBucketsOutput, error) {
+	return &s3.ListBucketsOutput{Buckets: []*s3.Bucket{{}}}, nil
+}
+
 // func Buckets(sess *session.Session, cred *credentials.Credentials) ([]*s3.Bucket, error)
 func TestBuckets(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Buckets(sess, nil)
+	svc := mockS3Client{}
+	expected := []*s3.Bucket{{}}
+	got, err := Buckets(svc)
 	if err != nil {
 		t.Fatalf("Buckets() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Buckets() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 

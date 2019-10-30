@@ -574,7 +574,8 @@ func (inv *Inv) queryUsers() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryBuckets() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkAccounts(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		buckets, err := helpers.Buckets(sess, cred)
+		svc := s3.New(sess, &aws.Config{Credentials: cred})
+		buckets, err := helpers.Buckets(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Buckets for account: %s -> %v", account, err)
 		}
