@@ -3,6 +3,7 @@ package helpers
 import (
 	"errors"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -99,7 +100,7 @@ func (m *mockGlacierClient) ListVaultsPages(in *glacier.ListVaultsInput, fn func
 	return errors.New("function is continuing to request pages after all pages have been consumed")
 }
 
-func (m *mockGlacierClient) listVaultsPagesR(_ *glacier.ListVaultsInput, index int) (out *glacier.ListVaultsOutput, lastPage bool) {
+func (m *mockGlacierClient) listVaultsPagesR(in *glacier.ListVaultsInput, index int) (out *glacier.ListVaultsOutput, lastPage bool) {
 	var (
 		limit = 10 // default items per page
 		items []*glacier.DescribeVaultOutput
