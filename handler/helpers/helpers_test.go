@@ -31,7 +31,7 @@ type mockCFClient struct {
 	cloudformationiface.CloudFormationAPI
 }
 
-func (m mockIamClient) DescribeStacksPages(in *cloudformation.DescribeStacksInput, fn func(*cloudformation.DescribeStacksOutput, bool) bool) error {
+func (m mockCFClient) DescribeStacksPages(in *cloudformation.DescribeStacksInput, fn func(*cloudformation.DescribeStacksOutput, bool) bool) error {
 	fn(&cloudformation.DescribeStacksOutput{Stacks: []*cloudformation.Stack{{}}}, true)
 	return nil
 }
