@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:5a1f00bfb33f91a42df6192a268a9bee5b2c212d1367ad64d1aae75fb84fa34e"
+  digest = "1:d3ed415cb0f82ac7f2919bcacb5930afba05b9e1784f8df372952001a48c3e4c"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -62,6 +62,7 @@
     "service/cloudformation",
     "service/cloudformation/cloudformationiface",
     "service/cloudwatch",
+    "service/cloudwatch/cloudwatchiface",
     "service/cloudwatchlogs",
     "service/configservice",
     "service/dynamodb",
@@ -261,6 +262,7 @@
     "github.com/aws/aws-sdk-go/service/cloudformation",
     "github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface",
     "github.com/aws/aws-sdk-go/service/cloudwatch",
+    "github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface",
     "github.com/aws/aws-sdk-go/service/configservice",
     "github.com/aws/aws-sdk-go/service/ec2",
     "github.com/aws/aws-sdk-go/service/ec2/ec2iface",

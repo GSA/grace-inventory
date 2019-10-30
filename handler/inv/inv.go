@@ -800,7 +800,8 @@ func (inv *Inv) queryStacks() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryAlarms() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		alarms, err := helpers.Alarms(sess, cred)
+		svc := cloudwatch.New(sess, &aws.Config{Credentials: cred})
+		alarms, err := helpers.Alarms(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get CloudWatch Alarms for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}

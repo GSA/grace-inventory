@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 	"github.com/aws/aws-sdk-go/service/configservice"
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/glacier"
@@ -138,11 +139,7 @@ func Stacks(svc cloudformationiface.CloudFormationAPI) ([]*cloudformation.Stack,
 }
 
 // Alarms ... pages through DescribeAlarmsPages and returns all CloudWatch Metric Alarms
-func Alarms(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*cloudwatch.MetricAlarm, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := cloudwatch.New(cfg, &aws.Config{Credentials: cred})
+func Alarms(svc cloudwatchiface.CloudWatchAPI) ([]*cloudwatch.MetricAlarm, error) {
 	var results []*cloudwatch.MetricAlarm
 	err := svc.DescribeAlarmsPages(&cloudwatch.DescribeAlarmsInput{},
 		func(page *cloudwatch.DescribeAlarmsOutput, lastPage bool) bool {

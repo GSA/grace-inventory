@@ -9,6 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -36,6 +38,15 @@ func (m mockCFClient) DescribeStacksPages(in *cloudformation.DescribeStacksInput
 	return nil
 }
 
+type mockCWClient struct {
+	cloudwatchiface.CloudWatchAPI
+}
+
+func (m mockCWClient) DescribeAlarmsPages(in *cloudwatch.DescribeAlarmsInput, fn func(*cloudwatch.DescribeAlarmsOutput, bool) bool) error {
+	fn(&cloudwatch.DescribeAlarmsOutput{MetricAlarms: []*cloudwatch.MetricAlarm{{}}}, true)
+	return nil
+}
+
 // func Buckets(sess *session.Session, cred *credentials.Credentials) ([]*s3.Bucket, error)
 func TestBuckets(t *testing.T) {
 	svc := mockS3Client{}
@@ -49,7 +60,7 @@ func TestBuckets(t *testing.T) {
 	}
 }
 
-// func Stacks(sess *session.Session, cred *credentials.Credentials) ([]*cloudformation.Stack, error)
+// func Stacks(svc *cloudformation.CloudFormationAPI) ([]*cloudformation.Stack, error)
 func TestStacks(t *testing.T) {
 	expected := []*cloudformation.Stack{{}}
 	svc := mockCFClient{}
@@ -62,15 +73,16 @@ func TestStacks(t *testing.T) {
 	}
 }
 
-// func Alarms(sess *session.Session, cred *credentials.Credentials) ([]*cloudwatch.MetricAlarm, error)
+// func Alarms(svc *cloudwatch.CloudWatchAPI) ([]*cloudwatch.MetricAlarm, error)
 func TestAlarms(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Alarms(sess, nil)
+	expected := []*cloudwatch.MetricAlarm{{}}
+	svc := mockCWClient{}
+	got, err := Alarms(svc)
 	if err != nil {
 		t.Fatalf("Alarms() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Alarms() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 
