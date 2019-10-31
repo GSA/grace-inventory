@@ -37,7 +37,7 @@ test: lint
 	go test -v ./...
 
 test_nocreds: lint
-	go test -v --run 'DBInstances|DBSnapshots|Secrets'
+	go test -v --run 'DBInstances|DBSnapshots|Secrets' ./...
 
 lint: Gopkg.toml dependencies
 	dep ensure
