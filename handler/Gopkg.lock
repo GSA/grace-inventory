@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:02cf48c27877a04141a7e952a9e9ea307f789e4250214d34a25f9ce551584e1d"
+  digest = "1:1befaee8931b3f14b9b3d6eee29c1cd4601def8981869c281ebb98dd8d6dc5d9"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -80,10 +80,12 @@
     "service/kms/kmsiface",
     "service/organizations",
     "service/rds",
+    "service/rds/rdsiface",
     "service/s3",
     "service/s3/s3iface",
     "service/s3/s3manager",
     "service/secretsmanager",
+    "service/secretsmanager/secretsmanageriface",
     "service/sns",
     "service/sqs",
     "service/ssm",
@@ -280,10 +282,12 @@
     "github.com/aws/aws-sdk-go/service/kms/kmsiface",
     "github.com/aws/aws-sdk-go/service/organizations",
     "github.com/aws/aws-sdk-go/service/rds",
+    "github.com/aws/aws-sdk-go/service/rds/rdsiface",
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/aws/aws-sdk-go/service/s3/s3iface",
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
     "github.com/aws/aws-sdk-go/service/secretsmanager",
+    "github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface",
     "github.com/aws/aws-sdk-go/service/sns",
     "github.com/aws/aws-sdk-go/service/ssm",
     "github.com/aws/aws-sdk-go/service/sts",
