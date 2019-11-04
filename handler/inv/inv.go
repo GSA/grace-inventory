@@ -995,12 +995,13 @@ func (inv *Inv) queryTopics() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryParameters() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		secrets, err := helpers.Parameters(sess, cred)
+		svc := ssm.New(sess, &aws.Config{Credentials: cred})
+		parameters, err := helpers.Parameters(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get SSM Parameters for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
 		var items []interface{}
-		for _, g := range secrets {
+		for _, g := range parameters {
 			items = append(items, g)
 		}
 		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil

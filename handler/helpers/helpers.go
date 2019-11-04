@@ -24,6 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
 
 var self = []*string{aws.String("self")}
@@ -343,11 +344,7 @@ func Secrets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*secre
 }
 
 // Parameters ... pages through DescribeParametersPages to get SSM Parameters
-func Parameters(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ssm.ParameterMetadata, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ssm.New(cfg, &aws.Config{Credentials: cred})
+func Parameters(svc ssmiface.SSMAPI) ([]*ssm.ParameterMetadata, error) {
 	var results []*ssm.ParameterMetadata
 	err := svc.DescribeParametersPages(&ssm.DescribeParametersInput{},
 		func(page *ssm.DescribeParametersOutput, lastPage bool) bool {

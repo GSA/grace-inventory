@@ -21,6 +21,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 
 	awstest "github.com/gruntwork-io/terratest/modules/aws"
 )
@@ -85,6 +87,15 @@ func (m mockKmsClient) DescribeKey(in *kms.DescribeKeyInput) (*kms.DescribeKeyOu
 
 func (m mockKmsClient) ListAliasesPages(in *kms.ListAliasesInput, fn func(*kms.ListAliasesOutput, bool) bool) error {
 	fn(&kms.ListAliasesOutput{Aliases: []*kms.AliasListEntry{{}}}, true)
+	return nil
+}
+
+type mockSsmClient struct {
+	ssmiface.SSMAPI
+}
+
+func (m mockSsmClient) DescribeParametersPages(in *ssm.DescribeParametersInput, fn func(*ssm.DescribeParametersOutput, bool) bool) error {
+	fn(&ssm.DescribeParametersOutput{Parameters: []*ssm.ParameterMetadata{{}}}, true)
 	return nil
 }
 
@@ -294,14 +305,15 @@ func TestSecrets(t *testing.T) {
 	}
 }
 
-//func Parameters(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ssm.ParameterMetadata, error) {
+// func Parameters(svc *ssm.SSMAPI) ([]*ssm.Parameter, error)
 func TestParameters(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Parameters(sess, nil)
+	expected := []*ssm.ParameterMetadata{{}}
+	svc := mockSsmClient{}
+	got, err := Parameters(svc)
 	if err != nil {
 		t.Fatalf("Parameters() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Parameters() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }

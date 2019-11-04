@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:32d6bbcac8b563ddd5ddee033186313d81ecdac1dbc49d7ea08a3530f012655c"
+  digest = "1:25e596d9b92bab23624131eec8d1ab59387fd7f5af00983da51d5f82b7b49417"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -88,6 +88,7 @@
     "service/sns/snsiface",
     "service/sqs",
     "service/ssm",
+    "service/ssm/ssmiface",
     "service/sts",
     "service/sts/stsiface",
   ]
@@ -288,6 +289,7 @@
     "github.com/aws/aws-sdk-go/service/sns",
     "github.com/aws/aws-sdk-go/service/sns/snsiface",
     "github.com/aws/aws-sdk-go/service/ssm",
+    "github.com/aws/aws-sdk-go/service/ssm/ssmiface",
     "github.com/aws/aws-sdk-go/service/sts",
     "github.com/aws/aws-sdk-go/service/sts/stsiface",
     "github.com/caarlos0/env",
