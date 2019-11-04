@@ -294,30 +294,6 @@ func TestSecrets(t *testing.T) {
 	}
 }
 
-// func Subscriptions(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*sns.Subscription, error) {
-func TestSubscriptions(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Subscriptions(sess, nil)
-	if err != nil {
-		t.Fatalf("Subscriptions() failed: %v", err)
-	}
-}
-
-// func Topics(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*SnsTopic, error) {
-func TestTopics(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Topics(sess, nil)
-	if err != nil {
-		t.Fatalf("Topics() failed: %v", err)
-	}
-}
-
 //func Parameters(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ssm.ParameterMetadata, error) {
 func TestParameters(t *testing.T) {
 	sess, err := awstest.NewAuthenticatedSession(defaultRegion)

@@ -957,12 +957,13 @@ func (inv *Inv) querySecrets() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) querySubscriptions() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		secrets, err := helpers.Subscriptions(sess, cred)
+		svc := sns.New(sess, &aws.Config{Credentials: cred})
+		subscriptions, err := helpers.Subscriptions(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get SNS Subscriptions for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
 		var items []interface{}
-		for _, g := range secrets {
+		for _, g := range subscriptions {
 			items = append(items, g)
 		}
 		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil
@@ -975,12 +976,13 @@ func (inv *Inv) querySubscriptions() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryTopics() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		secrets, err := helpers.Topics(sess, cred)
+		svc := sns.New(sess, &aws.Config{Credentials: cred})
+		topics, err := helpers.Topics(svc)
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get SNS Topics for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
 		var items []interface{}
-		for _, g := range secrets {
+		for _, g := range topics {
 			items = append(items, g)
 		}
 		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil

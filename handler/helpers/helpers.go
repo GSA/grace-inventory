@@ -23,7 +23,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
-	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/ssm"
 )
 
@@ -104,18 +103,6 @@ type KmsKey struct {
 	ValidTo *time.Time `type:"timestamp"`
 	// String that contains the alias. This value begins with alias/.
 	AliasName *string `min:"1" type:"string"`
-}
-
-// SnsTopic ... struct definition for Attributes map in GetTopicAttributesOutput
-type SnsTopic struct {
-	DisplayName             *string
-	TopicArn                *string
-	Owner                   *string
-	SubscriptionsPending    *string
-	SubscriptionsConfirmed  *string
-	SubscriptionsDeleted    *string
-	DeliveryPolicy          *string
-	EffectiveDeliveryPolicy *string
 }
 
 // Buckets ... performs ListBuckets and returns all S3 buckets
@@ -353,76 +340,6 @@ func Secrets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*secre
 		return nil, err
 	}
 	return results, nil
-}
-
-// Subscriptions ... pages through ListSubscriptionsPages to get list of Subscriptions
-func Subscriptions(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*sns.Subscription, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := sns.New(cfg, &aws.Config{Credentials: cred})
-	var results []*sns.Subscription
-	err := svc.ListSubscriptionsPages(&sns.ListSubscriptionsInput{},
-		func(page *sns.ListSubscriptionsOutput, lastPage bool) bool {
-			results = append(results, page.Subscriptions...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Topics ... pages over ListTopics results and returns all Topics parameters
-func Topics(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*SnsTopic, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := sns.New(cfg, &aws.Config{Credentials: cred})
-	topicList, err := listTopics(svc)
-	if err != nil {
-		return nil, err
-	}
-	return getTopicAttributes(svc, topicList)
-}
-
-// listTopics ... pages through ListTopicsPages to get list of TopicArns
-func listTopics(svc *sns.SNS) ([]*sns.Topic, error) {
-	var results []*sns.Topic
-	err := svc.ListTopicsPages(&sns.ListTopicsInput{},
-		func(page *sns.ListTopicsOutput, lastPage bool) bool {
-			results = append(results, page.Topics...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// getTopicAttributes ... loops through list of Topic ARNs to get Topic attributes GetTopicAttributes())
-func getTopicAttributes(svc *sns.SNS, topicList []*sns.Topic) ([]*SnsTopic, error) {
-	var topics []*SnsTopic
-	for _, t := range topicList {
-		input := &sns.GetTopicAttributesInput{TopicArn: t.TopicArn}
-		result, err := svc.GetTopicAttributes(input)
-		if err != nil {
-			return nil, err
-		}
-		a := result.Attributes
-		m := &SnsTopic{
-			DisplayName:             a["DisplayName"],
-			TopicArn:                a["TopicArn"],
-			Owner:                   a["Owner"],
-			SubscriptionsPending:    a["SubscriptionsPending"],
-			SubscriptionsConfirmed:  a["SubscriptionsConfirmed"],
-			SubscriptionsDeleted:    a["SubscriptionsDeleted"],
-			DeliveryPolicy:          a["DeliveryPolicy"],
-			EffectiveDeliveryPolicy: a["EffectiveDeliveryPolicy"],
-		}
-		topics = append(topics, m)
-	}
-	return topics, nil
 }
 
 // Parameters ... pages through DescribeParametersPages to get SSM Parameters
