@@ -47,6 +47,7 @@ func TestAccounts(t *testing.T) {
 }
 
 func TestAccountsInvalid(t *testing.T) {
+	t.Skip("skipping because test requires AWS credentials")
 	var (
 		sess *session.Session
 		err  error
