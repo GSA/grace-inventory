@@ -160,6 +160,15 @@ the compiled Lambda function handler downloaded or compiled earlier.
 
 See the [examples](examples) directory for more examples.
 
+**Note:** The S3 bucket created to store the inventory spreadsheets has logging
+enabled and requires a pre-existing bucket with a name in the form of:
+`${var.project_name}-${var.appenv}-access-logs`. The LogDelivery group must have
+WRITE and READ_ACP permissions on the bucket (`acl = "log-delivery-write"`).
+If your logging bucket has a different name or does not exist, you will have to
+create one or fork this repository and edit the logging configuration of the S3
+bucket on
+[Line 10 of `iam.tf`](https://github.com/GSA/grace-inventory/blob/9b46d0bfbf40d6b9a5237afb9a45621a2f1a85d9/s3.tf#L10)
+
 [top](#top)
 
 ## Terraform Module Inputs
