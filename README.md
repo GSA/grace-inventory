@@ -90,7 +90,7 @@ download the binary release from Github or compile the handler locally.
 
 [top](#top)
 
-### Download
+### Download (Recommended)
 
 ```bash
 mkdir -p release
@@ -101,7 +101,7 @@ cd ..
 
 [top](#top)
 
-### Build/Compile Locally
+### Build/Compile Locally (Not Recommended)
 
 #### Prerequisites
 
@@ -124,7 +124,7 @@ entering the following at a command prompt:
 make build_handler
 ```
 
-#### Alternative Build
+#### Alternative Build (Not Recommended)
 
 If your IAM permissions prevent the tests from succeeding, you can build manually:
 
