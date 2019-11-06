@@ -38,4 +38,3 @@ func (svc SecretsManagerSvc) Secrets() ([]*secretsmanager.SecretListEntry, error
 	}
 	return results, nil
 }
-

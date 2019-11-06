@@ -52,4 +52,3 @@ func (svc RDSSvc) DBSnapshots() ([]*rds.DBSnapshot, error) {
 	}
 	return results, nil
 }
-

@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"errors"
+
 	"reflect"
 	"strconv"
 	"testing"
@@ -23,11 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
-
-	awstest "github.com/gruntwork-io/terratest/modules/aws"
 )
-
-const defaultRegion = "us-east-1"
 
 type mockS3Client struct {
 	s3iface.S3API
@@ -271,11 +268,10 @@ func TestKeys(t *testing.T) {
 
 // func DBInstances(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBInstance, error) {
 func TestDBInstances(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
+	svc := RDSSvc{
+		Client: mockedRDS{},
 	}
-	_, err = DBInstances(sess, nil)
+	_, err := svc.DBInstances()
 	if err != nil {
 		t.Fatalf("DBInstances() failed: %v", err)
 	}
@@ -283,11 +279,10 @@ func TestDBInstances(t *testing.T) {
 
 // func DBSnapshots(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBInstance, error) {
 func TestDBSnapshots(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
+	svc := RDSSvc{
+		Client: mockedRDS{},
 	}
-	_, err = DBSnapshots(sess, nil)
+	_, err := svc.DBSnapshots()
 	if err != nil {
 		t.Fatalf("DBSnapshots() failed: %v", err)
 	}
@@ -295,11 +290,10 @@ func TestDBSnapshots(t *testing.T) {
 
 // func Secrets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*secretsmanager.SecretListEntry, error) {
 func TestSecrets(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
+	svc := SecretsManagerSvc{
+		Client: mockedSecretsManager{},
 	}
-	_, err = Secrets(sess, nil)
+	_, err := svc.Secrets()
 	if err != nil {
 		t.Fatalf("Secrets() failed: %v", err)
 	}

@@ -903,7 +903,10 @@ func (inv *Inv) queryKeys() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryDBInstances() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		instances, err := helpers.DBInstances(sess, cred)
+		svc := helpers.RDSSvc{
+			Client: rds.New(sess, &aws.Config{Credentials: cred}),
+		}
+		instances, err := svc.DBInstances()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get RDS DBInstances for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -921,7 +924,10 @@ func (inv *Inv) queryDBInstances() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) queryDBSnapshots() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		snapshots, err := helpers.DBSnapshots(sess, cred)
+		svc := helpers.RDSSvc{
+			Client: rds.New(sess, &aws.Config{Credentials: cred}),
+		}
+		snapshots, err := svc.DBSnapshots()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get RDS DBSnapshots for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
@@ -939,7 +945,10 @@ func (inv *Inv) queryDBSnapshots() ([]*spreadsheet.Payload, error) {
 func (inv *Inv) querySecrets() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
-		secrets, err := helpers.Secrets(sess, cred)
+		svc := helpers.SecretsManagerSvc{
+			Client: secretsmanager.New(sess, &aws.Config{Credentials: cred}),
+		}
+		secrets, err := svc.Secrets()
 		if err != nil {
 			return nil, newQueryErrorf(err, "failed to get Secrets for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
 		}
