@@ -1,12 +1,9 @@
 package helpers
 
 import (
-	"errors"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/client"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
@@ -20,9 +17,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/aws/aws-sdk-go/service/rds/rdsiface"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
+	"github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
@@ -290,57 +289,21 @@ func getAliasName(str string, keyAliases []*kms.AliasListEntry) *string {
 }
 
 // DBInstances ... pages through DescribeDBInstancesPages to get list of DBInstances
-func DBInstances(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBInstance, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := rds.New(cfg, &aws.Config{Credentials: cred})
-	var results []*rds.DBInstance
-	err := svc.DescribeDBInstancesPages(&rds.DescribeDBInstancesInput{},
-		func(page *rds.DescribeDBInstancesOutput, lastPage bool) bool {
-			results = append(results, page.DBInstances...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
+func DBInstances(svc rdsiface.RDSAPI) ([]*rds.DBInstance, error) {
+	res, err := RDSSvc{Client: svc}.DBInstances()
+	return res, err
 }
 
 // DBSnapshots ... pages through DescribeDBSnapshotsPages to get list of DBSnapshots
-func DBSnapshots(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBSnapshot, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := rds.New(cfg, &aws.Config{Credentials: cred})
-	var results []*rds.DBSnapshot
-	err := svc.DescribeDBSnapshotsPages(&rds.DescribeDBSnapshotsInput{},
-		func(page *rds.DescribeDBSnapshotsOutput, lastPage bool) bool {
-			results = append(results, page.DBSnapshots...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
+func DBSnapshots(svc rdsiface.RDSAPI) ([]*rds.DBSnapshot, error) {
+	res, err := RDSSvc{Client: svc}.DBSnapshots()
+	return res, err
 }
 
 // Secrets ... pages through ListSecretsPages to get list of Secrets
-func Secrets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*secretsmanager.SecretListEntry, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := secretsmanager.New(cfg, &aws.Config{Credentials: cred})
-	var results []*secretsmanager.SecretListEntry
-	err := svc.ListSecretsPages(&secretsmanager.ListSecretsInput{},
-		func(page *secretsmanager.ListSecretsOutput, lastPage bool) bool {
-			results = append(results, page.SecretList...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
+func Secrets(svc secretsmanageriface.SecretsManagerAPI) ([]*secretsmanager.SecretListEntry, error) {
+	res, err := SecretsManagerSvc{Client: svc}.Secrets()
+	return res, err
 }
 
 // Parameters ... pages through DescribeParametersPages to get SSM Parameters
@@ -355,4 +318,28 @@ func Parameters(svc ssmiface.SSMAPI) ([]*ssm.ParameterMetadata, error) {
 		return nil, err
 	}
 	return results, nil
+}
+
+// For testing:
+
+type mockCalls struct {
+	calls []string
+}
+
+func (m *mockCalls) Called(funcName string) {
+	m.calls = append(m.calls, funcName)
+}
+
+type mocked struct {
+	mockCalls *mockCalls
+}
+
+func (m mocked) Called(funcName string) {
+	if m.mockCalls != nil {
+		m.mockCalls.Called(funcName)
+	}
+}
+
+func (m mocked) CallsList() []string {
+	return m.mockCalls.calls
 }
