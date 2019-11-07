@@ -16,12 +16,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
-	"github.com/aws/aws-sdk-go/service/rds"
-	"github.com/aws/aws-sdk-go/service/rds/rdsiface"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
-	"github.com/aws/aws-sdk-go/service/secretsmanager"
-	"github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
@@ -288,24 +284,6 @@ func getAliasName(str string, keyAliases []*kms.AliasListEntry) *string {
 	return aws.String("")
 }
 
-// DBInstances ... pages through DescribeDBInstancesPages to get list of DBInstances
-func DBInstances(svc rdsiface.RDSAPI) ([]*rds.DBInstance, error) {
-	res, err := RDSSvc{Client: svc}.DBInstances()
-	return res, err
-}
-
-// DBSnapshots ... pages through DescribeDBSnapshotsPages to get list of DBSnapshots
-func DBSnapshots(svc rdsiface.RDSAPI) ([]*rds.DBSnapshot, error) {
-	res, err := RDSSvc{Client: svc}.DBSnapshots()
-	return res, err
-}
-
-// Secrets ... pages through ListSecretsPages to get list of Secrets
-func Secrets(svc secretsmanageriface.SecretsManagerAPI) ([]*secretsmanager.SecretListEntry, error) {
-	res, err := SecretsManagerSvc{Client: svc}.Secrets()
-	return res, err
-}
-
 // Parameters ... pages through DescribeParametersPages to get SSM Parameters
 func Parameters(svc ssmiface.SSMAPI) ([]*ssm.ParameterMetadata, error) {
 	var results []*ssm.ParameterMetadata
@@ -318,28 +296,4 @@ func Parameters(svc ssmiface.SSMAPI) ([]*ssm.ParameterMetadata, error) {
 		return nil, err
 	}
 	return results, nil
-}
-
-// For testing:
-
-type mockCalls struct {
-	calls []string
-}
-
-func (m *mockCalls) Called(funcName string) {
-	m.calls = append(m.calls, funcName)
-}
-
-type mocked struct {
-	mockCalls *mockCalls
-}
-
-func (m mocked) Called(funcName string) {
-	if m.mockCalls != nil {
-		m.mockCalls.Called(funcName)
-	}
-}
-
-func (m mocked) CallsList() []string {
-	return m.mockCalls.calls
 }

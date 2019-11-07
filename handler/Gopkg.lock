@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:25e596d9b92bab23624131eec8d1ab59387fd7f5af00983da51d5f82b7b49417"
+  digest = "1:c483ea818fac5dda40bd50e6635d7d722b630a89abc3d30be445c9a8886ef797"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -80,10 +80,12 @@
     "service/kms/kmsiface",
     "service/organizations",
     "service/rds",
+    "service/rds/rdsiface",
     "service/s3",
     "service/s3/s3iface",
     "service/s3/s3manager",
     "service/secretsmanager",
+    "service/secretsmanager/secretsmanageriface",
     "service/sns",
     "service/sns/snsiface",
     "service/sqs",
@@ -93,8 +95,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "3550bcc6d4824489d3463ba8642bad0c1f4e3755"
-  version = "v1.25.25"
+  revision = "2b2c58bba0c2a29a44712ad02cc0ae41907e449c"
+  version = "v1.25.29"
 
 [[projects]]
   digest = "1:7b94d37d65c0445053c6f3e73090e3966c1c29127035492c349e14f25c440359"
@@ -205,7 +207,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4b049aae7a44fb6fb4d8e84355b145e591f686111817c0998fe31a9f8bf226dc"
+  digest = "1:707136b7e33654fde61b199e8757083dc7783ae291d7ca627818a92e02e4ffb2"
   name = "golang.org/x/crypto"
   packages = [
     "curve25519",
@@ -218,7 +220,7 @@
     "ssh/agent",
   ]
   pruneopts = "UT"
-  revision = "8986dd9e96cf0a6f74da406c005ba3df38527c04"
+  revision = "ed6320f186d4e69b2ba748dd0084746281301a8e"
 
 [[projects]]
   branch = "master"
@@ -226,7 +228,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "0deb6923b6d97481cb43bc1043fe5b72a0143032"
+  revision = "a882066a44e04a21d46e51451c71e131344e830e"
 
 [[projects]]
   branch = "master"
@@ -234,7 +236,7 @@
   name = "golang.org/x/sys"
   packages = ["cpu"]
   pruneopts = "UT"
-  revision = "e8c54fb511f6a2d695a4403ae0dab1c05aef011a"
+  revision = "c1f44814a5cd81a6d1cb589ef1e528bc5d305e07"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
@@ -245,12 +247,12 @@
   version = "v1.6.5"
 
 [[projects]]
-  digest = "1:59f10c1537d2199d9115d946927fe31165959a95190849c82ff11e05803528b0"
+  digest = "1:f26a5d382387e03a40d1471dddfba85dfff9bf05352d7e42d37612677c4d3c5c"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = "UT"
-  revision = "f221b8435cfb71e54062f6c6e99e9ade30b124d5"
-  version = "v2.2.4"
+  revision = "f90ceb4f409096b60e2e9076b38b304b8246e5fa"
+  version = "v2.2.5"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -282,10 +284,12 @@
     "github.com/aws/aws-sdk-go/service/kms/kmsiface",
     "github.com/aws/aws-sdk-go/service/organizations",
     "github.com/aws/aws-sdk-go/service/rds",
+    "github.com/aws/aws-sdk-go/service/rds/rdsiface",
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/aws/aws-sdk-go/service/s3/s3iface",
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
     "github.com/aws/aws-sdk-go/service/secretsmanager",
+    "github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface",
     "github.com/aws/aws-sdk-go/service/sns",
     "github.com/aws/aws-sdk-go/service/sns/snsiface",
     "github.com/aws/aws-sdk-go/service/ssm",

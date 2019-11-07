@@ -9,6 +9,28 @@ import (
 	"github.com/aws/aws-sdk-go/service/rds/rdsiface"
 )
 
+type mockCalls struct {
+	calls []string
+}
+
+func (m *mockCalls) Called(funcName string) {
+	m.calls = append(m.calls, funcName)
+}
+
+type mocked struct {
+	mockCalls *mockCalls
+}
+
+func (m mocked) Called(funcName string) {
+	if m.mockCalls != nil {
+		m.mockCalls.Called(funcName)
+	}
+}
+
+func (m mocked) CallsList() []string {
+	return m.mockCalls.calls
+}
+
 type mockedRDS struct {
 	rdsiface.RDSAPI
 	mocked

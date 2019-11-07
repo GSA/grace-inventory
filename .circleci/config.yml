@@ -44,7 +44,7 @@ jobs:
       - checkout
       - run:
           name: Run Unit Tests
-          command: make -C handler test_nocreds
+          command: make test_handler
 
 workflows:
   version: 2

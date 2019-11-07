@@ -34,10 +34,7 @@ clean:
 	rm -rf $(RELEASEDIR)
 
 test: lint
-	go test -v ./...
-
-test_nocreds: lint
-	go test -v --run 'Users|Groups|Policies|Roles|Vaults|TestInstances|Images|Volumes|TestSnapshots|Vpcs|Subnets|Addresses|KeyPairs|Buckets|Stacks|Alarms|ConfigRules|LoadBalancers|Keys|Subscriptions|Topics|Parameters|New|Cred|DBSnapshots|DBInstances|Secrets' ./...
+	go test -v -cover ./...
 
 lint: Gopkg.toml dependencies
 	dep ensure
