@@ -472,7 +472,11 @@ func (inv *Inv) queryAccounts() ([]*spreadsheet.Payload, error) {
 		TenantRoleName:  inv.tenantRoleName,
 		OrgUnits:        inv.orgUnits,
 	}
-	accounts, err := accounts.Accounts(sess, options)
+	svc, err := accounts.NewAccountsSvc(sess)
+	if err != nil {
+		return nil, newQueryErrorf(err, "failed to create NewAccountsSvc: %v", err)
+	}
+	accounts, err := svc.AccountsList(options)
 	if err != nil {
 		return nil, newQueryErrorf(err, "failed to get Accounts: %v", err)
 	}
