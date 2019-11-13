@@ -1,26 +1,25 @@
 package helpers
 
 import (
-	"errors"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/client"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 	"github.com/aws/aws-sdk-go/service/configservice"
-	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/configservice/configserviceiface"
 	"github.com/aws/aws-sdk-go/service/elbv2"
+	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
-	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/kms"
-	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/secretsmanager"
-	"github.com/aws/aws-sdk-go/service/sns"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
 
 var self = []*string{aws.String("self")}
@@ -102,267 +101,17 @@ type KmsKey struct {
 	AliasName *string `min:"1" type:"string"`
 }
 
-// SnsTopic ... struct definition for Attributes map in GetTopicAttributesOutput
-type SnsTopic struct {
-	DisplayName             *string
-	TopicArn                *string
-	Owner                   *string
-	SubscriptionsPending    *string
-	SubscriptionsConfirmed  *string
-	SubscriptionsDeleted    *string
-	DeliveryPolicy          *string
-	EffectiveDeliveryPolicy *string
-}
-
-// Roles ... pages through ListRolesPages and returns all IAM roles
-func Roles(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.Role, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.Role
-	err := svc.ListRolesPages(&iam.ListRolesInput{},
-		func(page *iam.ListRolesOutput, lastPage bool) bool {
-			results = append(results, page.Roles...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Groups ... pages through ListGroupsPages and returns all IAM groups
-func Groups(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.Group, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.Group
-	err := svc.ListGroupsPages(&iam.ListGroupsInput{},
-		func(page *iam.ListGroupsOutput, lastPage bool) bool {
-			results = append(results, page.Groups...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Policies ... pages through ListPoliciesPages and returns all IAM policies
-func Policies(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.Policy, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.Policy
-	err := svc.ListPoliciesPages(&iam.ListPoliciesInput{},
-		func(page *iam.ListPoliciesOutput, lastPage bool) bool {
-			results = append(results, page.Policies...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Users ... pages through ListUsersPages and returns all IAM users
-func Users(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*iam.User, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := iam.New(cfg, &aws.Config{Credentials: cred})
-	var results []*iam.User
-	err := svc.ListUsersPages(&iam.ListUsersInput{},
-		func(page *iam.ListUsersOutput, lastPage bool) bool {
-			results = append(results, page.Users...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
 // Buckets ... performs ListBuckets and returns all S3 buckets
-func Buckets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*s3.Bucket, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := s3.New(cfg, &aws.Config{Credentials: cred})
-	input := &s3.ListBucketsInput{}
-	result, err := svc.ListBuckets(input)
+func Buckets(svc s3iface.S3API) ([]*s3.Bucket, error) {
+	result, err := svc.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		return nil, err
 	}
 	return result.Buckets, err
 }
 
-// Instances ... pages through DescribeInstancesPages and returns all EC2 instances
-func Instances(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Instance, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	var results []*ec2.Reservation
-	err := svc.DescribeInstancesPages(&ec2.DescribeInstancesInput{},
-		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
-			results = append(results, page.Reservations...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	var instances []*ec2.Instance
-	for _, r := range results {
-		instances = append(instances, r.Instances...)
-	}
-	return instances, nil
-}
-
-// Images ... performs DescribeImages and returns all EC2 images
-func Images(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Image, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	input := &ec2.DescribeImagesInput{Owners: self}
-	result, err := svc.DescribeImages(input)
-	if err != nil {
-		return nil, err
-	}
-	return result.Images, nil
-}
-
-// Volumes ... pages through DescribeVolumesPages and returns all EBS volumes
-func Volumes(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Volume, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	var results []*ec2.Volume
-	err := svc.DescribeVolumesPages(&ec2.DescribeVolumesInput{},
-		func(page *ec2.DescribeVolumesOutput, lastPage bool) bool {
-			results = append(results, page.Volumes...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Snapshots ... pages through DescribeSnapshotsPages and returns all EBS snapshots
-func Snapshots(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Snapshot, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	var results []*ec2.Snapshot
-	input := &ec2.DescribeSnapshotsInput{OwnerIds: self}
-	err := svc.DescribeSnapshotsPages(input,
-		func(page *ec2.DescribeSnapshotsOutput, lastPage bool) bool {
-			results = append(results, page.Snapshots...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Vpcs ... pages through DescribeVpcsPages and returns all VPCs
-func Vpcs(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Vpc, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	var results []*ec2.Vpc
-	err := svc.DescribeVpcsPages(&ec2.DescribeVpcsInput{},
-		func(page *ec2.DescribeVpcsOutput, lastPage bool) bool {
-			results = append(results, page.Vpcs...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Subnets ... pages through DescribeSubnetsPages and returns all VPC Subnets
-func Subnets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Subnet, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	var results []*ec2.Subnet
-	err := svc.DescribeSubnetsPages(&ec2.DescribeSubnetsInput{},
-		func(page *ec2.DescribeSubnetsOutput, lastPage bool) bool {
-			results = append(results, page.Subnets...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// SecurityGroups ... pages through DescribeSecurityGroupsPages and returns all SecurityGroups
-func SecurityGroups(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.SecurityGroup, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	var results []*ec2.SecurityGroup
-	err := svc.DescribeSecurityGroupsPages(&ec2.DescribeSecurityGroupsInput{},
-		func(page *ec2.DescribeSecurityGroupsOutput, lastPage bool) bool {
-			results = append(results, page.SecurityGroups...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Addresses ... performs DescribeAddresses and returns all EC2 Addresses
-func Addresses(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.Address, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	input := &ec2.DescribeAddressesInput{}
-	result, err := svc.DescribeAddresses(input)
-	if err != nil {
-		return nil, err
-	}
-	addresses := result.Addresses
-	return addresses, nil
-}
-
-// KeyPairs ... performs DescribeKeyPairs and returns all EC2 KeyPairs
-func KeyPairs(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ec2.KeyPairInfo, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ec2.New(cfg, &aws.Config{Credentials: cred})
-	input := &ec2.DescribeKeyPairsInput{}
-	result, err := svc.DescribeKeyPairs(input)
-	if err != nil {
-		return nil, err
-	}
-	addresses := result.KeyPairs
-	return addresses, nil
-}
-
 // Stacks ... pages through DescribeStacksPages and returns all CloudFormation Stacks
-func Stacks(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*cloudformation.Stack, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := cloudformation.New(cfg, &aws.Config{Credentials: cred})
+func Stacks(svc cloudformationiface.CloudFormationAPI) ([]*cloudformation.Stack, error) {
 	var results []*cloudformation.Stack
 	err := svc.DescribeStacksPages(&cloudformation.DescribeStacksInput{},
 		func(page *cloudformation.DescribeStacksOutput, lastPage bool) bool {
@@ -376,11 +125,7 @@ func Stacks(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*cloudf
 }
 
 // Alarms ... pages through DescribeAlarmsPages and returns all CloudWatch Metric Alarms
-func Alarms(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*cloudwatch.MetricAlarm, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := cloudwatch.New(cfg, &aws.Config{Credentials: cred})
+func Alarms(svc cloudwatchiface.CloudWatchAPI) ([]*cloudwatch.MetricAlarm, error) {
 	var results []*cloudwatch.MetricAlarm
 	err := svc.DescribeAlarmsPages(&cloudwatch.DescribeAlarmsInput{},
 		func(page *cloudwatch.DescribeAlarmsOutput, lastPage bool) bool {
@@ -394,11 +139,7 @@ func Alarms(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*cloudw
 }
 
 // ConfigRules ... performs DescribeConfigRules and returns all Config Service ConfigRules
-func ConfigRules(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*configservice.ConfigRule, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := configservice.New(cfg, &aws.Config{Credentials: cred})
+func ConfigRules(svc configserviceiface.ConfigServiceAPI) ([]*configservice.ConfigRule, error) {
 	input := &configservice.DescribeConfigRulesInput{}
 	result, err := svc.DescribeConfigRules(input)
 	if err != nil {
@@ -417,11 +158,7 @@ func ConfigRules(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*c
 }
 
 // LoadBalancers ... pages through DescribeLoadBalancersPages and returns all ELB v2 LoadBalancers
-func LoadBalancers(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*elbv2.LoadBalancer, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := elbv2.New(cfg, &aws.Config{Credentials: cred})
+func LoadBalancers(svc elbv2iface.ELBV2API) ([]*elbv2.LoadBalancer, error) {
 	var results []*elbv2.LoadBalancer
 	err := svc.DescribeLoadBalancersPages(&elbv2.DescribeLoadBalancersInput{},
 		func(page *elbv2.DescribeLoadBalancersOutput, lastPage bool) bool {
@@ -454,11 +191,7 @@ func (svc *GlacierSvc) Vaults() ([]*glacier.DescribeVaultOutput, error) {
 }
 
 // Keys ... pages over ListKeys results and returns all KMS Keys w/ AliasName
-func Keys(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*KmsKey, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := kms.New(cfg, &aws.Config{Credentials: cred})
+func Keys(svc kmsiface.KMSAPI) ([]*KmsKey, error) {
 	keyList, err := listKeys(svc)
 	if err != nil {
 		return nil, err
@@ -475,7 +208,7 @@ func Keys(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*KmsKey, 
 }
 
 // listKeys ... pages through ListKeysPages to get list of KeyIDs
-func listKeys(svc *kms.KMS) ([]*kms.KeyListEntry, error) {
+func listKeys(svc kmsiface.KMSAPI) ([]*kms.KeyListEntry, error) {
 	var results []*kms.KeyListEntry
 	err := svc.ListKeysPages(&kms.ListKeysInput{},
 		func(page *kms.ListKeysOutput, lastPage bool) bool {
@@ -489,7 +222,7 @@ func listKeys(svc *kms.KMS) ([]*kms.KeyListEntry, error) {
 }
 
 // getKeyDescriptions ... loops through list of KeyIds to get KeyMetadata (kms.DescribeKey)
-func getKeyDescriptions(svc *kms.KMS, keyList []*kms.KeyListEntry) ([]*kms.KeyMetadata, error) {
+func getKeyDescriptions(svc kmsiface.KMSAPI, keyList []*kms.KeyListEntry) ([]*kms.KeyMetadata, error) {
 	var keys []*kms.KeyMetadata
 	for _, key := range keyList {
 		input := &kms.DescribeKeyInput{KeyId: key.KeyId}
@@ -503,7 +236,7 @@ func getKeyDescriptions(svc *kms.KMS, keyList []*kms.KeyListEntry) ([]*kms.KeyMe
 }
 
 // listKeyAliases ... pages over ListAliasesPages and returns list of Aliases
-func listKeyAliases(svc *kms.KMS) ([]*kms.AliasListEntry, error) {
+func listKeyAliases(svc kmsiface.KMSAPI) ([]*kms.AliasListEntry, error) {
 	var results []*kms.AliasListEntry
 	err := svc.ListAliasesPages(&kms.ListAliasesInput{},
 		func(page *kms.ListAliasesOutput, lastPage bool) bool {
@@ -551,136 +284,8 @@ func getAliasName(str string, keyAliases []*kms.AliasListEntry) *string {
 	return aws.String("")
 }
 
-// DBInstances ... pages through DescribeDBInstancesPages to get list of DBInstances
-func DBInstances(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBInstance, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := rds.New(cfg, &aws.Config{Credentials: cred})
-	var results []*rds.DBInstance
-	err := svc.DescribeDBInstancesPages(&rds.DescribeDBInstancesInput{},
-		func(page *rds.DescribeDBInstancesOutput, lastPage bool) bool {
-			results = append(results, page.DBInstances...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// DBSnapshots ... pages through DescribeDBSnapshotsPages to get list of DBSnapshots
-func DBSnapshots(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBSnapshot, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := rds.New(cfg, &aws.Config{Credentials: cred})
-	var results []*rds.DBSnapshot
-	err := svc.DescribeDBSnapshotsPages(&rds.DescribeDBSnapshotsInput{},
-		func(page *rds.DescribeDBSnapshotsOutput, lastPage bool) bool {
-			results = append(results, page.DBSnapshots...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Secrets ... pages through ListSecretsPages to get list of Secrets
-func Secrets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*secretsmanager.SecretListEntry, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := secretsmanager.New(cfg, &aws.Config{Credentials: cred})
-	var results []*secretsmanager.SecretListEntry
-	err := svc.ListSecretsPages(&secretsmanager.ListSecretsInput{},
-		func(page *secretsmanager.ListSecretsOutput, lastPage bool) bool {
-			results = append(results, page.SecretList...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Subscriptions ... pages through ListSubscriptionsPages to get list of Subscriptions
-func Subscriptions(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*sns.Subscription, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := sns.New(cfg, &aws.Config{Credentials: cred})
-	var results []*sns.Subscription
-	err := svc.ListSubscriptionsPages(&sns.ListSubscriptionsInput{},
-		func(page *sns.ListSubscriptionsOutput, lastPage bool) bool {
-			results = append(results, page.Subscriptions...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// Topics ... pages over ListTopics results and returns all Topics parameters
-func Topics(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*SnsTopic, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := sns.New(cfg, &aws.Config{Credentials: cred})
-	topicList, err := listTopics(svc)
-	if err != nil {
-		return nil, err
-	}
-	return getTopicAttributes(svc, topicList)
-}
-
-// listTopics ... pages through ListTopicsPages to get list of TopicArns
-func listTopics(svc *sns.SNS) ([]*sns.Topic, error) {
-	var results []*sns.Topic
-	err := svc.ListTopicsPages(&sns.ListTopicsInput{},
-		func(page *sns.ListTopicsOutput, lastPage bool) bool {
-			results = append(results, page.Topics...)
-			return !lastPage
-		})
-	if err != nil {
-		return nil, err
-	}
-	return results, nil
-}
-
-// getTopicAttributes ... loops through list of Topic ARNs to get Topic attributes GetTopicAttributes())
-func getTopicAttributes(svc *sns.SNS, topicList []*sns.Topic) ([]*SnsTopic, error) {
-	var topics []*SnsTopic
-	for _, t := range topicList {
-		input := &sns.GetTopicAttributesInput{TopicArn: t.TopicArn}
-		result, err := svc.GetTopicAttributes(input)
-		if err != nil {
-			return nil, err
-		}
-		a := result.Attributes
-		m := &SnsTopic{
-			DisplayName:             a["DisplayName"],
-			TopicArn:                a["TopicArn"],
-			Owner:                   a["Owner"],
-			SubscriptionsPending:    a["SubscriptionsPending"],
-			SubscriptionsConfirmed:  a["SubscriptionsConfirmed"],
-			SubscriptionsDeleted:    a["SubscriptionsDeleted"],
-			DeliveryPolicy:          a["DeliveryPolicy"],
-			EffectiveDeliveryPolicy: a["EffectiveDeliveryPolicy"],
-		}
-		topics = append(topics, m)
-	}
-	return topics, nil
-}
-
 // Parameters ... pages through DescribeParametersPages to get SSM Parameters
-func Parameters(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ssm.ParameterMetadata, error) {
-	if cfg == nil {
-		return nil, errors.New("nil ConfigProvider")
-	}
-	svc := ssm.New(cfg, &aws.Config{Credentials: cred})
+func Parameters(svc ssmiface.SSMAPI) ([]*ssm.ParameterMetadata, error) {
 	var results []*ssm.ParameterMetadata
 	err := svc.DescribeParametersPages(&ssm.DescribeParametersInput{},
 		func(page *ssm.DescribeParametersOutput, lastPage bool) bool {

@@ -34,7 +34,7 @@ clean:
 	rm -rf $(RELEASEDIR)
 
 test: lint
-	go test -v ./...
+	go test -v -cover ./...
 
 lint: Gopkg.toml dependencies
 	dep ensure

@@ -15,7 +15,7 @@
   version = "v1.13.2"
 
 [[projects]]
-  digest = "1:a0f946eb939dcad75da88601e675cf48ca698ccf08da4daee90e81843a5dc8c2"
+  digest = "1:714d09d5cb5aada89a99326d593d0e398e13b1b6fae2029bb345e66fc05c4e38"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -29,7 +29,6 @@
     "aws/credentials/endpointcreds",
     "aws/credentials/processcreds",
     "aws/credentials/stscreds",
-    "aws/crr",
     "aws/csm",
     "aws/defaults",
     "aws/ec2metadata",
@@ -57,96 +56,50 @@
     "private/protocol/restjson",
     "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
-    "service/acm",
-    "service/autoscaling",
     "service/cloudformation",
+    "service/cloudformation/cloudformationiface",
     "service/cloudwatch",
-    "service/cloudwatchlogs",
+    "service/cloudwatch/cloudwatchiface",
     "service/configservice",
-    "service/dynamodb",
+    "service/configservice/configserviceiface",
     "service/ec2",
-    "service/ecs",
+    "service/ec2/ec2iface",
     "service/elbv2",
+    "service/elbv2/elbv2iface",
     "service/glacier",
     "service/glacier/glacieriface",
     "service/iam",
+    "service/iam/iamiface",
     "service/kms",
+    "service/kms/kmsiface",
     "service/organizations",
+    "service/organizations/organizationsiface",
     "service/rds",
+    "service/rds/rdsiface",
     "service/s3",
     "service/s3/s3iface",
     "service/s3/s3manager",
+    "service/s3/s3manager/s3manageriface",
     "service/secretsmanager",
+    "service/secretsmanager/secretsmanageriface",
     "service/sns",
-    "service/sqs",
+    "service/sns/snsiface",
     "service/ssm",
+    "service/ssm/ssmiface",
     "service/sts",
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "b4225bdde03b756685c89b7db31fe2ffac6d9234"
-  version = "v1.24.0"
+  revision = "15b7acb9c9b5df95e91d4cb24b38b57d795bcdde"
+  version = "v1.25.30"
 
 [[projects]]
-  digest = "1:7b94d37d65c0445053c6f3e73090e3966c1c29127035492c349e14f25c440359"
-  name = "github.com/boombuler/barcode"
-  packages = [
-    ".",
-    "qr",
-    "utils",
-  ]
-  pruneopts = "UT"
-  revision = "3cfea5ab600ae37946be2b763b8ec2c1cf2d272d"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:71be6302fa0607e391a2b8a2b763eb5b624ee65add3966984cb3a9465faf51df"
+  digest = "1:2de50460dd6b7b36cb01f2d74f7e1c156b8adbf94f87762dbcb32e537e064246"
   name = "github.com/caarlos0/env"
   packages = ["."]
   pruneopts = "UT"
-  revision = "4bd75bf16b9ef8c1383109b5e4d931bd72c3b6d0"
-  version = "v6.0.0"
-
-[[projects]]
-  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
-  name = "github.com/davecgh/go-spew"
-  packages = ["spew"]
-  pruneopts = "UT"
-  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
-  version = "v1.1.1"
-
-[[projects]]
-  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
-  name = "github.com/go-sql-driver/mysql"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "72cd26f257d44c1114970e19afddcd812016007e"
-  version = "v1.4.1"
-
-[[projects]]
-  digest = "1:8f8811f9be822914c3a25c6a071e93beb4c805d7b026cbf298bc577bc1cc945b"
-  name = "github.com/google/uuid"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "064e2069ce9c359c118179501254f67d7d37ba24"
-  version = "0.2"
-
-[[projects]]
-  digest = "1:714bca7e79df5f787d6f018df22c3e789d1c27d6a393be6656e9f97367950024"
-  name = "github.com/gruntwork-io/terratest"
-  packages = [
-    "modules/aws",
-    "modules/collections",
-    "modules/customerrors",
-    "modules/files",
-    "modules/logger",
-    "modules/random",
-    "modules/retry",
-    "modules/ssh",
-  ]
-  pruneopts = "UT"
-  revision = "2ba8cabb767dd7ab1a918138540501fee8d6dd56"
-  version = "v0.19.0"
+  revision = "b1dce163743c66634eeef5988da14b031b1aa8f6"
+  version = "v6.1.0"
 
 [[projects]]
   digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
@@ -156,92 +109,12 @@
   revision = "c2b33e84"
 
 [[projects]]
-  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
-  name = "github.com/pmezard/go-difflib"
-  packages = ["difflib"]
-  pruneopts = "UT"
-  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:3e5eb9af2330c7a46d64592800813c33adf94305ce53a3fae42191ea18e520e6"
-  name = "github.com/pquerna/otp"
-  packages = [
-    ".",
-    "hotp",
-    "totp",
-  ]
-  pruneopts = "UT"
-  revision = "43bebefda392017900e7a7b237b4c914c6a55b50"
-  version = "v1.2.0"
-
-[[projects]]
-  digest = "1:99d32780e5238c2621fff621123997c3e3cca96db8be13179013aea77dfab551"
-  name = "github.com/stretchr/testify"
-  packages = [
-    "assert",
-    "require",
-  ]
-  pruneopts = "UT"
-  revision = "221dbe5ed46703ee255b1da0dec05086f5035f62"
-  version = "v1.4.0"
-
-[[projects]]
-  digest = "1:e60f2f1cd2e8dfdea48c2440c303d103266e754ab1d8b75796a4e4caddb7a68c"
+  digest = "1:777b07148bdabfc846ab120fd0d19b88820cb56578d24a776ec5bf42bafb7ac3"
   name = "github.com/tealeg/xlsx"
   packages = ["."]
   pruneopts = "UT"
-  revision = "8be35264fa75a1bbe954ce51eba04f273e2c59e5"
-  version = "v1.0.3"
-
-[[projects]]
-  branch = "master"
-  digest = "1:e0346b37c792e4d81c8e7c62c04a37cdecc8579a08d43fcf9666565553ca4d14"
-  name = "golang.org/x/crypto"
-  packages = [
-    "curve25519",
-    "ed25519",
-    "ed25519/internal/edwards25519",
-    "internal/chacha20",
-    "internal/subtle",
-    "poly1305",
-    "ssh",
-    "ssh/agent",
-  ]
-  pruneopts = "UT"
-  revision = "227b76d455e791cb042b03e633e2f7fbcfdf74a5"
-
-[[projects]]
-  branch = "master"
-  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
-  name = "golang.org/x/net"
-  packages = ["context"]
-  pruneopts = "UT"
-  revision = "a8b05e9114ab0cb08faec337c959aed24b68bf50"
-
-[[projects]]
-  branch = "master"
-  digest = "1:0b9eab718e36091a2b54afb645b0ef42658f544535ea3c7cbff03a9640415a77"
-  name = "golang.org/x/sys"
-  packages = ["cpu"]
-  pruneopts = "UT"
-  revision = "b4ddaad3f8a36719f2b8bc6486c14cc468ca2bb5"
-
-[[projects]]
-  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
-  name = "google.golang.org/appengine"
-  packages = ["cloudsql"]
-  pruneopts = "UT"
-  revision = "5f2a59506353b8d5ba8cbbcd9f3c1f41f1eaf079"
-  version = "v1.6.2"
-
-[[projects]]
-  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
+  revision = "626b0bf6d25fddacbb58ae127b37e4de04268f84"
+  version = "v2.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -256,25 +129,38 @@
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/awstesting/mock",
     "github.com/aws/aws-sdk-go/service/cloudformation",
+    "github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface",
     "github.com/aws/aws-sdk-go/service/cloudwatch",
+    "github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface",
     "github.com/aws/aws-sdk-go/service/configservice",
+    "github.com/aws/aws-sdk-go/service/configservice/configserviceiface",
     "github.com/aws/aws-sdk-go/service/ec2",
+    "github.com/aws/aws-sdk-go/service/ec2/ec2iface",
     "github.com/aws/aws-sdk-go/service/elbv2",
+    "github.com/aws/aws-sdk-go/service/elbv2/elbv2iface",
     "github.com/aws/aws-sdk-go/service/glacier",
     "github.com/aws/aws-sdk-go/service/glacier/glacieriface",
     "github.com/aws/aws-sdk-go/service/iam",
+    "github.com/aws/aws-sdk-go/service/iam/iamiface",
     "github.com/aws/aws-sdk-go/service/kms",
+    "github.com/aws/aws-sdk-go/service/kms/kmsiface",
     "github.com/aws/aws-sdk-go/service/organizations",
+    "github.com/aws/aws-sdk-go/service/organizations/organizationsiface",
     "github.com/aws/aws-sdk-go/service/rds",
+    "github.com/aws/aws-sdk-go/service/rds/rdsiface",
     "github.com/aws/aws-sdk-go/service/s3",
+    "github.com/aws/aws-sdk-go/service/s3/s3iface",
     "github.com/aws/aws-sdk-go/service/s3/s3manager",
+    "github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface",
     "github.com/aws/aws-sdk-go/service/secretsmanager",
+    "github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface",
     "github.com/aws/aws-sdk-go/service/sns",
+    "github.com/aws/aws-sdk-go/service/sns/snsiface",
     "github.com/aws/aws-sdk-go/service/ssm",
+    "github.com/aws/aws-sdk-go/service/ssm/ssmiface",
     "github.com/aws/aws-sdk-go/service/sts",
     "github.com/aws/aws-sdk-go/service/sts/stsiface",
     "github.com/caarlos0/env",
-    "github.com/gruntwork-io/terratest/modules/aws",
     "github.com/tealeg/xlsx",
   ]
   solver-name = "gps-cdcl"

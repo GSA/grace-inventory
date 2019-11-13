@@ -2,231 +2,162 @@ package helpers
 
 import (
 	"errors"
+
+	"reflect"
 	"strconv"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
+	"github.com/aws/aws-sdk-go/service/configservice"
+	"github.com/aws/aws-sdk-go/service/configservice/configserviceiface"
+	"github.com/aws/aws-sdk-go/service/elbv2"
+	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
-
-	awstest "github.com/gruntwork-io/terratest/modules/aws"
+	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
 
-const defaultRegion = "us-east-1"
-
-// func Roles(sess *session.Session, cred *credentials.Credentials) ([]*iam.Role, error)
-func TestRoles(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Roles(sess, nil)
-	if err != nil {
-		t.Fatalf("Roles() failed: %v", err)
-	}
+type mockS3Client struct {
+	s3iface.S3API
 }
 
-// func Groups(sess *session.Session, cred *credentials.Credentials) ([]*iam.Group, error)
-func TestGroups(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Groups(sess, nil)
-	if err != nil {
-		t.Fatalf("Groups() failed: %v", err)
-	}
+func (m mockS3Client) ListBuckets(in *s3.ListBucketsInput) (*s3.ListBucketsOutput, error) {
+	return &s3.ListBucketsOutput{Buckets: []*s3.Bucket{{}}}, nil
 }
 
-// func Policies(sess *session.Session, cred *credentials.Credentials) ([]*iam.Policy, error)
-func TestPolicies(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Policies(sess, nil)
-	if err != nil {
-		t.Fatalf("Policies() failed: %v", err)
-	}
+type mockCFClient struct {
+	cloudformationiface.CloudFormationAPI
 }
 
-// func Users(sess *session.Session, cred *credentials.Credentials) ([]*iam.User, error)
-func TestUsers(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Users(sess, nil)
-	if err != nil {
-		t.Fatalf("Users() failed: %v", err)
-	}
+func (m mockCFClient) DescribeStacksPages(in *cloudformation.DescribeStacksInput, fn func(*cloudformation.DescribeStacksOutput, bool) bool) error {
+	fn(&cloudformation.DescribeStacksOutput{Stacks: []*cloudformation.Stack{{}}}, true)
+	return nil
+}
+
+type mockCWClient struct {
+	cloudwatchiface.CloudWatchAPI
+}
+
+func (m mockCWClient) DescribeAlarmsPages(in *cloudwatch.DescribeAlarmsInput, fn func(*cloudwatch.DescribeAlarmsOutput, bool) bool) error {
+	fn(&cloudwatch.DescribeAlarmsOutput{MetricAlarms: []*cloudwatch.MetricAlarm{{}}}, true)
+	return nil
+}
+
+type mockCSClient struct {
+	configserviceiface.ConfigServiceAPI
+}
+
+func (m mockCSClient) DescribeConfigRules(in *configservice.DescribeConfigRulesInput) (*configservice.DescribeConfigRulesOutput, error) {
+	return &configservice.DescribeConfigRulesOutput{ConfigRules: []*configservice.ConfigRule{{}}}, nil
+}
+
+type mockElbClient struct {
+	elbv2iface.ELBV2API
+}
+
+func (m mockElbClient) DescribeLoadBalancersPages(in *elbv2.DescribeLoadBalancersInput, fn func(*elbv2.DescribeLoadBalancersOutput, bool) bool) error {
+	fn(&elbv2.DescribeLoadBalancersOutput{LoadBalancers: []*elbv2.LoadBalancer{{}}}, true)
+	return nil
+}
+
+type mockKmsClient struct {
+	kmsiface.KMSAPI
+}
+
+func (m mockKmsClient) ListKeysPages(in *kms.ListKeysInput, fn func(*kms.ListKeysOutput, bool) bool) error {
+	fn(&kms.ListKeysOutput{Keys: []*kms.KeyListEntry{{}}}, true)
+	return nil
+}
+
+func (m mockKmsClient) DescribeKey(in *kms.DescribeKeyInput) (*kms.DescribeKeyOutput, error) {
+	return &kms.DescribeKeyOutput{KeyMetadata: &kms.KeyMetadata{}}, nil
+}
+
+func (m mockKmsClient) ListAliasesPages(in *kms.ListAliasesInput, fn func(*kms.ListAliasesOutput, bool) bool) error {
+	fn(&kms.ListAliasesOutput{Aliases: []*kms.AliasListEntry{{}}}, true)
+	return nil
+}
+
+type mockSsmClient struct {
+	ssmiface.SSMAPI
+}
+
+func (m mockSsmClient) DescribeParametersPages(in *ssm.DescribeParametersInput, fn func(*ssm.DescribeParametersOutput, bool) bool) error {
+	fn(&ssm.DescribeParametersOutput{Parameters: []*ssm.ParameterMetadata{{}}}, true)
+	return nil
 }
 
 // func Buckets(sess *session.Session, cred *credentials.Credentials) ([]*s3.Bucket, error)
 func TestBuckets(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Buckets(sess, nil)
+	svc := mockS3Client{}
+	expected := []*s3.Bucket{{}}
+	got, err := Buckets(svc)
 	if err != nil {
 		t.Fatalf("Buckets() failed: %v", err)
 	}
-}
-
-// func Instances(sess *session.Session, cred *credentials.Credentials) ([]*ec2.Instance, error)
-func TestInstances(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Instances(sess, nil)
-	if err != nil {
-		t.Fatalf("Instances() failed: %v", err)
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Buckets() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 
-// func Images(sess *session.Session, cred *credentials.Credentials) ([]*ec2.Image, error)
-func TestImages(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Images(sess, nil)
-	if err != nil {
-		t.Fatalf("Images() failed: %v", err)
-	}
-}
-
-// func Volumes(sess *session.Session, cred *credentials.Credentials) ([]*ec2.Volume, error)
-func TestVolumes(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Volumes(sess, nil)
-	if err != nil {
-		t.Fatalf("Volumes() failed: %v", err)
-	}
-}
-
-// func Snapshots(sess *session.Session, cred *credentials.Credentials) ([]*ec2.Snapshot, error)
-func TestSnapshots(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Snapshots(sess, nil)
-	if err != nil {
-		t.Fatalf("Snapshots() failed: %v", err)
-	}
-}
-
-// func Vpcs(sess *session.Session, cred *credentials.Credentials) ([]*ec2.Vpc, error)
-func TestVpcs(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Vpcs(sess, nil)
-	if err != nil {
-		t.Fatalf("Vpcs() failed: %v", err)
-	}
-}
-
-// func Subnets(sess *session.Session, cred *credentials.Credentials) ([]*ec2.Subnet, error)
-func TestSubnets(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Subnets(sess, nil)
-	if err != nil {
-		t.Fatalf("Subnets() failed: %v", err)
-	}
-}
-
-// func SecurityGroups(sess *session.Session, cred *credentials.Credentials) ([]*ec2.SecurityGroup, error)
-func TestSecurityGroups(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = SecurityGroups(sess, nil)
-	if err != nil {
-		t.Fatalf("SecurityGroups() failed: %v", err)
-	}
-}
-
-// func Addresses(sess *session.Session, cred *credentials.Credentials) ([]*ec2.Address, error)
-func TestAddresses(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Addresses(sess, nil)
-	if err != nil {
-		t.Fatalf("Addresses() failed: %v", err)
-	}
-}
-
-// func KeyPairs(sess *session.Session, cred *credentials.Credentials) ([]*ec2.KeyPairInfo, error)
-func TestKeyPairs(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = KeyPairs(sess, nil)
-	if err != nil {
-		t.Fatalf("KeyPairs() failed: %v", err)
-	}
-}
-
-// func Stacks(sess *session.Session, cred *credentials.Credentials) ([]*cloudformation.Stack, error)
+// func Stacks(svc *cloudformation.CloudFormationAPI) ([]*cloudformation.Stack, error)
 func TestStacks(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Stacks(sess, nil)
+	expected := []*cloudformation.Stack{{}}
+	svc := mockCFClient{}
+	got, err := Stacks(svc)
 	if err != nil {
 		t.Fatalf("Stacks() failed: %v", err)
 	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Stacks() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
+	}
 }
 
-// func Alarms(sess *session.Session, cred *credentials.Credentials) ([]*cloudwatch.MetricAlarm, error)
+// func Alarms(svc *cloudwatch.CloudWatchAPI) ([]*cloudwatch.MetricAlarm, error)
 func TestAlarms(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Alarms(sess, nil)
+	expected := []*cloudwatch.MetricAlarm{{}}
+	svc := mockCWClient{}
+	got, err := Alarms(svc)
 	if err != nil {
 		t.Fatalf("Alarms() failed: %v", err)
 	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Alarms() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
+	}
 }
 
-// func ConfigRules(sess *session.Session, cred *credentials.Credentials) ([]*configservice.ConfigRule, error)
+// func ConfigRules(svc *configservice.ConfigServiceAPI) ([]*configservice.ConfigRule, error)
 func TestConfigRules(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = ConfigRules(sess, nil)
+	expected := []*configservice.ConfigRule{{}}
+	svc := mockCSClient{}
+	got, err := ConfigRules(svc)
 	if err != nil {
 		t.Fatalf("ConfigRules() failed: %v", err)
 	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("ConfigRules() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
+	}
 }
 
-// func LoadBalancers(sess *session.Session, cred *credentials.Credentials) ([]*elbv2.LoadBalancer, error)
+// func LoadBalancers(svc *elbv2.ELBV2API) ([]*elbv2.LoadBalancer, error)
 func TestLoadBalancers(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = LoadBalancers(sess, nil)
+	expected := []*elbv2.LoadBalancer{{}}
+	svc := mockElbClient{}
+	got, err := LoadBalancers(svc)
 	if err != nil {
 		t.Fatalf("LoadBalancers() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("LoadBalancers() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 
@@ -322,25 +253,25 @@ func TestVaultsPagination(t *testing.T) {
 	}
 }
 
-// func Keys(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*KmsKey, error) {
+// func Keys(svc *kms.ELBV2API) ([]*kms.Key, error)
 func TestKeys(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Keys(sess, nil)
+	expected := []*KmsKey{{}}
+	svc := mockKmsClient{}
+	got, err := Keys(svc)
 	if err != nil {
 		t.Fatalf("Keys() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Keys() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
 
 // func DBInstances(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBInstance, error) {
 func TestDBInstances(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
+	svc := RDSSvc{
+		Client: mockedRDS{},
 	}
-	_, err = DBInstances(sess, nil)
+	_, err := svc.DBInstances()
 	if err != nil {
 		t.Fatalf("DBInstances() failed: %v", err)
 	}
@@ -348,11 +279,10 @@ func TestDBInstances(t *testing.T) {
 
 // func DBSnapshots(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBInstance, error) {
 func TestDBSnapshots(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
+	svc := RDSSvc{
+		Client: mockedRDS{},
 	}
-	_, err = DBSnapshots(sess, nil)
+	_, err := svc.DBSnapshots()
 	if err != nil {
 		t.Fatalf("DBSnapshots() failed: %v", err)
 	}
@@ -360,48 +290,24 @@ func TestDBSnapshots(t *testing.T) {
 
 // func Secrets(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*secretsmanager.SecretListEntry, error) {
 func TestSecrets(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
+	svc := SecretsManagerSvc{
+		Client: mockedSecretsManager{},
 	}
-	_, err = Secrets(sess, nil)
+	_, err := svc.Secrets()
 	if err != nil {
 		t.Fatalf("Secrets() failed: %v", err)
 	}
 }
 
-// func Subscriptions(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*sns.Subscription, error) {
-func TestSubscriptions(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Subscriptions(sess, nil)
-	if err != nil {
-		t.Fatalf("Subscriptions() failed: %v", err)
-	}
-}
-
-// func Topics(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*SnsTopic, error) {
-func TestTopics(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Topics(sess, nil)
-	if err != nil {
-		t.Fatalf("Topics() failed: %v", err)
-	}
-}
-
-//func Parameters(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*ssm.ParameterMetadata, error) {
+// func Parameters(svc *ssm.SSMAPI) ([]*ssm.Parameter, error)
 func TestParameters(t *testing.T) {
-	sess, err := awstest.NewAuthenticatedSession(defaultRegion)
-	if err != nil {
-		t.Fatalf("failed to create session: %v", err)
-	}
-	_, err = Parameters(sess, nil)
+	expected := []*ssm.ParameterMetadata{{}}
+	svc := mockSsmClient{}
+	got, err := Parameters(svc)
 	if err != nil {
 		t.Fatalf("Parameters() failed: %v", err)
+	}
+	if !reflect.DeepEqual(expected, got) {
+		t.Errorf("Parameters() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
 }
