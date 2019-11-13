@@ -21,10 +21,10 @@ ifeq ($(strip $(GITHUB_TOKEN)),)
 	@echo "GITHUB_TOKEN must be provided"
 	@exit 0
 else ifeq ($(strip $(CIRCLE_TAG)),)
-  @echo "CIRCLE_TAG must be set"
+	@echo "CIRCLE_TAG must be set"
 	@exit 0
 else ifeq ($(shell echo $(CIRCLE_TAG) | egrep '^v\d+\.\d+\.\d+'),)
-  @echo "CIRCLE_TAG must match version pattern (i.e. v.1.2.3)"
+	@echo "CIRCLE_TAG must match version pattern (i.e. v.1.2.3)"
 	@exit 0
 else
 	ghr -t $(GITHUB_TOKEN) -u $(CIRCLE_PROJECT_USERNAME) -r $(CIRCLE_PROJECT_REPONAME) -c $(CIRCLE_SHA1) -delete $(CIRCLE_TAG) $(RELEASEDIR)
