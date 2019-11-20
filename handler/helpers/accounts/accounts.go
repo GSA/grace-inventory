@@ -48,6 +48,7 @@ type Options struct {
 // Global compiled regular expressions
 var rIDList = regexp.MustCompile(`^\d{12}(,\d{12})*$`)
 
+// Svc ... type for holding session/config and AWS services
 // For unit testing, set the iamSvc, organizationsSvc and downloaderSvc to
 // an iface mock svc client
 type Svc struct {
@@ -57,16 +58,19 @@ type Svc struct {
 	downloaderSvc    s3manageriface.DownloaderAPI
 }
 
+// NewAccountsSvc ... creates new Svc struct
 func NewAccountsSvc(cfg client.ConfigProvider) (as *Svc, err error) {
 	if cfg == nil {
 		return nil, errors.New("nil ConfigProvider")
 	}
-	as.cfg = cfg
-	as.downloaderSvc = s3manager.NewDownloader(cfg)
+	as = &Svc{
+		cfg:           cfg,
+		downloaderSvc: s3manager.NewDownloader(cfg),
+	}
 	return as, nil
 }
 
-// Accounts ... performs Queries or parses accounts and returns all organization accounts
+// AccountsList ... performs Queries or parses accounts and returns all organization accounts
 func (as *Svc) AccountsList(opt Options) ([]*organizations.Account, error) {
 	switch str := opt.AccountsInfo; {
 	case str == "":
