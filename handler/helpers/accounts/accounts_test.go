@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
 	"github.com/aws/aws-sdk-go/service/organizations"
@@ -14,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
+	"gotest.tools/assert"
 )
 
 var rID = regexp.MustCompile(`^\d{12}$`)
@@ -65,6 +67,37 @@ var mockSvc = Svc{
 	iamSvc:           mockIamSvc{},
 	organizationsSvc: mockOrgSvc{},
 	downloaderSvc:    mockDownloaderSvc{},
+}
+
+func TestNewAccountsSvc(t *testing.T) {
+	sess, err := session.NewSession(&aws.Config{
+		Endpoint: aws.String("http://127.0.0.1"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// test case table
+	tt := map[string]struct {
+		sess        *session.Session
+		expectedErr string
+	}{"nil client.ConfigProvider": {
+		sess:        nil,
+		expectedErr: "nil ConfigProvider",
+	}, "happy path": {
+		sess: sess,
+	}}
+	// loop through test cases
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			_, err := NewAccountsSvc(tc.sess)
+			if tc.expectedErr == "" {
+				assert.NilError(t, err)
+			} else {
+				assert.Error(t, err, tc.expectedErr)
+			}
+		})
+	}
 }
 
 //nolint: gocyclo
