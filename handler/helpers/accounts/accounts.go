@@ -22,6 +22,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
+	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/aws/aws-sdk-go/service/sts/stsiface"
 )
 
 type accountsList struct {
@@ -57,6 +59,7 @@ type Svc struct {
 	iamSvc           iamiface.IAMAPI
 	organizationsSvc organizationsiface.OrganizationsAPI
 	downloaderSvc    s3manageriface.DownloaderAPI
+	stsSvc           stsiface.STSAPI
 }
 
 // NewAccountsSvc ... creates new Svc struct
@@ -67,6 +70,7 @@ func NewAccountsSvc(cfg client.ConfigProvider) (as *Svc, err error) {
 	as = &Svc{
 		cfg:           cfg,
 		downloaderSvc: s3manager.NewDownloader(cfg),
+		stsSvc:        sts.New(cfg),
 	}
 	return as, nil
 }
@@ -92,7 +96,7 @@ func (as *Svc) queryAccounts(opt Options) ([]*organizations.Account, error) {
 	if as.organizationsSvc == nil {
 		if opt.MasterAccountID != "" && opt.MasterAccountID != opt.MgmtAccountID {
 			arn := "arn:aws:iam::" + opt.MasterAccountID + ":role/" + opt.MasterRoleName
-			cred := stscreds.NewCredentials(as.cfg, arn)
+			cred := stscreds.NewCredentialsWithClient(as.stsSvc, arn)
 			as.organizationsSvc = organizations.New(as.cfg, &aws.Config{Credentials: cred})
 		} else {
 			as.organizationsSvc = organizations.New(as.cfg)
@@ -195,7 +199,7 @@ func (as *Svc) getAccountAliases(opt Options) ([]*organizations.Account, error) 
 			} else {
 				arn := "arn:aws:iam::" + acct + ":role/" + opt.TenantRoleName
 				fmt.Printf("ARN: %v", arn)
-				cred := stscreds.NewCredentials(as.cfg, arn)
+				cred := stscreds.NewCredentialsWithClient(as.stsSvc, arn)
 				svc = iam.New(as.cfg, &aws.Config{Credentials: cred})
 			}
 		}
