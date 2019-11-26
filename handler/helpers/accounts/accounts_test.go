@@ -48,6 +48,11 @@ func newStubSession(t *testing.T) *session.Session {
 	return sess
 }
 
+///////////////////
+// Mock Services //
+///////////////////
+
+// mockIamSvc ... creates a mock of the AWS Identity and Access Management (IAM) service
 type mockIamSvc struct {
 	iamiface.IAMAPI
 	Resp iam.ListAccountAliasesOutput
@@ -57,6 +62,7 @@ func (m mockIamSvc) ListAccountAliases(in *iam.ListAccountAliasesInput) (*iam.Li
 	return &m.Resp, nil
 }
 
+// mockOrgSvc ... creates a mock of the AWS Organizations service
 type mockOrgSvc struct {
 	organizationsiface.OrganizationsAPI
 	Resp organizations.ListAccountsOutput
@@ -66,6 +72,7 @@ func (m mockOrgSvc) ListAccounts(in *organizations.ListAccountsInput) (*organiza
 	return &m.Resp, nil
 }
 
+// mockDownloaderSvc ... creates a mock of the AWS S3 Manager Downloader API
 type mockDownloaderSvc struct {
 	s3manageriface.DownloaderAPI
 }
@@ -91,6 +98,7 @@ func (m mockDownloaderSvc) Download(w io.WriterAt, in *s3.GetObjectInput, fn ...
 	return int64(n), err
 }
 
+// mockStsSvc ... create a mock of the AWS Security Token Service (STS)
 type mockStsSvc struct {
 	stsiface.STSAPI
 	TestInput func(*sts.AssumeRoleInput)
@@ -119,13 +127,11 @@ var mockSvc = Svc{
 	stsSvc:           mockStsSvc{},
 }
 
+/////////////////////////////////
+// Accounts Package Unit Tests //
+/////////////////////////////////
+
 func TestNewAccountsSvc(t *testing.T) {
-	sess, err := session.NewSession(&aws.Config{
-		Endpoint: aws.String("http://127.0.0.1"),
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
 	// test case table
 	tt := map[string]struct {
 		sess        *session.Session
@@ -133,7 +139,7 @@ func TestNewAccountsSvc(t *testing.T) {
 	}{"nil client.ConfigProvider": {
 		expectedErr: "nil ConfigProvider",
 	}, "happy path": {
-		sess: sess,
+		sess: newStubSession(t),
 	}}
 	// loop through test cases
 	for name, tc := range tt {
