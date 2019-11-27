@@ -85,6 +85,13 @@ func TestIsKnownError(t *testing.T) {
 	}
 }
 
+func TestNew(t *testing.T) {
+	// expected := Inv{}
+	_, err := New()
+	assert.Error(t, err, `env: required environment variable "s3_bucket" is not set`)
+	// assert.DeepEqual(t, expected, actual)
+}
+
 func TestGetCurrentIdentity(t *testing.T) {
 	expected := sts.GetCallerIdentityOutput{
 		Account: aws.String("a"),
