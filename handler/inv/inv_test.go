@@ -1,6 +1,7 @@
 package inv
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -10,6 +11,7 @@ import (
 	"github.com/GSA/grace-inventory/handler/helpers/sessionmgr"
 	"github.com/GSA/grace-inventory/handler/spreadsheet"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -19,7 +21,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/organizations"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/aws/aws-sdk-go/service/sts/stsiface"
+	"gotest.tools/assert"
 )
+
+///////////////////
+// Mock Services //
+///////////////////
 
 type mockStsClient struct {
 	stsiface.STSAPI
@@ -28,6 +35,54 @@ type mockStsClient struct {
 
 func (m *mockStsClient) GetCallerIdentity(*sts.GetCallerIdentityInput) (*sts.GetCallerIdentityOutput, error) {
 	return &m.Response, nil
+}
+
+func mockNewSession(cfgs ...*aws.Config) (*session.Session, error) {
+	// server is the mock server that simply writes a 200 status back to the client
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	for _, cfg := range cfgs {
+		cfg.DisableSSL = aws.Bool(true)
+		cfg.Endpoint = aws.String(server.URL)
+	}
+	return session.NewSession(cfgs...)
+}
+
+////////////////////////////
+// inv Package Unit Tests //
+////////////////////////////
+
+func TestIsKnownError(t *testing.T) {
+	err := fmt.Errorf("%s", "test")
+	tt := map[string]struct {
+		in       error
+		expected bool
+	}{
+		"nil input": {},
+		"non-query error": {
+			in:       err,
+			expected: false,
+		},
+		"non-awserr query error": {
+			in:       newQueryErrorf(err, "%s", "test"),
+			expected: false,
+		},
+		"unknown awserr": {
+			in:       newQueryErrorf(awserr.New("test", "test", err), "%s", "test"),
+			expected: false,
+		},
+		"known awserr AccessDenied": {
+			in:       newQueryErrorf(awserr.New("AccessDenied", "test", err), "%s", "test"),
+			expected: true,
+		},
+	}
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, isKnownError(tc.in))
+		})
+	}
 }
 
 func TestGetCurrentIdentity(t *testing.T) {
@@ -42,18 +97,6 @@ func TestGetCurrentIdentity(t *testing.T) {
 	if !reflect.DeepEqual(&expected, actual) {
 		t.Errorf("failed to get caller identity, expected: %#v, got: %#v", expected, actual)
 	}
-}
-
-func mockNewSession(cfgs ...*aws.Config) (*session.Session, error) {
-	// server is the mock server that simply writes a 200 status back to the client
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-	for _, cfg := range cfgs {
-		cfg.DisableSSL = aws.Bool(true)
-		cfg.Endpoint = aws.String(server.URL)
-	}
-	return session.NewSession(cfgs...)
 }
 
 func TestWalkAccounts(t *testing.T) {
