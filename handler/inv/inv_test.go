@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
 
@@ -85,11 +86,45 @@ func TestIsKnownError(t *testing.T) {
 	}
 }
 
+// TestNew ... not very useful without a way of mocking/stubbing the API calls
+// to get the current identity and sessions. This unit test will fail if you
+// have valid credentials configured in your environment
 func TestNew(t *testing.T) {
-	// expected := Inv{}
-	_, err := New()
-	assert.Error(t, err, `env: required environment variable "s3_bucket" is not set`)
-	// assert.DeepEqual(t, expected, actual)
+	tt := map[string]struct {
+		env         map[string]string
+		expected    Inv
+		expectedErr string
+	}{
+		"environment variables not set": {
+			expectedErr: `env: required environment variable "s3_bucket" is not set`,
+		},
+		"no credentials": {
+			env: map[string]string{
+				"s3_bucket":  "test",
+				"kms_key_id": "test",
+				"regions":    "us-east-1",
+			},
+			expectedErr: "NoCredentialProviders: no valid providers in chain. Deprecated.\n\tFor verbose messaging see aws.Config.CredentialsChainVerboseErrors",
+		},
+	}
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			for k, v := range tc.env {
+				err := os.Setenv(k, v)
+				if err != nil {
+					t.Fatalf("error setting environment variable: %v", err)
+				}
+			}
+			actual, err := New()
+			if tc.expectedErr == "" {
+				assert.NilError(t, err)
+				assert.DeepEqual(t, actual, tc.expected)
+			} else {
+				assert.Error(t, err, tc.expectedErr)
+			}
+		})
+	}
 }
 
 func TestGetCurrentIdentity(t *testing.T) {
