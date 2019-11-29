@@ -169,6 +169,12 @@ create one or fork this repository and edit the logging configuration of the S3
 bucket on
 [Line 10 of `iam.tf`](https://github.com/GSA/grace-inventory/blob/9b46d0bfbf40d6b9a5237afb9a45621a2f1a85d9/s3.tf#L10)
 
+**Note:** The `DEFAULT_REGION` for the lambda function to write to the S3 Bucket
+will be the first region listed in the `regions` attribute.  By default, this is
+`us-east-1`.  If you want to place the S3 bucket in a different region, then you
+will need to set the `regions` attribute with your desired region first in the
+comma delimited list.
+
 [top](#top)
 
 ## Terraform Module Inputs
@@ -182,7 +188,7 @@ bucket on
 | master\_account\_id | \(optional\) Account ID of AWS Master Payer Account | string | `""` | no |
 | master\_role\_name | \(optional\) Role assumed by lambda function to query organizations in Master Payer account | string | `""` | no |
 | organizational\_units | \(optional\) comma delimited list of organizational units to query for accounts. If set it will only query accounts in those organizational units | string | `""` | no |
-| regions | \(optional\) Comma delimited list of AWS regions to inventory | string | `"us-east-1,us-east-2,us-west-1,us-west-2"` | no |
+| regions | \(optional\) Comma delimited list of AWS regions to inventory.  **Note:** The first region listed will be used by the lambda function as the `DEFAULT_REGION`. | string | `"us-east-1,us-east-2,us-west-1,us-west-2"` | no |
 | schedule\_expression | \(optional\) Cloudwatch schedule expression for when to run inventory | string | `"cron(5 3 ? * MON-FRI *)"` | no |
 | tenant\_role\_name | \(optional\) Role assumed by lambda function to query tenant accounts | string | `"OrganizationAccountAccessRole"` | no |
 
