@@ -17,6 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/configservice"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
@@ -592,6 +593,12 @@ func (inv *Inv) queryBuckets() ([]*spreadsheet.Payload, error) {
 	})
 }
 
+var ec2Creator = ec2ClientCreator
+
+func ec2ClientCreator(p client.ConfigProvider, cfgs ...*aws.Config) ec2iface.EC2API {
+	return ec2.New(p, cfgs...)
+}
+
 // queryInstances ... queries EC2 instances for all organization accounts and
 // all sessions/regions in SessionMgr, pushes them onto a slice of interface
 // then returns a slice of *spreadsheet.Payload
@@ -599,7 +606,7 @@ func (inv *Inv) queryInstances() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkAccounts(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		instances, err := svc.Instances()
 		if err != nil {
@@ -620,7 +627,7 @@ func (inv *Inv) queryImages() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		images, err := svc.Images()
 		if err != nil {
@@ -641,7 +648,7 @@ func (inv *Inv) queryVolumes() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		volumes, err := svc.Volumes()
 		if err != nil {
@@ -662,7 +669,7 @@ func (inv *Inv) querySnapshots() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		snapshots, err := svc.Snapshots()
 		if err != nil {
@@ -683,7 +690,7 @@ func (inv *Inv) queryVpcs() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		vpcs, err := svc.Vpcs()
 		if err != nil {
@@ -704,7 +711,7 @@ func (inv *Inv) querySubnets() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		subnets, err := svc.Subnets()
 		if err != nil {
@@ -725,7 +732,7 @@ func (inv *Inv) querySecurityGroups() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		groups, err := svc.SecurityGroups()
 		if err != nil {
@@ -746,7 +753,7 @@ func (inv *Inv) queryAddresses() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		addresses, err := svc.Addresses()
 		if err != nil {
@@ -767,7 +774,7 @@ func (inv *Inv) queryKeyPairs() ([]*spreadsheet.Payload, error) {
 	defer logDuration()()
 	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
 		svc := helpers.Ec2Svc{
-			Client: ec2.New(sess, &aws.Config{Credentials: cred}),
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
 		}
 		keyPairs, err := svc.KeyPairs()
 		if err != nil {

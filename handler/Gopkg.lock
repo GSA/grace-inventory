@@ -15,7 +15,7 @@
   version = "v1.13.3"
 
 [[projects]]
-  digest = "1:624852d7618b6dde910cb7de38fbae35c1af2efbcfaf34a3e439ebe872ba1572"
+  digest = "1:9e964bf47bb1e2f5b9259c102f5574811c0b36d93fbfb3949f8c2e409d0aceb6"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -90,8 +90,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "da1bcf347b8a39f8222e2799f772112761b6f25c"
-  version = "v1.25.42"
+  revision = "e88e0ae0e94fe4bb21bb303278e0f5f6bc825f6b"
+  version = "v1.25.44"
 
 [[projects]]
   digest = "1:2de50460dd6b7b36cb01f2d74f7e1c156b8adbf94f87762dbcb32e537e064246"
@@ -198,6 +198,7 @@
     "github.com/caarlos0/env",
     "github.com/tealeg/xlsx",
     "gotest.tools/assert",
+    "gotest.tools/assert/cmp",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
