@@ -7,7 +7,6 @@ import (
 	"log"
 	"math"
 	"net/url"
-	"reflect"
 	"regexp"
 	"strings"
 	"time"
@@ -64,9 +63,6 @@ type Svc struct {
 
 // NewAccountsSvc ... creates new Svc struct
 func NewAccountsSvc(cfg client.ConfigProvider) (as *Svc, err error) {
-	if cfg == nil || reflect.ValueOf(cfg).IsNil() {
-		return nil, errors.New("nil ConfigProvider")
-	}
 	as = &Svc{
 		cfg:           cfg,
 		downloaderSvc: s3manager.NewDownloader(cfg),

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
@@ -134,11 +135,9 @@ var mockSvc = Svc{
 func TestNewAccountsSvc(t *testing.T) {
 	// test case table
 	tt := map[string]struct {
-		sess        *session.Session
+		sess        client.ConfigProvider
 		expectedErr string
-	}{"nil client.ConfigProvider": {
-		expectedErr: "nil ConfigProvider",
-	}, "happy path": {
+	}{"happy path": {
 		sess: newStubSession(t),
 	}}
 	// loop through test cases
