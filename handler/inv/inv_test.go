@@ -1,25 +1,35 @@
 package inv
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
+	"os"
 	"testing"
 
 	"github.com/GSA/grace-inventory/handler/helpers/credmgr"
 	"github.com/GSA/grace-inventory/handler/helpers/sessionmgr"
 	"github.com/GSA/grace-inventory/handler/spreadsheet"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/awstesting/mock"
+	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
 	"github.com/aws/aws-sdk-go/service/organizations"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/aws/aws-sdk-go/service/sts/stsiface"
+	"github.com/google/go-cmp/cmp"
+	"gotest.tools/assert"
 )
+
+///////////////////
+// Mock Services //
+///////////////////
 
 type mockStsClient struct {
 	stsiface.STSAPI
@@ -28,20 +38,6 @@ type mockStsClient struct {
 
 func (m *mockStsClient) GetCallerIdentity(*sts.GetCallerIdentityInput) (*sts.GetCallerIdentityOutput, error) {
 	return &m.Response, nil
-}
-
-func TestGetCurrentIdentity(t *testing.T) {
-	expected := sts.GetCallerIdentityOutput{
-		Account: aws.String("a"),
-		Arn:     aws.String("b"),
-		UserId:  aws.String("c"),
-	}
-	svc := stsSvc{Client: &mockStsClient{Response: expected}}
-	actual, _ := svc.getCurrentIdentity()
-
-	if !reflect.DeepEqual(&expected, actual) {
-		t.Errorf("failed to get caller identity, expected: %#v, got: %#v", expected, actual)
-	}
 }
 
 func mockNewSession(cfgs ...*aws.Config) (*session.Session, error) {
@@ -54,6 +50,95 @@ func mockNewSession(cfgs ...*aws.Config) (*session.Session, error) {
 		cfg.Endpoint = aws.String(server.URL)
 	}
 	return session.NewSession(cfgs...)
+}
+
+////////////////////////////
+// inv Package Unit Tests //
+////////////////////////////
+
+func TestIsKnownError(t *testing.T) {
+	err := fmt.Errorf("%s", "test")
+	tt := map[string]struct {
+		in       error
+		expected bool
+	}{
+		"nil input": {},
+		"non-query error": {
+			in:       err,
+			expected: false,
+		},
+		"non-awserr query error": {
+			in:       newQueryErrorf(err, "%s", "test"),
+			expected: false,
+		},
+		"unknown awserr": {
+			in:       newQueryErrorf(awserr.New("test", "test", err), "%s", "test"),
+			expected: false,
+		},
+		"known awserr AccessDenied": {
+			in:       newQueryErrorf(awserr.New("AccessDenied", "test", err), "%s", "test"),
+			expected: true,
+		},
+	}
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, isKnownError(tc.in))
+		})
+	}
+}
+
+// TestNew ... not very useful without a way of mocking/stubbing the API calls
+// to get the current identity and sessions. This unit test will fail if you
+// have valid credentials configured in your environment
+func TestNew(t *testing.T) {
+	tt := map[string]struct {
+		env         map[string]string
+		expected    Inv
+		expectedErr string
+	}{
+		"environment variables not set": {
+			expectedErr: `env: required environment variable "s3_bucket" is not set`,
+		},
+		"no credentials": {
+			env: map[string]string{
+				"s3_bucket":  "test",
+				"kms_key_id": "test",
+				"regions":    "us-east-1",
+			},
+			expectedErr: "NoCredentialProviders: no valid providers in chain. Deprecated.\n\tFor verbose messaging see aws.Config.CredentialsChainVerboseErrors",
+		},
+	}
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			for k, v := range tc.env {
+				err := os.Setenv(k, v)
+				if err != nil {
+					t.Fatalf("error setting environment variable: %v", err)
+				}
+			}
+			actual, err := New()
+			if tc.expectedErr == "" {
+				assert.NilError(t, err)
+				assert.DeepEqual(t, actual, tc.expected)
+			} else {
+				assert.Error(t, err, tc.expectedErr)
+			}
+		})
+	}
+}
+
+func TestGetCurrentIdentity(t *testing.T) {
+	expected := sts.GetCallerIdentityOutput{
+		Account: aws.String("a"),
+		Arn:     aws.String("b"),
+		UserId:  aws.String("c"),
+	}
+	svc := stsSvc{Client: &mockStsClient{Response: expected}}
+	actual, _ := svc.getCurrentIdentity()
+
+	assert.DeepEqual(t, actual, &expected, cmp.AllowUnexported(sts.GetCallerIdentityOutput{}))
 }
 
 func TestWalkAccounts(t *testing.T) {
@@ -84,13 +169,8 @@ func TestWalkAccounts(t *testing.T) {
 		})
 		return nil, nil
 	})
-	if err != nil {
-		t.Errorf("failed to walk accounts: %v", err)
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("failed to match accounts, expected: %#v, got: %#v", expected, actual)
-	}
+	assert.NilError(t, err)
+	assert.DeepEqual(t, actual, expected, cmp.AllowUnexported(organizations.Account{}))
 }
 
 func TestWalkSessions(t *testing.T) {
@@ -132,14 +212,191 @@ func TestWalkSessions(t *testing.T) {
 		})
 		return nil, nil
 	})
+	assert.NilError(t, err)
+	assert.DeepEqual(t, actual, expected, cmp.AllowUnexported(organizations.Account{}))
+}
+
+/////////////////////////////////////
+// Mocks for querying EC2 Services //
+/////////////////////////////////////
+
+type mockEc2Client struct {
+	ec2iface.EC2API
+}
+
+func (m mockEc2Client) DescribeInstancesPages(in *ec2.DescribeInstancesInput, fn func(*ec2.DescribeInstancesOutput, bool) bool) error {
+	fn(&ec2.DescribeInstancesOutput{
+		Reservations: []*ec2.Reservation{
+			{
+				Instances: []*ec2.Instance{
+					{InstanceId: aws.String("i-1234567890abcdef0")},
+				},
+			}}}, true)
+	return nil
+}
+
+func (m mockEc2Client) DescribeImages(in *ec2.DescribeImagesInput) (*ec2.DescribeImagesOutput, error) {
+	return &ec2.DescribeImagesOutput{
+		Images: []*ec2.Image{
+			{ImageId: aws.String("ami-5731123e")},
+		},
+	}, nil
+}
+
+func (m mockEc2Client) DescribeVolumesPages(in *ec2.DescribeVolumesInput, fn func(*ec2.DescribeVolumesOutput, bool) bool) error {
+	fn(&ec2.DescribeVolumesOutput{
+		Volumes: []*ec2.Volume{
+			{VolumeId: aws.String("vol-049df61146c4d7901")},
+		}}, true)
+	return nil
+}
+
+func (m mockEc2Client) DescribeSnapshotsPages(in *ec2.DescribeSnapshotsInput, fn func(*ec2.DescribeSnapshotsOutput, bool) bool) error {
+	fn(&ec2.DescribeSnapshotsOutput{
+		Snapshots: []*ec2.Snapshot{
+			{SnapshotId: aws.String("snap-1234567890abcdef0")},
+		}}, true)
+	return nil
+}
+
+func (m mockEc2Client) DescribeVpcsPages(in *ec2.DescribeVpcsInput, fn func(*ec2.DescribeVpcsOutput, bool) bool) error {
+	fn(&ec2.DescribeVpcsOutput{
+		Vpcs: []*ec2.Vpc{
+			{VpcId: aws.String("vpc-0e9801d129EXAMPLE")},
+		}}, true)
+	return nil
+}
+
+func (m mockEc2Client) DescribeSubnetsPages(in *ec2.DescribeSubnetsInput, fn func(*ec2.DescribeSubnetsOutput, bool) bool) error {
+	fn(&ec2.DescribeSubnetsOutput{
+		Subnets: []*ec2.Subnet{
+			{SubnetId: aws.String("subnet-0bb1c79de3EXAMPLE")},
+		}}, true)
+	return nil
+}
+
+func (m mockEc2Client) DescribeSecurityGroupsPages(in *ec2.DescribeSecurityGroupsInput, fn func(*ec2.DescribeSecurityGroupsOutput, bool) bool) error {
+	fn(&ec2.DescribeSecurityGroupsOutput{
+		SecurityGroups: []*ec2.SecurityGroup{
+			{GroupId: aws.String("sg-903004f8")},
+		}}, true)
+	return nil
+}
+
+func (m mockEc2Client) DescribeAddresses(in *ec2.DescribeAddressesInput) (*ec2.DescribeAddressesOutput, error) {
+	return &ec2.DescribeAddressesOutput{
+		Addresses: []*ec2.Address{
+			{
+				InstanceId:     aws.String("i-1234567890abcdef0"),
+				PublicIp:       aws.String("127.0.0.1"),
+				PublicIpv4Pool: aws.String("amazon"),
+				Domain:         aws.String("standard"),
+			},
+		},
+	}, nil
+}
+
+func (m mockEc2Client) DescribeKeyPairs(in *ec2.DescribeKeyPairsInput) (*ec2.DescribeKeyPairsOutput, error) {
+	return &ec2.DescribeKeyPairsOutput{
+		KeyPairs: []*ec2.KeyPairInfo{
+			{KeyName: aws.String("test")},
+		},
+	}, nil
+}
+
+func mockEc2Creator(client.ConfigProvider, ...*aws.Config) ec2iface.EC2API {
+	return mockEc2Client{}
+}
+
+func mockInv(t *testing.T) *Inv {
+	regions := []string{"us-east-1", "us-west-1"}
+	sessMgr := sessionmgr.New("us-east-1", regions)
+	sessMgr.Sessioner(mockNewSession)
+	err := sessMgr.Init()
 	if err != nil {
-		t.Errorf("failed to walk accounts: %v", err)
+		t.Fatalf("failed to instantiate session manager: %v", err)
 	}
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("failed to match accounts, expected: %#v, got: %#v", expected, actual)
+	accounts := []*organizations.Account{
+		{Id: aws.String("a"), Name: aws.String("a")},
+		{Id: aws.String("b"), Name: aws.String("b")},
+		{Id: aws.String("c"), Name: aws.String("c")},
 	}
+
+	inv := &Inv{
+		accounts:   accounts,
+		credMgr:    credmgr.New(mock.Session, "", "", accounts),
+		sessionMgr: sessMgr,
+	}
+	return inv
 }
+
+func TestQueryInstances(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.queryInstances()
+	assert.NilError(t, err)
+}
+
+func TestQueryImages(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.queryImages()
+	assert.NilError(t, err)
+}
+
+func TestQueryVolumes(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.queryVolumes()
+	assert.NilError(t, err)
+}
+
+func TestQuerySnapshots(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.querySnapshots()
+	assert.NilError(t, err)
+}
+
+func TestQueryVpcs(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.queryVpcs()
+	assert.NilError(t, err)
+}
+
+func TestQuerySubnets(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.querySubnets()
+	assert.NilError(t, err)
+}
+
+func TestQuerySecurityGroups(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.querySecurityGroups()
+	assert.NilError(t, err)
+}
+
+func TestQueryAddresses(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.queryAddresses()
+	assert.NilError(t, err)
+}
+
+func TestQueryKeyPairs(t *testing.T) {
+	inv := mockInv(t)
+	ec2Creator = mockEc2Creator
+	_, err := inv.queryKeyPairs()
+	assert.NilError(t, err)
+}
+
+///////////////////////////////////
+// Mocks for testing queryVaults //
+///////////////////////////////////
 
 type mockGlacierClient struct {
 	glacieriface.GlacierAPI
@@ -211,11 +468,6 @@ func TestQueryVaults(t *testing.T) {
 
 	glacierCreator = mockGlacierCreator
 	actual, err := inv.queryVaults()
-	if err != nil {
-		t.Errorf("failed to queryVaults: %v", err)
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("failed to match objects, expected: %s, got: %s", expected, actual)
-	}
+	assert.NilError(t, err)
+	assert.DeepEqual(t, actual, expected, cmp.AllowUnexported(spreadsheet.Payload{}, glacier.DescribeVaultOutput{}))
 }

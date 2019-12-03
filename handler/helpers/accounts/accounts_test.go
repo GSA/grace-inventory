@@ -3,10 +3,16 @@ package accounts
 import (
 	"bytes"
 	"io"
+	"net/http"
+	"net/http/httptest"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/client"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
 	"github.com/aws/aws-sdk-go/service/organizations"
@@ -14,10 +20,40 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
+	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/aws/aws-sdk-go/service/sts/stsiface"
+	"gotest.tools/assert"
 )
 
 var rID = regexp.MustCompile(`^\d{12}$`)
 
+// newAPIStub ... Creates a new httptest.Server to respond to AWS API calls
+func newAPIStub() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+}
+
+// newStubSession ... creates a *Session with a stub endpoint
+func newStubSession(t *testing.T) *session.Session {
+	stub := newAPIStub()
+	creds := credentials.NewStaticCredentials("test", "test", "test")
+	sess, err := session.NewSession(&aws.Config{
+		Endpoint:    aws.String(stub.URL),
+		Region:      aws.String("us-east-1"),
+		Credentials: creds,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return sess
+}
+
+///////////////////
+// Mock Services //
+///////////////////
+
+// mockIamSvc ... creates a mock of the AWS Identity and Access Management (IAM) service
 type mockIamSvc struct {
 	iamiface.IAMAPI
 	Resp iam.ListAccountAliasesOutput
@@ -27,6 +63,7 @@ func (m mockIamSvc) ListAccountAliases(in *iam.ListAccountAliasesInput) (*iam.Li
 	return &m.Resp, nil
 }
 
+// mockOrgSvc ... creates a mock of the AWS Organizations service
 type mockOrgSvc struct {
 	organizationsiface.OrganizationsAPI
 	Resp organizations.ListAccountsOutput
@@ -36,6 +73,7 @@ func (m mockOrgSvc) ListAccounts(in *organizations.ListAccountsInput) (*organiza
 	return &m.Resp, nil
 }
 
+// mockDownloaderSvc ... creates a mock of the AWS S3 Manager Downloader API
 type mockDownloaderSvc struct {
 	s3manageriface.DownloaderAPI
 }
@@ -61,10 +99,59 @@ func (m mockDownloaderSvc) Download(w io.WriterAt, in *s3.GetObjectInput, fn ...
 	return int64(n), err
 }
 
+// mockStsSvc ... create a mock of the AWS Security Token Service (STS)
+type mockStsSvc struct {
+	stsiface.STSAPI
+	TestInput func(*sts.AssumeRoleInput)
+}
+
+func (s mockStsSvc) AssumeRole(input *sts.AssumeRoleInput) (*sts.AssumeRoleOutput, error) {
+	if s.TestInput != nil {
+		s.TestInput(input)
+	}
+	expiry := time.Now().Add(60 * time.Minute)
+	return &sts.AssumeRoleOutput{
+		Credentials: &sts.Credentials{
+			// Just reflect the role arn to the provider.
+			AccessKeyId:     input.RoleArn,
+			SecretAccessKey: aws.String("assumedSecretAccessKey"),
+			SessionToken:    aws.String("assumedSessionToken"),
+			Expiration:      &expiry,
+		},
+	}, nil
+}
+
 var mockSvc = Svc{
 	iamSvc:           mockIamSvc{},
 	organizationsSvc: mockOrgSvc{},
 	downloaderSvc:    mockDownloaderSvc{},
+	stsSvc:           mockStsSvc{},
+}
+
+/////////////////////////////////
+// Accounts Package Unit Tests //
+/////////////////////////////////
+
+func TestNewAccountsSvc(t *testing.T) {
+	// test case table
+	tt := map[string]struct {
+		sess        client.ConfigProvider
+		expectedErr string
+	}{"happy path": {
+		sess: newStubSession(t),
+	}}
+	// loop through test cases
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			_, err := NewAccountsSvc(tc.sess)
+			if tc.expectedErr == "" {
+				assert.NilError(t, err)
+			} else {
+				assert.Error(t, err, tc.expectedErr)
+			}
+		})
+	}
 }
 
 //nolint: gocyclo
@@ -176,4 +263,45 @@ func TestAccountsList(t *testing.T) {
 		//	t.Fatalf("Accounts(\"%v\") failed: expected %v.  Got: %v", accountsInfo, accountName, *accounts[0].Name)
 		//}
 	})
+}
+
+func TestQueryAccounts(t *testing.T) {
+	sess := newStubSession(t)
+	// test case table
+	tt := map[string]struct {
+		opt         Options
+		expectedErr string
+		expected    []*organizations.Account
+	}{
+		"stub AccountsSvc nil Options": {},
+		"stub AccountsSvc master account set": {
+			opt: Options{
+				MasterAccountID: "test_master",
+				MgmtAccountID:   "test_mgmt",
+			},
+		},
+		"stub AccountsSvc OrgUnits set": {
+			opt: Options{
+				OrgUnits: []string{"test_ou"},
+			},
+		},
+	}
+	// loop through test cases
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			svc, err := NewAccountsSvc(sess)
+			if err != nil {
+				t.Fatal(err)
+			}
+			svc.stsSvc = mockStsSvc{}
+			actual, err := svc.queryAccounts(tc.opt)
+			if tc.expectedErr == "" {
+				assert.NilError(t, err)
+			} else {
+				assert.Error(t, err, tc.expectedErr)
+			}
+			assert.DeepEqual(t, tc.expected, actual)
+		})
+	}
 }
