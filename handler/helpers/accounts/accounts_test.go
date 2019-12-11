@@ -22,7 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/aws/aws-sdk-go/service/sts/stsiface"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 var rID = regexp.MustCompile(`^\d{12}$`)

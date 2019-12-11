@@ -1,8 +1,8 @@
 # <a name="top">GRACE Inventory Lambda Function</a>
 
-**Lint Checks:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory.svg?style=svg)](https://circleci.com/gh/GSA/grace-inventory)
+**Lint Checks/Unit Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory.svg?style=svg)](https://circleci.com/gh/GSA/grace-inventory)
 
-**Unit/Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-tests.svg?style=svg&circle-token=f86712ce5167665fe0d4a23d4af4fe7e9a20f7de)](https://circleci.com/gh/GSA/grace-inventory-tests)
+**Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-tests.svg?style=svg&circle-token=f86712ce5167665fe0d4a23d4af4fe7e9a20f7de)](https://circleci.com/gh/GSA/grace-inventory-tests)
 
 Lambda function to create an inventory report of AWS services as an Excel
 spreadsheet in an S3 bucket. Includes Terraform code to deploy the Lambda
@@ -107,7 +107,6 @@ cd ..
 
 - Install the following prerequisites:
     1. [Go](https://golang.org/)
-    1. [Dep](https://golang.github.io/dep/docs/installation.html)
     1. [GolangCI-Lint](https://github.com/golangci/golangci-lint)
     1. [gosec](https://github.com/securego/gosec)
     1. [make](https://www.gnu.org/software/make/)

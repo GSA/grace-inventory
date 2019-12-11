@@ -15,6 +15,10 @@ run:
   # include test files or not, default is true
   tests: true
 
+  # include test files with integration tag
+  build-tags:
+    - integration
+
 
 # output configuration options
 output:
