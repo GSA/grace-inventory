@@ -24,7 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/aws/aws-sdk-go/service/sts/stsiface"
 	"github.com/google/go-cmp/cmp"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 ///////////////////
@@ -98,7 +98,7 @@ func TestNew(t *testing.T) {
 		expectedErr string
 	}{
 		"environment variables not set": {
-			expectedErr: `env: required environment variable "s3_bucket" is not set`,
+			expectedErr: `required environment variable "s3_bucket" is not set`,
 		},
 		"no credentials": {
 			env: map[string]string{
@@ -108,6 +108,25 @@ func TestNew(t *testing.T) {
 			},
 			expectedErr: "NoCredentialProviders: no valid providers in chain. Deprecated.\n\tFor verbose messaging see aws.Config.CredentialsChainVerboseErrors",
 		},
+		"happy path": {
+			env: map[string]string{
+				"s3_bucket":  "test",
+				"kms_key_id": "test",
+				"regions":    "us-east-1",
+			},
+		},
+	}
+	// Remove test cases that would fail during integration testing because environment variables are set
+	if os.Getenv("s3_bucket") != "" {
+		t.Log("deleting test case for environment variables not set")
+		delete(tt, "environment variables not set")
+	}
+	if os.Getenv("AWS_ACCESS_KEY_ID") != "" {
+		t.Log("deleting test case for no credentials")
+		delete(tt, "no credentials")
+	} else {
+		t.Log("deleting test case for happy path")
+		delete(tt, "happy path")
 	}
 	for name, tc := range tt {
 		tc := tc
@@ -121,9 +140,10 @@ func TestNew(t *testing.T) {
 			actual, err := New()
 			if tc.expectedErr == "" {
 				assert.NilError(t, err)
-				assert.DeepEqual(t, actual, tc.expected)
+				assert.Equal(t, actual.bucketID, os.Getenv("s3_bucket"))
+				assert.Equal(t, actual.kmsKeyID, os.Getenv("kms_key_id"))
 			} else {
-				assert.Error(t, err, tc.expectedErr)
+				assert.ErrorContains(t, err, tc.expectedErr)
 			}
 		})
 	}

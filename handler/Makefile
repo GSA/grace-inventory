@@ -1,12 +1,12 @@
 GOOS = linux
 GOARCH = amd64
 GOBIN := $(GOPATH)/bin
-GODEP := $(GOBIN)/dep
 GOLANGCILINT := $(GOBIN)/golangci-lint
 GOSEC := $(GOBIN)/gosec
 GHR := $(GOBIN)/ghr
 RELEASEDIR ?= ../release/
 CIRCLE_PROJECT_REPONAME ?= grace-inventory-lambda
+export GO111MODULE=on
 
 .PHONY: build release clean test lint dependencies
 build: lint clean
@@ -36,23 +36,20 @@ clean:
 test: lint
 	go test -v -cover ./...
 
-lint: Gopkg.toml dependencies
-	dep ensure
+lint: go.mod dependencies
+	go mod tidy
 	golangci-lint run ./...
 	gosec ./...
 
-Gopkg.toml:
-ifeq (,$(wildcard Gopkg.toml))
-	dep init
+go.mod:
+ifeq (,$(wildcard go.mod))
+	go mod init
 endif
 
-dependencies: $(GODEP) $(GOLANGCILINT) $(GOSEC) $(GHR)
+dependencies: $(GOLANGCILINT) $(GOSEC) $(GHR)
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
-
-$(GODEP):
-	go get -u github.com/golang/dep/cmd/dep
 
 $(GOSEC):
 	go get -u github.com/securego/gosec/cmd/gosec

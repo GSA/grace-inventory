@@ -31,7 +31,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/aws/aws-sdk-go/service/sts/stsiface"
-	"github.com/caarlos0/env"
+	"github.com/caarlos0/env/v6"
 
 	"github.com/GSA/grace-inventory/handler/helpers"
 	"github.com/GSA/grace-inventory/handler/helpers/accounts"
