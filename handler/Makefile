@@ -49,7 +49,7 @@ endif
 dependencies: $(GOLANGCILINT) $(GOSEC) $(GHR)
 
 $(GOLANGCILINT):
-	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@master
 
 $(GOSEC):
 	go get -u github.com/securego/gosec/cmd/gosec

@@ -73,7 +73,7 @@ func TestIntegrationAddSheet(t *testing.T) {
 }
 
 // func (ss *Spreadsheet) UpdateSheet(name string, payload *Payload)
-func testIntegrationUpdateSheet(t *testing.T) {
+func TestIntegrationUpdateSheet(t *testing.T) {
 	docName := itest0
 	sheetName := itest1
 	colName := column0
