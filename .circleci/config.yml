@@ -45,6 +45,15 @@ jobs:
       - run:
           name: Run Unit Tests
           command: make test_handler
+  release_handler:
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/github.com/GSA/grace-inventory
+    steps:
+      - checkout
+      - run:
+          name: Release handler
+          command: make release_handler
 
 workflows:
   version: 2
@@ -53,3 +62,9 @@ workflows:
       - validate_terraform
       - lint_handler
       - test_handler
+      - release_handler:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: master
