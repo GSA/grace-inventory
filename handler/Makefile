@@ -5,7 +5,7 @@ GOLANGCILINT := $(GOBIN)/golangci-lint
 GOSEC := $(GOBIN)/gosec
 GHR := $(GOBIN)/ghr
 RELEASEDIR ?= ../release/
-CIRCLE_PROJECT_REPONAME ?= grace-inventory-lambda
+CIRCLE_PROJECT_REPONAME := grace-inventory-lambda
 export GO111MODULE=on
 
 .PHONY: build release clean test lint dependencies integration_test
