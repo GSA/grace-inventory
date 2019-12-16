@@ -5,15 +5,16 @@ GOLANGCILINT := $(GOBIN)/golangci-lint
 GOSEC := $(GOBIN)/gosec
 GHR := $(GOBIN)/ghr
 RELEASEDIR ?= ../release/
-CIRCLE_PROJECT_REPONAME := grace-inventory-lambda
+ARTIFACT_NAME := grace-inventory-lambda
+CIRCLE_PROJECT_REPONAME ?= $(ARTIFACT_NAME)
 export GO111MODULE=on
 
 .PHONY: build release clean test lint dependencies integration_test
 build: lint clean
 	mkdir -p $(RELEASEDIR)
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME) -v
-	zip -j $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME).zip $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME)
-	rm -f $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME)
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $(RELEASEDIR)$(ARTIFACT_NAME) -v
+	zip -j $(RELEASEDIR)$(ARTIFACT_NAME).zip $(RELEASEDIR)$(ARTIFACT_NAME)
+	rm -f $(RELEASEDIR)$(ARTIFACT_NAME)
 
 release: build
 	export CIRCLE_TAG=$(CIRCLE_TAG)
