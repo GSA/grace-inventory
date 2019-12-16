@@ -8,7 +8,7 @@ RELEASEDIR ?= ../release/
 CIRCLE_PROJECT_REPONAME ?= grace-inventory-lambda
 export GO111MODULE=on
 
-.PHONY: build release clean test lint dependencies
+.PHONY: build release clean test lint dependencies integration_test
 build: lint clean
 	mkdir -p $(RELEASEDIR)
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $(RELEASEDIR)$(CIRCLE_PROJECT_REPONAME) -v
@@ -32,6 +32,9 @@ clean:
 
 test: lint
 	go test -v -cover ./...
+
+integration_test: test
+	go test -v -cover --tags=integration ./...
 
 lint: go.mod dependencies
 	go mod tidy
