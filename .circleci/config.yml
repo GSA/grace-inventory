@@ -27,7 +27,7 @@ jobs:
           command: find . -name ".terraform" -prune -o -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && tflint && echo "√ $m") || exit 1 ; done
       - run:
           name: start localstack
-          command: docker-compse up -d
+          command: docker-compose up -d
       - run:
           name: verify localstack
           command: wget http://localhost:8055/
