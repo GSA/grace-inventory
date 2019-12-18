@@ -28,15 +28,15 @@ jobs:
       - run:
           name: install docker-compose
           command: |
-            apk add py-pip
-            apk add python-dev
-            apk add libffi-dev
-            apk add openssl-dev
-            apk add gcc
-            apk add libc-dev
-            apk add make
+            apk add -q py-pip
+            apk add -q python-dev
+            apk add -q libffi-dev
+            apk add -q openssl-dev
+            apk add -q gcc
+            apk add -q libc-dev
+            apk add -q make
             curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
             which docker-compose
             apk add file
             file /usr/local/bin/docker-compose
