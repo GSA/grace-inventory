@@ -32,6 +32,7 @@ jobs:
             chmod +x ~/docker-compose
             mv ~/docker-compose /usr/local/bin/docker-compose
             which docker-compose
+            apk add file
             file /usr/local/bin/docker-compose
             cat /etc/os-release
             docker-compose run test
