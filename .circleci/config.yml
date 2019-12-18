@@ -34,7 +34,6 @@ jobs:
             pip install docker-compose
             which docker-compose
             which docker
-            docker-compose run test
             docker-compose up -d
       - run:
           name: verify localstack
