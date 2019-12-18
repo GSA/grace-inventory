@@ -28,9 +28,15 @@ jobs:
       - run:
           name: install docker-compose
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            mv ~/docker-compose /usr/local/bin/docker-compose
+            apk add py-pip
+            apk add python-dev
+            apk add libffi-dev
+            apk add openssl-dev
+            apk add gcc
+            apk add libc-dev
+            apk add make
+            curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
             which docker-compose
             apk add file
             file /usr/local/bin/docker-compose
