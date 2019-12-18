@@ -27,7 +27,11 @@ jobs:
           command: find . -name ".terraform" -prune -o -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && tflint && echo "√ $m") || exit 1 ; done
       - run:
           name: install docker-compose
-          command: curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+            docker-compose run test
       - run:
           name: start localstack
           command: docker-compose up -d
