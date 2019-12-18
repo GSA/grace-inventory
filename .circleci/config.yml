@@ -32,9 +32,12 @@ jobs:
             apk add py-pip
             apk add python-dev libffi-dev openssl-dev gcc libc-dev make
             pip install docker-compose
-            which docker-compose
-            which docker
-            docker-compose up -d
+            service docker status
+            ls -la /var/run/docker.sock
+            usermod -aG docker ${USER}
+      - run:
+          name: start localstack
+          command: docker-compose up -d
       - run:
           name: verify localstack
           command: curl http://localhost:8055/
