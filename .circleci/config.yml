@@ -35,12 +35,8 @@ jobs:
             apk add -q gcc
             apk add -q libc-dev
             apk add -q make
-            curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            chmod +x /usr/local/bin/docker-compose
+            pip install docker-compose
             which docker-compose
-            apk add file
-            file /usr/local/bin/docker-compose
-            cat /etc/os-release
             docker-compose run test
             docker-compose up -d
       - run:
