@@ -34,9 +34,8 @@ jobs:
             echo $PATH
             whoami
             docker-compose run test
-      - run:
-          name: start localstack
-          command: docker-compose up -d
+            which docker-compose
+            docker-compse up -d
       - run:
           name: verify localstack
           command: curl http://localhost:8055/
