@@ -30,12 +30,10 @@ jobs:
           command: |
             curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
-            ls ~
             mv ~/docker-compose /usr/local/bin/docker-compose
-            ls /usr/local/bin
-            echo $PATH
-            whoami
             which docker-compose
+            file /usr/local/bin/docker-compose
+            cat /etc/os-release
             docker-compose run test
             docker-compose up -d
       - run:
