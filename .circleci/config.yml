@@ -30,11 +30,11 @@ jobs:
           command: |
             curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
-            mv ~/docker-compose /usr/local/bin/docker-compose
+            mv ~/docker-compose /usr/local/sbin/docker-compose
             echo $PATH
             whoami
-            docker-compose run test
             which docker-compose
+            docker-compose run test
             docker-compse up -d
       - run:
           name: verify localstack
