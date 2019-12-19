@@ -36,6 +36,9 @@ jobs:
           name: Install curl
           command: apk add --update curl && apk upgrade
       - run:
+          name: Install go
+          command: apk add --no-cache git make musl-dev go
+      - run:
           name: Test Terraform
           command: |
             make test_terraform

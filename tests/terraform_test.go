@@ -1,9 +1,10 @@
 package testing
 
 import (
-    "time"
+	"testing"
+	"time"
 )
 
 func TestNow(t *testing.T) {
-    t.Logf("Now: %s\n", time.Now())
+	t.Logf("Now: %s\n", time.Now())
 }
