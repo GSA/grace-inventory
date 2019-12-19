@@ -28,7 +28,7 @@ destroy: init
 	terraform destroy -auto-approve
 
 test: $(GO)
-	$(GO) test -v ./...
+	./usr/local/go/bin/go test -v ./...
 
 apply: plan
 	terraform apply -auto-approve
@@ -45,7 +45,11 @@ init: check
 	[[ -e ../release/grace-inventory-lambda.zip ]] || touch ../release/grace-inventory-lambda.zip
 	terraform init -backend-config="bucket=$(backend_bucket)" -backend-config="key=$(backend_key)"
 
-$(GO):
+glibc:
+	curl -L -o /tmp/glibc.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-i18n-2.30-r0.apk
+	apk add --allow-untrusted /tmp/glibc.apk
+
+$(GO): glibc
 	echo $(PATH)
 	curl -L -o /tmp/go.tgz https://dl.google.com/go/go$(GO_VERSION).linux-amd64.tar.gz
 	tar -C /usr/local -xzf /tmp/go.tgz
