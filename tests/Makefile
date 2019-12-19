@@ -29,11 +29,12 @@ destroy: init
 	terraform destroy -auto-approve
 
 test:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -v ./...
+	go test -v ./...
 
 $(terraform):
     curl https://releases.hashicorp.com/terraform/$(terraform_version)/terraform_$(terraform_version)_linux_amd64.zip -o /tmp/terraform_$(terraform_version)_linux_amd64.zip
     unzip -d /usr/bin/ /tmp/terraform_$(terraform_version)_linux_amd64.zip
+	ls -lah /usr/bin
 
 apply: plan
 	terraform apply -auto-approve
