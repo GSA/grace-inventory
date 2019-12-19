@@ -11,10 +11,12 @@ import (
 func TestNow(t *testing.T) {
 	localstack := `/opt/code/localstack/bin/localstack`
 	cmd := exec.Command(localstack, "start", "--host")
-	err := cmd.Run()
-	if err != nil {
-		t.Fatalf("failed to execute localstack: %v", err)
-	}
+	go func(t *testing.T) {
+		err := cmd.Run()
+		if err != nil {
+			t.Fatalf("failed to execute localstack: %v", err)
+		}
+	}(t)
 	opts := &terraform.Options{
 
 		// The path to where our Terraform code is located
