@@ -2,7 +2,6 @@ package testing
 
 import (
 	"os/exec"
-	"path"
 	"path/filepath"
 	"testing"
 
