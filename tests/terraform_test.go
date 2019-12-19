@@ -9,7 +9,8 @@ import (
 )
 
 func TestNow(t *testing.T) {
-	cmd := exec.Command("localstack", "start", "--host")
+	localstack := `/opt/code/localstack/bin/localstack`
+	cmd := exec.Command(localstack, "start", "--host")
 	err := cmd.Run()
 	if err != nil {
 		t.Fatalf("failed to execute localstack: %v", err)
