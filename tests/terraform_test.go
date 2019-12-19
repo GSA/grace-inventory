@@ -10,6 +10,7 @@ import (
 )
 
 func TestNow(t *testing.T) {
+
 	err := os.Setenv("AWS_ACCESS_KEY_ID", "foobar")
 	if err != nil {
 		t.Fatalf("failed to set AWS_ACCESS_KEY_ID: %v", err)

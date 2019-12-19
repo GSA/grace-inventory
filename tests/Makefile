@@ -29,7 +29,7 @@ destroy: init
 test: /bin/terraform
 	go test -v ./...
 
-/bin/terraform:
+/bin/terraform: create_files
 	curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.12.7/terraform_0.12.7_linux_amd64.zip
 	unzip -d /tmp/ /tmp/terraform.zip
 	chmod +x /tmp/terraform
@@ -45,7 +45,9 @@ validate: init
 	terraform validate
 	terrascan --location . --tests all
 
-init: check
+init: create_files check
+	terraform init -backend-config="bucket=$(backend_bucket)" -backend-config="key=$(backend_key)"
+
+create_files:
 	[[ -d ../release ]] || mkdir ../release
 	[[ -e ../release/grace-inventory-lambda.zip ]] || touch ../release/grace-inventory-lambda.zip
-	terraform init -backend-config="bucket=$(backend_bucket)" -backend-config="key=$(backend_key)"
