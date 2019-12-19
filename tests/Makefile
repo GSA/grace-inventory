@@ -30,8 +30,8 @@ test:
 	go test -v ./...
 
 /bin/terraform:
-    curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.12.7/terraform_0.12.7_linux_amd64.zip
-    unzip -d /tmp/ /tmp/terraform.zip
+	curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.12.7/terraform_0.12.7_linux_amd64.zip
+	unzip -d /tmp/ /tmp/terraform.zip
 	chmod +x /tmp/terraform
 	mv /tmp/terraform /bin/terraform
 	ls -lah /bin
