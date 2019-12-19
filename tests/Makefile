@@ -4,8 +4,6 @@ export TF_VAR_appenv := $(appenv)
 undefine TF_VAR_master_account_id
 undefine TF_VAR_master_role_name
 export backend_key := grace_integration_testing_inventory_lambda.tfstate
-terraform := /usr/bin/terraform
-terraform_version := 0.12.7
 
 .PHONY: check apply plan validate init destroy test
 
@@ -31,10 +29,12 @@ destroy: init
 test:
 	go test -v ./...
 
-$(terraform):
-    curl https://releases.hashicorp.com/terraform/$(terraform_version)/terraform_$(terraform_version)_linux_amd64.zip -o /tmp/terraform_$(terraform_version)_linux_amd64.zip
-    unzip -d /usr/bin/ /tmp/terraform_$(terraform_version)_linux_amd64.zip
-	ls -lah /usr/bin
+/bin/terraform:
+    curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.12.7/terraform_0.12.7_linux_amd64.zip
+    unzip -d /tmp/ /tmp/terraform.zip
+	chmod +x /tmp/terraform
+	mv /tmp/terraform /bin/terraform
+	ls -lah /bin
 
 apply: plan
 	terraform apply -auto-approve
