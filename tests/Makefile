@@ -49,3 +49,5 @@ $(GO):
 	echo $(PATH)
 	curl -L -o /tmp/go.tgz https://dl.google.com/go/go$(GO_VERSION).linux-amd64.tar.gz
 	tar -C /usr/local -xzf /tmp/go.tgz
+	ls -alh /usr/local/
+	ls -alh /usr/local/go/

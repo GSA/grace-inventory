@@ -28,7 +28,6 @@ jobs:
   test_terraform:
     environment:
       AWS_DEFAULT_REGION: us-east-1
-      PATH: /usr/local/go/bin:$PATH
     docker:
       - image: localstack/localstack:latest
     steps:
