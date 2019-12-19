@@ -26,7 +26,7 @@ endif
 destroy: init
 	terraform destroy -auto-approve
 
-test:
+test: /bin/terraform
 	go test -v ./...
 
 /bin/terraform:
