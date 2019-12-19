@@ -46,8 +46,11 @@ init: check
 	terraform init -backend-config="bucket=$(backend_bucket)" -backend-config="key=$(backend_key)"
 
 glibc:
-	curl -L -o /tmp/glibc.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-i18n-2.30-r0.apk
-	apk add --allow-untrusted /tmp/glibc.apk
+	curl -L -o /tmp/glibc-2.30-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk
+	curl -L -o /tmp/glibc-bin-2.30-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-bin-2.30-r0.apk
+	curl -L -o /tmp/glibc-dev-2.30-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-dev-2.30-r0.apk
+	curl -L -o /tmp/glibc-i18n-2.30-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-i18n-2.30-r0.apk
+	apk add --allow-untrusted /tmp/glibc-2.30-r0.apk /tmp/glibc-bin-2.30-r0.apk /tmp/glibc-dev-2.30-r0.apk /tmp/glibc-i18n-2.30-r0.apk
 
 $(GO): glibc
 	echo $(PATH)
