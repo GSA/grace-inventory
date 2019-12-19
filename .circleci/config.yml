@@ -25,23 +25,19 @@ jobs:
       - run:
           name: Check Terraform configurations with tflint
           command: find . -name ".terraform" -prune -o -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && tflint && echo "√ $m") || exit 1 ; done
+  test_terraform:
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+    docker:
+      - image: localstack/localstack:latest
+    steps:
+      - checkout
       - run:
-          name: install docker-compose
-          command: |
-            apk add docker
-            apk add py-pip
-            apk add python-dev libffi-dev openssl-dev gcc libc-dev make
-            pip install docker-compose
-            apk add service
-            service docker status
-            ls -la /var/run/docker.sock
-            usermod -aG docker ${USER}
+          name: Install curl
+          command: apk add --update curl && apk upgrade
       - run:
-          name: start localstack
-          command: docker-compose up -d
-      - run:
-          name: verify localstack
-          command: curl http://localhost:8055/
+          name: Test Terraform
+          command: make test_terraform
   lint_handler:
     environment:
       AWS_DEFAULT_REGION: us-east-1
@@ -77,6 +73,9 @@ workflows:
   build:
     jobs:
       - validate_terraform
+      - test_terraform:
+          requires:
+            - validate_terraform
       - lint_handler
       - test_handler
       - release_handler:

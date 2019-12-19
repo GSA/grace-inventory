@@ -5,7 +5,7 @@ undefine TF_VAR_master_account_id
 undefine TF_VAR_master_role_name
 export backend_key := grace_integration_testing_inventory_lambda.tfstate
 
-.PHONY: check apply plan validate init destroy
+.PHONY: check apply plan validate init destroy test
 check:
 ifeq ($(strip $(backend_bucket)),)
 	@echo "backend_bucket must be provided"
@@ -24,6 +24,9 @@ endif
 
 destroy: init
 	terraform destroy -auto-approve
+
+test: init
+    go test -v ./...
 
 apply: plan
 	terraform apply -auto-approve
