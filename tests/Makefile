@@ -5,6 +5,7 @@ undefine TF_VAR_master_account_id
 undefine TF_VAR_master_role_name
 export backend_key := grace_integration_testing_inventory_lambda.tfstate
 GO := /usr/local/go/bin/go
+GO_VERSION := 1.13.5
 
 .PHONY: check apply plan validate init destroy test
 check:
@@ -46,5 +47,5 @@ init: check
 
 $(GO):
 	echo $(PATH)
-	curl -L -o /tmp/go.tgz https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz
+	curl -L -o /tmp/go.tgz https://dl.google.com/go/go$(GO_VERSION).linux-amd64.tar.gz
 	tar -C /usr/local -xzf /tmp/go.tgz
