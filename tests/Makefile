@@ -25,8 +25,7 @@ endif
 destroy: init
 	terraform destroy -auto-approve
 
-test: init
-    go test -v ./...
+test: go test -v ./...
 
 apply: plan
 	terraform apply -auto-approve
