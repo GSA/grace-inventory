@@ -37,7 +37,8 @@ jobs:
           command: apk add --update curl && apk upgrade
       - run:
           name: Test Terraform
-          command: make test_terraform
+          command: |
+            make test_terraform
   lint_handler:
     environment:
       AWS_DEFAULT_REGION: us-east-1
