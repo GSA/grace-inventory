@@ -1,6 +1,5 @@
 GOOS = linux
 GOARCH = amd64
-GO := /usr/local/go/bin/go
 GOBIN := $(GOPATH)/bin
 GOLANGCILINT := $(GOBIN)/golangci-lint
 GOSEC := $(GOBIN)/gosec
@@ -9,7 +8,6 @@ RELEASEDIR ?= ../release/
 ARTIFACT_NAME := grace-inventory-lambda
 CIRCLE_PROJECT_REPONAME ?= $(ARTIFACT_NAME)
 export GO111MODULE=on
-export PATH=$PATH:/usr/local/go/bin
 
 .PHONY: build release clean test lint dependencies integration_test
 build: lint clean
@@ -49,11 +47,7 @@ ifeq (,$(wildcard go.mod))
 	go mod init
 endif
 
-dependencies: $(GO) $(GOLANGCILINT) $(GOSEC) $(GHR)
-
-$(GO):
-	curl -L -o /tmp/go.tgz https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz
-	tar -C /usr/local -xzf /tmp/go.tgz
+dependencies: $(GOLANGCILINT) $(GOSEC) $(GHR)
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@master
