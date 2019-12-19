@@ -42,6 +42,8 @@ jobs:
           name: Test Terraform
           command: |
             make test_terraform
+      - store_artifacts:
+          path: /tmp/
   lint_handler:
     environment:
       AWS_DEFAULT_REGION: us-east-1

@@ -1,12 +1,20 @@
 package testing
 
 import (
+	"os/exec"
+	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
 func TestNow(t *testing.T) {
+	cmd := exec.Command("localstack", "start", "--host")
+	err := cmd.Run()
+	if err != nil {
+		t.Fatalf("failed to execute localstack: %v", err)
+	}
 	opts := &terraform.Options{
 
 		// The path to where our Terraform code is located
@@ -25,4 +33,13 @@ func TestNow(t *testing.T) {
 	}
 	defer terraform.Destroy(t, opts)
 	t.Logf("output: %s\n", terraform.InitAndApply(t, opts))
+
+	pattern := `/tmp/localstack/data/*.json`
+	matches, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("failed to glob files %s: %v", pattern, err)
+	}
+	for _, m := range matches {
+		t.Logf("found file: %s\n", m)
+	}
 }

@@ -34,7 +34,6 @@ test: /bin/terraform
 	unzip -d /tmp/ /tmp/terraform.zip
 	chmod +x /tmp/terraform
 	mv /tmp/terraform /bin/terraform
-	ls -lah /bin
 
 apply: plan
 	terraform apply -auto-approve
