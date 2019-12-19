@@ -5,6 +5,19 @@ terraform {
 }
 
 provider "aws" {
+  endpoints {
+    lambda           = "http://localhost:4574"
+    s3               = "http://localhost:4572"
+    sns              = "http://localhost:4575"
+    sqs              = "http://localhost:4576"
+    ses              = "http://localhost:4579"
+    cloudwatch       = "http://localhost:4582"
+    cloudwatchlogs   = "http://localhost:4586"
+    cloudwatchevents = "http://localhost:4587"
+    sts              = "http://localhost:4592"
+    iam              = "http://localhost:4593"
+    kms              = "http://localhost:4599"
+  }
 }
 
 // If the Lambda function is installed in a non-master/mgmt account, it can

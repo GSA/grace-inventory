@@ -27,7 +27,7 @@ destroy: init
 	terraform destroy -auto-approve
 
 test:
-	go test -v ./...
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -v ./...
 
 apply: plan
 	terraform apply -auto-approve
