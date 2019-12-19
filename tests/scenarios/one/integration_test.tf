@@ -26,12 +26,12 @@ provider "aws" {
 // and the roles are assumable by the Lambda function's IAM role
 module "integration_test" {
   // source            = "github.com/GSA/grace-inventory?ref=latest"
-  source            = "../"
+  source            = "../../../"
   accounts_info     = "self"
   project_name      = "grace"
   appenv            = var.appenv
   master_account_id = var.master_account_id
   master_role_name  = var.master_role_name
   tenant_role_name  = var.tenant_role_name
-  source_file       = "../release/grace-inventory-lambda.zip"
+  source_file       = "../../../release/grace-inventory-lambda.zip"
 }
