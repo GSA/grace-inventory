@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
@@ -9,6 +10,16 @@ import (
 )
 
 func TestNow(t *testing.T) {
+	err := os.Setenv("AWS_ACCESS_KEY_ID", "foobar")
+	if err != nil {
+		t.Fatalf("failed to set AWS_ACCESS_KEY_ID: %v", err)
+	}
+
+	err := os.Setenv("AWS_SECRET_ACCESS_KEY", "foobar")
+	if err != nil {
+		t.Fatalf("failed to set AWS_SECRET_ACCESS_KEY: %v", err)
+	}
+
 	localstack := `/opt/code/localstack/bin/localstack`
 	cmd := exec.Command(localstack, "start", "--host")
 	go func(t *testing.T) {
