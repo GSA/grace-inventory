@@ -50,7 +50,7 @@ plan_terraform: validate_terraform
 	make -C tests plan
 
 test_terraform: init_terraform
-    make -C tests test
+	make -C tests test
 
 validate_terraform: init_terraform
 	terraform validate
