@@ -15,7 +15,7 @@ func TestNow(t *testing.T) {
 		t.Fatalf("failed to set AWS_ACCESS_KEY_ID: %v", err)
 	}
 
-	err := os.Setenv("AWS_SECRET_ACCESS_KEY", "foobar")
+	err = os.Setenv("AWS_SECRET_ACCESS_KEY", "foobar")
 	if err != nil {
 		t.Fatalf("failed to set AWS_SECRET_ACCESS_KEY: %v", err)
 	}
