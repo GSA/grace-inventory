@@ -49,8 +49,7 @@ plan_terraform: validate_terraform
 	terraform plan
 	make -C tests plan
 
-test_terraform: init_terraform
-	make -C tests test
+test_terraform: make -C tests test
 
 validate_terraform: init_terraform
 	terraform validate
