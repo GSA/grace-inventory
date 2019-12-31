@@ -22,6 +22,7 @@ account the Lambda function is installed in.
         - [Prerequisites](#prerequisites)
         - [Build](#build)
     - [Example Usage](#example-usage)
+    - [Intermittent Error](#intermittent-error)
 - [Terraform Module Inputs](#terraform-module-inputs)
 - [Terraform Module Outputs](#terraform-module-outputs)
 - [Environment Variables](#environment-variables)
@@ -173,6 +174,30 @@ will be the first region listed in the `regions` attribute.  By default, this is
 `us-east-1`.  If you want to place the S3 bucket in a different region, then you
 will need to set the `regions` attribute with your desired region first in the
 comma delimited list.
+
+### Intermittent Error
+
+The KMS key policy depends on the IAM role, however, even though Terraform creates
+the IAM role first, there is sometimes a delay in the configuration reaching
+eventual consistency within AWS. This can result in the following error:
+
+```
+Error: MalformedPolicyDocumentException: Policy contains a statement with one or more invalid principals.
+	status code: 400, request id: 2425f0db-3033-448c-8e20-347eec8cac03
+
+  on .terraform/modules/example_self/kms.tf line 1, in resource "aws_kms_key" "kms_key":
+   1: resource "aws_kms_key" "kms_key" {
+```
+
+Re-applying the terraform (`terraform apply`) will usually resolve the problem.
+Terraform considers this a retriable error, so you can also increase the
+`max_retries` in the aws provider:
+
+```
+provider "aws" {
+  max_retries = 5
+}
+```
 
 [top](#top)
 
