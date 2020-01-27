@@ -217,26 +217,13 @@ func (as *Svc) listAccountsForParents(orgUnits []string) ([]*organizations.Accou
 		input := &organizations.ListAccountsForParentInput{
 			ParentId: aws.String(ou),
 		}
-		result, err := as.organizationsSvc.ListAccountsForParent(input)
+		err := as.organizationsSvc.ListAccountsForParentPages(input,
+			func(page *organizations.ListAccountsForParentOutput, lastPage bool) bool {
+				accounts = append(accounts, page.Accounts...)
+				return !lastPage
+			})
 		if err != nil {
-			return nil, err
-		}
-		accounts = append(accounts, result.Accounts...)
-		token := ""
-		if result.NextToken != nil {
-			token = *result.NextToken
-		}
-		for token != "" {
-			input.NextToken = &token
-			result, err := as.organizationsSvc.ListAccountsForParent(input)
-			if err != nil {
-				return nil, err
-			}
-			accounts = append(accounts, result.Accounts...)
-			token = ""
-			if result.NextToken != nil {
-				token = *result.NextToken
-			}
+			return accounts, err
 		}
 	}
 	return accounts, nil
