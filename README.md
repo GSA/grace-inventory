@@ -1,8 +1,8 @@
-# <a name="top">GRACE Inventory Lambda Function</a>
+# <a name="top">GRACE Inventory Lambda Function</a> [![GoDoc](https://godoc.org/github.com/GSA/grace-inventory?status.svg)](https://godoc.org/github.com/GSA/grace-circleci-builder) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/GSA/grace-inventory)
 
-**Lint Checks/Unit Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory.svg?style=svg)](https://circleci.com/gh/GSA/grace-inventory)
+**Lint Checks/Unit Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory.svg?style=shield)](https://circleci.com/gh/GSA/grace-inventory)
 
-**Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-tests.svg?style=svg&circle-token=f86712ce5167665fe0d4a23d4af4fe7e9a20f7de)](https://circleci.com/gh/GSA/grace-inventory-tests)
+**Integration Tests:** [![CircleCI](https://circleci.com/gh/GSA/grace-inventory-tests.svg?style=shield&circle-token=f86712ce5167665fe0d4a23d4af4fe7e9a20f7de)](https://circleci.com/gh/GSA/grace-inventory-tests)
 
 Lambda function to create an inventory report of AWS services as an Excel
 spreadsheet in an S3 bucket. Includes Terraform code to deploy the Lambda
@@ -231,29 +231,6 @@ provider "aws" {
 
 ## Environment Variables
 
-### CircleCI Environment Variables
-
-| Name                              | Description |
-| --------------------------------- | ------------|
-| AWS_DEFAULT_REGION                | default AWS region |
-| DEVELOPMENT_AWS_ACCESS_KEY_ID     | AWS access key for deployment to development environment |
-| DEVELOPMENT_AWS_SECRET_ACCESS_KEY | AWS secret key for deployment to development environment |
-| DEVELOPMENT_MASTER_ACCT_ID        | Account ID of master payer account |
-| TEST_AWS_ACCESS_KEY_ID            | AWS access key for deployment to test environment |
-| TEST_AWS_SECRET_ACCESS_KEY        | AWS secret key for deployment to test environment |
-| TEST_MASTER_ACCT_ID               | Account ID of master payer account |
-| PRODUCTION_AWS_ACCESS_KEY_ID      | AWS access key for deployment to production environment |
-| PRODUCTION_AWS_SECRET_ACCESS_KEY  | AWS secret key for deployment to production environment |
-| PRODUCTION_MASTER_ACCT_ID               | Account ID of master payer account |
-| TF_VAR_regions                    | comma delimited list of regions to be inventoried |
-| TF_VAR_tenant_role_name           | Role name used to inventory tenant accounts |
-| TF_VAR_master_role_name           | Role name to assume in master payer account for querying organizations |
-| TF_VAR_schedule_expression        | Cloudwatch schedule expression for scheduling Lambda function |
-| backend_bucket                    | S3 Bucket for saving shared Terraform state file |
-| backend_key                       | S3 Bucket Key for saving shared Terraform state file |
-
-[top](#top)
-
 ### Lambda Function Environment Variables
 
 | Name                 | Description |
@@ -266,8 +243,40 @@ provider "aws" {
 | organizational_units | (optional) comma delimited list of organizational units to query for accounts. If set it will only query accounts in those organizational units |
 | tenant_role_name            | (optional) Role name used to inventory tenant accounts |
 | master_role_name            | (optional) Role name to assume in master payer account for querying organizations |
+| sheets | (optional) A comma delimited list of sheets that should be generated (see [sheets](#sheets))
 
 [top](#top)
+
+## Sheets
+
+| Name | Permission | Description |
+| ---- | ---------- | ----------- |
+| Roles | iam:ListRoles | queries IAM Roles |
+| Groups | iam:ListGroups | queries IAM Groups |
+| Policies | iam:ListPolicies | queries IAM Policies |
+| Users | iam:ListUsers | queries IAM Users |
+| Buckets | s3:ListBuckets | queries S3 Buckets |
+| Instances | ec2:DescribeInstances | queries EC2 Instances |
+| Images | ec2:DescribeImages | queries EC2 Images |
+| Volumes | ec2:DescribeVolumes | queries EC2 Volumes |
+| Snapshots | ec2:DescribeSnapshots | queries EC2 Snapshots |
+| VPCs | ec2:DescribeVpcs | queries EC2 VPCs |
+| Subnets | ec2:DescribeSubnets | queries EC2 Subnets |
+| SecurityGroups | ec2:DescribeSecurityGroups | queries EC2 Security Groups |
+| Addresses | ec2:DescribeAddresses | queries EC2 Addresses |
+| KeyPairs | ec2:DescribeKeyPairs | queries EC2 Key Pairs |
+| Stacks | cloudformation:DescribeStacks | queries Cloud Formation Stacks |
+| Alarms | cloudwatch:DescribeAlarms | queries CloudWatch Alarms |
+| ConfigRules | config:DescribeConfig | queries AWS Config rules |
+| LoadBlancers | elasticloadbalancing:DescribeLoadBalancers | queries Elastic Load Balancers |
+| Vaults | glacier:ListVaults | queries Glacier Vaults |
+| Keys | kms:ListKeys | queries KMS Keys |
+| DBInstances | rds:DescribeDBInstances | queries RDS Database Instances |
+| DBSnapshots | rds:DescribeDBSnapshots | queries RDS Database Snapshots |
+| Secrets | secretsmanager:ListSecrets | queries Secrets Manager secrets |
+| Subscriptions | sns:ListSubscriptions | queries Simple Notification Service Subscriptions |
+| Topics | sns:ListTopics | queries Simple Notification Service Topics |
+| Parameters | ssm:DescribeParameters | queries AWS Systems Manager Parameters |
 
 ## Public domain
 
