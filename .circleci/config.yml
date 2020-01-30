@@ -54,12 +54,23 @@ jobs:
       - run:
           name: Release handler
           command: make release_handler
-
+  tfsec:
+    docker:
+      - image: circleci/golang:latest
+    steps:
+      - checkout
+      - run:
+          name: Install tfsec
+          command: env GO111MODULE=on go get -u github.com/liamg/tfsec/cmd/tfsec
+      - run:
+          name: Terraform static code analysis with tfsec
+          command: tfsec
 workflows:
   version: 2
   build:
     jobs:
       - validate_terraform
+      - tfsec
       - lint_handler
       - test_handler
       - release_handler:
