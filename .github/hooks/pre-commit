@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # GITLEAKS_PRECOMMIT_HOOK BEGIN
-precommit_version="v0.0.1"
+precommit_version="v0.0.3"
 precommit_url="https://raw.githubusercontent.com/GSA/odp-code-repository-commit-rules/${precommit_version}/gitleaks/precommit.sh"
 precommit_path="$(git rev-parse --show-toplevel)/.git/hooks/precommit.sh"
 
