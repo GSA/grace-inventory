@@ -9,7 +9,7 @@ endif
 export appenv := $(shell echo "$(environment)" | tr '[:upper:]' '[:lower:]')
 export TF_VAR_appenv := $(appenv)
 
-.PHONY: test deploy check lint_handler test_handler build_handler release_handler integration_test plan_terraform validate_terraform init_terraform apply_terraform apply_terraform_tests destroy_terraform_tests clean
+.PHONY: precommit test deploy check lint_handler test_handler build_handler release_handler integration_test plan_terraform validate_terraform init_terraform apply_terraform apply_terraform_tests destroy_terraform_tests clean
 test: test_handler plan_terraform
 
 deploy: build_handler apply_terraform
