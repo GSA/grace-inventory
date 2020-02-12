@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+# GITLEAKS_PRECOMMIT_HOOK BEGIN
+precommit_version="v0.0.1"
+precommit_url="https://raw.githubusercontent.com/GSA/odp-code-repository-commit-rules/${precommit_version}/gitleaks/precommit.sh"
+precommit_path="$(git rev-parse --show-toplevel)/.git/hooks/precommit.sh"
+
+if [ ! -f "${precommit_path}" ]; then
+	curl --silent -o "${precommit_path}" "${precommit_url}"
+	if [ "$os" = "Linux" ] || [ "$os" = "Darwin" ]; then
+    	chmod +x "${precommit_path}"
+	fi
+fi
+
+"${precommit_path}" "${precommit_version}"
+# GITLEAKS_PRECOMMIT_HOOK END

@@ -37,6 +37,7 @@ release/
 # IntelliJ’s project specific settings files/directory (Goland)
 .idea
 .idea/
+*.iml
 
 # vi/vim/GVim/MacVim backup files
 *.swp
