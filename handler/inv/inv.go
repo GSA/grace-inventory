@@ -255,7 +255,7 @@ func (inv *Inv) aggregate() error {
 		case obj := <-inv.out:
 			switch val := obj.(type) {
 			case *spreadsheet.Payload:
-				sheet, err := typeToSheet(val.Items)
+				sheet, err := TypeToSheet(val.Items)
 				if err != nil {
 					return err
 				}
@@ -302,8 +302,8 @@ func (svc *stsSvc) getCurrentIdentity() (*sts.GetCallerIdentityOutput, error) {
 }
 
 // nolint: gocyclo
-// typeToSheet ... converts a slice type to a sheet name
-func typeToSheet(items interface{}) (string, error) {
+// TypeToSheet ... converts a slice type to a sheet name
+func TypeToSheet(items interface{}) (string, error) {
 	var sheet string
 
 	s := reflect.ValueOf(items)
@@ -352,6 +352,8 @@ func typeToSheet(items interface{}) (string, error) {
 		sheet = SheetAlarms
 	case *configservice.ConfigRule:
 		sheet = SheetConfigRules
+	case *elbv2.LoadBalancer:
+		sheet = SheetLoadBalancers
 	case *glacier.DescribeVaultOutput:
 		sheet = SheetVaults
 	case *helpers.KmsKey:
