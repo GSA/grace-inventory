@@ -4,8 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/GSA/grace-inventory-lambda/handler/inv"
-
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
 )
@@ -45,9 +43,9 @@ func TestRoles(t *testing.T) {
 	if !reflect.DeepEqual(expected, roles) {
 		t.Errorf("Roles() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, roles, roles)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -62,9 +60,9 @@ func TestGroups(t *testing.T) {
 	if !reflect.DeepEqual(expected, groups) {
 		t.Errorf("Groups() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, groups, groups)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -79,9 +77,9 @@ func TestPolicies(t *testing.T) {
 	if !reflect.DeepEqual(expected, policies) {
 		t.Errorf("Policies() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, policies, policies)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -96,8 +94,8 @@ func TestUsers(t *testing.T) {
 	if !reflect.DeepEqual(expected, users) {
 		t.Errorf("Users() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, users, users)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }

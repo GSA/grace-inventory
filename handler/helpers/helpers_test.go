@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/GSA/grace-inventory-lambda/handler/inv"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
@@ -108,9 +107,9 @@ func TestBuckets(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Buckets() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -125,9 +124,9 @@ func TestStacks(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Stacks() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -142,9 +141,9 @@ func TestAlarms(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Alarms() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -159,9 +158,9 @@ func TestConfigRules(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("ConfigRules() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -176,9 +175,9 @@ func TestLoadBalancers(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("LoadBalancers() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -254,9 +253,9 @@ func TestVaultsPagination(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Vaults() failed: %v", err)
 			}
-			_, err = inv.TypeToSheet(items)
+			_, err = TypeToSheet(items)
 			if err != nil {
-				t.Fatalf("inv.TypeToSheet failed: %v", err)
+				t.Fatalf("TypeToSheet failed: %v", err)
 			}
 			length := len(items)
 			if length != tc.ExpectedLength {
@@ -288,9 +287,9 @@ func TestKeys(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Keys() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -303,9 +302,9 @@ func TestDBInstances(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DBInstances() failed: %v", err)
 	}
-	_, err = inv.TypeToSheet(items)
+	_, err = TypeToSheet(items)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -318,9 +317,9 @@ func TestDBSnapshots(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DBSnapshots() failed: %v", err)
 	}
-	_, err = inv.TypeToSheet(items)
+	_, err = TypeToSheet(items)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -333,9 +332,9 @@ func TestSecrets(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Secrets() failed: %v", err)
 	}
-	_, err = inv.TypeToSheet(items)
+	_, err = TypeToSheet(items)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -350,8 +349,8 @@ func TestParameters(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Parameters() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/GSA/grace-inventory-lambda/handler/inv"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/aws/aws-sdk-go/service/rds/rdsiface"
 )
@@ -146,9 +145,9 @@ func TestRDSSvc_DBInstances(t *testing.T) {
 				t.Errorf("RDSSvc.DBInstances() error = %v, wantErr %v", err, tc.wantErr)
 				return
 			}
-			_, err = inv.TypeToSheet(got)
+			_, err = TypeToSheet(got)
 			if err != nil {
-				t.Fatalf("inv.TypeToSheet failed: %v", err)
+				t.Fatalf("TypeToSheet failed: %v", err)
 			}
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("RDSSvc.DBInstances() = %v, want %v", got, tc.want)
@@ -247,9 +246,9 @@ func TestRDSSvc_DBSnapshots(t *testing.T) {
 				t.Errorf("RDSSvc.DBSnapshots() error = %v, wantErr %v", err, tc.wantErr)
 				return
 			}
-			_, err = inv.TypeToSheet(got)
+			_, err = TypeToSheet(got)
 			if err != nil {
-				t.Fatalf("inv.TypeToSheet failed: %v", err)
+				t.Fatalf("TypeToSheet failed: %v", err)
 			}
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("RDSSvc.DBSnapshots() = %v, want %v", got, tc.want)

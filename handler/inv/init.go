@@ -4,52 +4,22 @@ import (
 	"os"
 	"regexp"
 
+	"github.com/GSA/grace-inventory/handler/helpers"
 	"github.com/GSA/grace-inventory/handler/spreadsheet"
-)
-
-// Sheet name constants
-const (
-	SheetRoles          = "Roles"
-	SheetAccounts       = "Accounts"
-	SheetGroups         = "Groups"
-	SheetPolicies       = "Policies"
-	SheetUsers          = "Users"
-	SheetBuckets        = "Buckets"
-	SheetInstances      = "Instances"
-	SheetImages         = "Images"
-	SheetVolumes        = "Volumes"
-	SheetSnapshots      = "Snapshots"
-	SheetVpcs           = "VPCs"
-	SheetSubnets        = "Subnets"
-	SheetSecurityGroups = "SecurityGroups"
-	SheetAddresses      = "Addresses"
-	SheetKeyPairs       = "KeyPairs"
-	SheetStacks         = "Stacks"
-	SheetAlarms         = "Alarms"
-	SheetConfigRules    = "ConfigRules"
-	SheetLoadBalancers  = "LoadBlancers"
-	SheetVaults         = "Vaults"
-	SheetKeys           = "Keys"
-	SheetDBInstances    = "DBInstances"
-	SheetDBSnapshots    = "DBSnapshots"
-	SheetSecrets        = "Secrets"
-	SheetSubscriptions  = "Subscriptions"
-	SheetTopics         = "Topics"
-	SheetParameters     = "Parameters"
 )
 
 func init() {
 	accountsInfo := os.Getenv("accounts_info")
 	r := regexp.MustCompile(`^\d{12}`)
 	if accountsInfo == "self" || r.MatchString(accountsInfo) {
-		spreadsheet.RegisterSheet(SheetAccounts, func() *spreadsheet.Sheet {
+		spreadsheet.RegisterSheet(helpers.SheetAccounts, func() *spreadsheet.Sheet {
 			return &spreadsheet.Sheet{Name: "Accounts", Columns: []*spreadsheet.Column{
 				{FriendlyName: "Alias", FieldName: "Name"},
 				{FriendlyName: "Id", FieldName: "Id"},
 			}}
 		})
 	} else {
-		spreadsheet.RegisterSheet(SheetAccounts, func() *spreadsheet.Sheet {
+		spreadsheet.RegisterSheet(helpers.SheetAccounts, func() *spreadsheet.Sheet {
 			return &spreadsheet.Sheet{Name: "Accounts", Columns: []*spreadsheet.Column{
 				{FriendlyName: "Name", FieldName: "Name"},
 				{FriendlyName: "Id", FieldName: "Id"},
@@ -61,7 +31,7 @@ func init() {
 			}}
 		})
 	}
-	spreadsheet.RegisterSheet(SheetRoles, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetRoles, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "IAM Roles", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "RoleName", FieldName: "RoleName"},
@@ -70,7 +40,7 @@ func init() {
 			{FriendlyName: "CreateDate", FieldName: "CreateDate"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetGroups, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetGroups, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "IAM Groups", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "GroupName", FieldName: "GroupName"},
@@ -78,7 +48,7 @@ func init() {
 			{FriendlyName: "CreateDate", FieldName: "CreateDate"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetPolicies, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetPolicies, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "IAM Policies", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "PolicyName", FieldName: "PolicyName"},
@@ -86,7 +56,7 @@ func init() {
 			{FriendlyName: "CreateDate", FieldName: "CreateDate"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetUsers, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetUsers, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "IAM Users", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "UserName", FieldName: "UserName"},
@@ -94,14 +64,14 @@ func init() {
 			{FriendlyName: "CreateDate", FieldName: "CreateDate"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetBuckets, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetBuckets, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "S3 Buckets", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Name", FieldName: "Name"},
 			{FriendlyName: "CreateDate", FieldName: "CreationDate"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetInstances, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetInstances, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "EC2 Instances", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -114,7 +84,7 @@ func init() {
 			{FriendlyName: "LaunchTime", FieldName: "LaunchTime"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetImages, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetImages, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Images", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -126,7 +96,7 @@ func init() {
 			{FriendlyName: "CreationDate", FieldName: "CreationDate"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetVolumes, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetVolumes, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Volumes", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -138,7 +108,7 @@ func init() {
 			{FriendlyName: "CreateTime", FieldName: "CreateTime"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetSnapshots, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetSnapshots, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Snapshots", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -151,7 +121,7 @@ func init() {
 			{FriendlyName: "StartTime", FieldName: "StartTime"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetVpcs, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetVpcs, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "VPCs", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -162,7 +132,7 @@ func init() {
 			{FriendlyName: "DhcpOptionsId", FieldName: "DhcpOptionsId"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetSubnets, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetSubnets, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Subnets", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -174,7 +144,7 @@ func init() {
 			{FriendlyName: "AvailabilityZone", FieldName: "AvailabilityZone"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetSecurityGroups, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetSecurityGroups, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "SecurityGroups", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -184,7 +154,7 @@ func init() {
 			{FriendlyName: "VpcId", FieldName: "VpcId"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetAddresses, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetAddresses, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "EC2 IP Addresses", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -199,7 +169,7 @@ func init() {
 			{FriendlyName: "PublicIpv4Pool", FieldName: "PublicIpv4Pool"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetKeyPairs, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetKeyPairs, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Key Pairs", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -207,7 +177,7 @@ func init() {
 			{FriendlyName: "KeyFingerprint", FieldName: "KeyFingerprint"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetStacks, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetStacks, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "CloudFormation Stacks", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -226,7 +196,7 @@ func init() {
 			{FriendlyName: "TimeoutInMinutes", FieldName: "TimeoutInMinutes"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetAlarms, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetAlarms, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Alarms", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -253,7 +223,7 @@ func init() {
 			{FriendlyName: "Unit", FieldName: "Unit"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetConfigRules, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetConfigRules, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Config Rules", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -267,7 +237,7 @@ func init() {
 			{FriendlyName: "MaximumExecutionFrequency", FieldName: "MaximumExecutionFrequency"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetLoadBalancers, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetLoadBalancers, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Load Balancers", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -283,7 +253,7 @@ func init() {
 			{FriendlyName: "VpcId", FieldName: "VpcId"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetVaults, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetVaults, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Glacier Vaults", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -295,7 +265,7 @@ func init() {
 			{FriendlyName: "LastInventoryDate", FieldName: "LastInventoryDate"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetKeys, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetKeys, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "KMS Keys", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -316,7 +286,7 @@ func init() {
 			{FriendlyName: "ValidTo", FieldName: "ValidTo"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetDBInstances, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetDBInstances, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "RDS DB Instances", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -336,7 +306,7 @@ func init() {
 			{FriendlyName: "InstanceCreateTime", FieldName: "InstanceCreateTime"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetDBSnapshots, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetDBSnapshots, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "RDS DB Snapshots", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -359,7 +329,7 @@ func init() {
 			{FriendlyName: "VpcId", FieldName: "VpcId"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetSecrets, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetSecrets, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Secrets", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -374,7 +344,7 @@ func init() {
 			{FriendlyName: "RotationEnabled", FieldName: "RotationEnabled"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetSubscriptions, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetSubscriptions, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "SNS Subscriptions", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -385,7 +355,7 @@ func init() {
 			{FriendlyName: "TopicArn", FieldName: "TopicArn"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetTopics, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetTopics, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "SNS Topics", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},
@@ -399,7 +369,7 @@ func init() {
 			{FriendlyName: "EffectiveDeliveryPolicy", FieldName: "EffectiveDeliveryPolicy"},
 		}}
 	})
-	spreadsheet.RegisterSheet(SheetParameters, func() *spreadsheet.Sheet {
+	spreadsheet.RegisterSheet(helpers.SheetParameters, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "SSM Parameters", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
 			{FriendlyName: "Region", FieldName: ""},

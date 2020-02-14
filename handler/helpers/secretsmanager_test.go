@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/GSA/grace-inventory-lambda/handler/inv"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface"
@@ -91,9 +90,9 @@ func TestSecretsManagerSvc_Secrets(t *testing.T) {
 				t.Errorf("EC2Svc.Secrets() error = %v, wantErr %v", err, tc.wantErr)
 				return
 			}
-			_, err = inv.TypeToSheet(got)
+			_, err = TypeToSheet(got)
 			if err != nil {
-				t.Fatalf("inv.TypeToSheet failed: %v", err)
+				t.Fatalf("TypeToSheet failed: %v", err)
 			}
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("EC2Svc.Secrets() = %v, want %v", got, tc.want)

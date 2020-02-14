@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/GSA/grace-inventory-lambda/handler/inv"
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/sns/snsiface"
 )
@@ -38,9 +37,9 @@ func TestSubscriptions(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Subscriptions() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -55,8 +54,8 @@ func TestTopics(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Topics() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
-	_, err = inv.TypeToSheet(expected)
+	_, err = TypeToSheet(expected)
 	if err != nil {
-		t.Fatalf("inv.TypeToSheet failed: %v", err)
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
