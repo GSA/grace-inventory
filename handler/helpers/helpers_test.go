@@ -107,6 +107,10 @@ func TestBuckets(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Buckets() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func Stacks(svc *cloudformation.CloudFormationAPI) ([]*cloudformation.Stack, error)
@@ -119,6 +123,10 @@ func TestStacks(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Stacks() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
+	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -133,6 +141,10 @@ func TestAlarms(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Alarms() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func ConfigRules(svc *configservice.ConfigServiceAPI) ([]*configservice.ConfigRule, error)
@@ -146,6 +158,10 @@ func TestConfigRules(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("ConfigRules() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func LoadBalancers(svc *elbv2.ELBV2API) ([]*elbv2.LoadBalancer, error)
@@ -158,6 +174,10 @@ func TestLoadBalancers(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("LoadBalancers() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
+	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -233,7 +253,10 @@ func TestVaultsPagination(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Vaults() failed: %v", err)
 			}
-
+			_, err = TypeToSheet(items)
+			if err != nil {
+				t.Fatalf("TypeToSheet failed: %v", err)
+			}
 			length := len(items)
 			if length != tc.ExpectedLength {
 				t.Errorf("items length invalid, expected: %d, got: %d", tc.ExpectedLength, length)
@@ -264,6 +287,10 @@ func TestKeys(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Keys() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func DBInstances(cfg client.ConfigProvider, cred *credentials.Credentials) ([]*rds.DBInstance, error) {
@@ -271,9 +298,13 @@ func TestDBInstances(t *testing.T) {
 	svc := RDSSvc{
 		Client: mockedRDS{},
 	}
-	_, err := svc.DBInstances()
+	items, err := svc.DBInstances()
 	if err != nil {
 		t.Fatalf("DBInstances() failed: %v", err)
+	}
+	_, err = TypeToSheet(items)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -282,9 +313,13 @@ func TestDBSnapshots(t *testing.T) {
 	svc := RDSSvc{
 		Client: mockedRDS{},
 	}
-	_, err := svc.DBSnapshots()
+	items, err := svc.DBSnapshots()
 	if err != nil {
 		t.Fatalf("DBSnapshots() failed: %v", err)
+	}
+	_, err = TypeToSheet(items)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -293,9 +328,13 @@ func TestSecrets(t *testing.T) {
 	svc := SecretsManagerSvc{
 		Client: mockedSecretsManager{},
 	}
-	_, err := svc.Secrets()
+	items, err := svc.Secrets()
 	if err != nil {
 		t.Fatalf("Secrets() failed: %v", err)
+	}
+	_, err = TypeToSheet(items)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -309,5 +348,9 @@ func TestParameters(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Parameters() failed.\nExpected %#v (%T)\nGot: %#v (%T)\n", expected, expected, got, got)
+	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }

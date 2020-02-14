@@ -1,10 +1,8 @@
 package inv
 
 import (
-	"errors"
 	"fmt"
 	"log"
-	"reflect"
 	"runtime"
 	"time"
 
@@ -150,32 +148,32 @@ func New() (*Inv, error) {
 	}
 	//store available queries for referencing
 	inv.queries = map[string]queryFunc{
-		SheetRoles:          inv.queryRoles,
-		SheetGroups:         inv.queryGroups,
-		SheetPolicies:       inv.queryPolicies,
-		SheetUsers:          inv.queryUsers,
-		SheetBuckets:        inv.queryBuckets,
-		SheetInstances:      inv.queryInstances,
-		SheetImages:         inv.queryImages,
-		SheetVolumes:        inv.queryVolumes,
-		SheetSnapshots:      inv.querySnapshots,
-		SheetVpcs:           inv.queryVpcs,
-		SheetSubnets:        inv.querySubnets,
-		SheetSecurityGroups: inv.querySecurityGroups,
-		SheetAddresses:      inv.queryAddresses,
-		SheetKeyPairs:       inv.queryKeyPairs,
-		SheetStacks:         inv.queryStacks,
-		SheetAlarms:         inv.queryAlarms,
-		SheetConfigRules:    inv.queryConfigRules,
-		SheetLoadBalancers:  inv.queryLoadBalancers,
-		SheetVaults:         inv.queryVaults,
-		SheetKeys:           inv.queryKeys,
-		SheetDBInstances:    inv.queryDBInstances,
-		SheetDBSnapshots:    inv.queryDBSnapshots,
-		SheetSecrets:        inv.querySecrets,
-		SheetSubscriptions:  inv.querySubscriptions,
-		SheetTopics:         inv.queryTopics,
-		SheetParameters:     inv.queryParameters,
+		helpers.SheetRoles:          inv.queryRoles,
+		helpers.SheetGroups:         inv.queryGroups,
+		helpers.SheetPolicies:       inv.queryPolicies,
+		helpers.SheetUsers:          inv.queryUsers,
+		helpers.SheetBuckets:        inv.queryBuckets,
+		helpers.SheetInstances:      inv.queryInstances,
+		helpers.SheetImages:         inv.queryImages,
+		helpers.SheetVolumes:        inv.queryVolumes,
+		helpers.SheetSnapshots:      inv.querySnapshots,
+		helpers.SheetVpcs:           inv.queryVpcs,
+		helpers.SheetSubnets:        inv.querySubnets,
+		helpers.SheetSecurityGroups: inv.querySecurityGroups,
+		helpers.SheetAddresses:      inv.queryAddresses,
+		helpers.SheetKeyPairs:       inv.queryKeyPairs,
+		helpers.SheetStacks:         inv.queryStacks,
+		helpers.SheetAlarms:         inv.queryAlarms,
+		helpers.SheetConfigRules:    inv.queryConfigRules,
+		helpers.SheetLoadBalancers:  inv.queryLoadBalancers,
+		helpers.SheetVaults:         inv.queryVaults,
+		helpers.SheetKeys:           inv.queryKeys,
+		helpers.SheetDBInstances:    inv.queryDBInstances,
+		helpers.SheetDBSnapshots:    inv.queryDBSnapshots,
+		helpers.SheetSecrets:        inv.querySecrets,
+		helpers.SheetSubscriptions:  inv.querySubscriptions,
+		helpers.SheetTopics:         inv.queryTopics,
+		helpers.SheetParameters:     inv.queryParameters,
 	}
 
 	sess, err := session.NewSession(&aws.Config{Region: &defaultRegion})
@@ -202,7 +200,7 @@ func New() (*Inv, error) {
 // until all queries have been ran and the spreadsheet has been saved to the bucket
 func (inv *Inv) Run(s *spreadsheet.Spreadsheet) error {
 	inv.spreadsheet = s
-	inv.query(map[string]queryFunc{SheetAccounts: inv.queryAccounts})
+	inv.query(map[string]queryFunc{helpers.SheetAccounts: inv.queryAccounts})
 
 	err := inv.aggregate()
 	if err != nil {
@@ -255,7 +253,7 @@ func (inv *Inv) aggregate() error {
 		case obj := <-inv.out:
 			switch val := obj.(type) {
 			case *spreadsheet.Payload:
-				sheet, err := typeToSheet(val.Items)
+				sheet, err := helpers.TypeToSheet(val.Items)
 				if err != nil {
 					return err
 				}
@@ -264,7 +262,7 @@ func (inv *Inv) aggregate() error {
 					// stop processing further, we'll wait for the next one
 					break
 				}
-				if sheet == SheetAccounts {
+				if sheet == helpers.SheetAccounts {
 					// Use accounts to facilitate the creation of the credMgr
 					sess, err := inv.sessionMgr.Default()
 					if err != nil {
@@ -299,80 +297,6 @@ type stsSvc struct {
 // getCurrentIdentity ... returns the response from GetCallerIdentity
 func (svc *stsSvc) getCurrentIdentity() (*sts.GetCallerIdentityOutput, error) {
 	return svc.Client.GetCallerIdentity(&sts.GetCallerIdentityInput{})
-}
-
-// nolint: gocyclo
-// typeToSheet ... converts a slice type to a sheet name
-func typeToSheet(items interface{}) (string, error) {
-	var sheet string
-
-	s := reflect.ValueOf(items)
-	if s.Kind() != reflect.Slice {
-		return "", errors.New("items is not a sheet")
-	}
-
-	if s.Len() == 0 {
-		//Empty slice - this isn't an error, but we don't need to do anything
-		return "", nil
-	}
-	switch val := s.Index(0).Interface().(type) {
-	case *organizations.Account:
-		sheet = SheetAccounts
-	case *iam.Role:
-		sheet = SheetRoles
-	case *iam.Group:
-		sheet = SheetGroups
-	case *iam.Policy:
-		sheet = SheetPolicies
-	case *iam.User:
-		sheet = SheetUsers
-	case *s3.Bucket:
-		sheet = SheetBuckets
-	case *ec2.Instance:
-		sheet = SheetInstances
-	case *ec2.Image:
-		sheet = SheetImages
-	case *ec2.Volume:
-		sheet = SheetVolumes
-	case *ec2.Snapshot:
-		sheet = SheetSnapshots
-	case *ec2.Vpc:
-		sheet = SheetVpcs
-	case *ec2.Subnet:
-		sheet = SheetSubnets
-	case *ec2.SecurityGroup:
-		sheet = SheetSecurityGroups
-	case *ec2.Address:
-		sheet = SheetAddresses
-	case *ec2.KeyPairInfo:
-		sheet = SheetKeyPairs
-	case *cloudformation.Stack:
-		sheet = SheetStacks
-	case *cloudwatch.MetricAlarm:
-		sheet = SheetAlarms
-	case *configservice.ConfigRule:
-		sheet = SheetConfigRules
-	case *glacier.DescribeVaultOutput:
-		sheet = SheetVaults
-	case *helpers.KmsKey:
-		sheet = SheetKeys
-	case *rds.DBInstance:
-		sheet = SheetDBInstances
-	case *rds.DBSnapshot:
-		sheet = SheetDBSnapshots
-	case *secretsmanager.SecretListEntry:
-		sheet = SheetSecrets
-	case *sns.Subscription:
-		sheet = SheetSubscriptions
-	case *helpers.SnsTopic:
-		sheet = SheetTopics
-	case *ssm.ParameterMetadata:
-		sheet = SheetParameters
-	default:
-		log.Printf("Unknown sheet type: %T", val)
-		return "", errors.New("unknown type")
-	}
-	return sheet, nil
 }
 
 // walkAccounts ... loops over all organization accounts, skipping suspended accounts, and calling 'fn'

@@ -90,6 +90,10 @@ func TestSecretsManagerSvc_Secrets(t *testing.T) {
 				t.Errorf("EC2Svc.Secrets() error = %v, wantErr %v", err, tc.wantErr)
 				return
 			}
+			_, err = TypeToSheet(got)
+			if err != nil {
+				t.Fatalf("TypeToSheet failed: %v", err)
+			}
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("EC2Svc.Secrets() = %v, want %v", got, tc.want)
 			}

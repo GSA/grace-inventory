@@ -1,6 +1,9 @@
 package helpers
 
 import (
+	"errors"
+	"log"
+	"reflect"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -10,14 +13,20 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 	"github.com/aws/aws-sdk-go/service/configservice"
 	"github.com/aws/aws-sdk-go/service/configservice/configserviceiface"
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/elbv2/elbv2iface"
 	"github.com/aws/aws-sdk-go/service/glacier"
 	"github.com/aws/aws-sdk-go/service/glacier/glacieriface"
+	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
+	"github.com/aws/aws-sdk-go/service/organizations"
+	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/aws/aws-sdk-go/service/secretsmanager"
+	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 )
@@ -296,4 +305,111 @@ func Parameters(svc ssmiface.SSMAPI) ([]*ssm.ParameterMetadata, error) {
 		return nil, err
 	}
 	return results, nil
+}
+
+// Sheet name constants
+const (
+	SheetRoles          = "Roles"
+	SheetAccounts       = "Accounts"
+	SheetGroups         = "Groups"
+	SheetPolicies       = "Policies"
+	SheetUsers          = "Users"
+	SheetBuckets        = "Buckets"
+	SheetInstances      = "Instances"
+	SheetImages         = "Images"
+	SheetVolumes        = "Volumes"
+	SheetSnapshots      = "Snapshots"
+	SheetVpcs           = "VPCs"
+	SheetSubnets        = "Subnets"
+	SheetSecurityGroups = "SecurityGroups"
+	SheetAddresses      = "Addresses"
+	SheetKeyPairs       = "KeyPairs"
+	SheetStacks         = "Stacks"
+	SheetAlarms         = "Alarms"
+	SheetConfigRules    = "ConfigRules"
+	SheetLoadBalancers  = "LoadBlancers"
+	SheetVaults         = "Vaults"
+	SheetKeys           = "Keys"
+	SheetDBInstances    = "DBInstances"
+	SheetDBSnapshots    = "DBSnapshots"
+	SheetSecrets        = "Secrets"
+	SheetSubscriptions  = "Subscriptions"
+	SheetTopics         = "Topics"
+	SheetParameters     = "Parameters"
+)
+
+// nolint: gocyclo
+// TypeToSheet ... converts a slice type to a sheet name
+func TypeToSheet(items interface{}) (string, error) {
+	var sheet string
+
+	s := reflect.ValueOf(items)
+	if s.Kind() != reflect.Slice {
+		return "", errors.New("items is not a sheet")
+	}
+
+	if s.Len() == 0 {
+		//Empty slice - this isn't an error, but we don't need to do anything
+		return "", nil
+	}
+	switch val := s.Index(0).Interface().(type) {
+	case *organizations.Account:
+		sheet = SheetAccounts
+	case *iam.Role:
+		sheet = SheetRoles
+	case *iam.Group:
+		sheet = SheetGroups
+	case *iam.Policy:
+		sheet = SheetPolicies
+	case *iam.User:
+		sheet = SheetUsers
+	case *s3.Bucket:
+		sheet = SheetBuckets
+	case *ec2.Instance:
+		sheet = SheetInstances
+	case *ec2.Image:
+		sheet = SheetImages
+	case *ec2.Volume:
+		sheet = SheetVolumes
+	case *ec2.Snapshot:
+		sheet = SheetSnapshots
+	case *ec2.Vpc:
+		sheet = SheetVpcs
+	case *ec2.Subnet:
+		sheet = SheetSubnets
+	case *ec2.SecurityGroup:
+		sheet = SheetSecurityGroups
+	case *ec2.Address:
+		sheet = SheetAddresses
+	case *ec2.KeyPairInfo:
+		sheet = SheetKeyPairs
+	case *cloudformation.Stack:
+		sheet = SheetStacks
+	case *cloudwatch.MetricAlarm:
+		sheet = SheetAlarms
+	case *configservice.ConfigRule:
+		sheet = SheetConfigRules
+	case *elbv2.LoadBalancer:
+		sheet = SheetLoadBalancers
+	case *glacier.DescribeVaultOutput:
+		sheet = SheetVaults
+	case *KmsKey:
+		sheet = SheetKeys
+	case *rds.DBInstance:
+		sheet = SheetDBInstances
+	case *rds.DBSnapshot:
+		sheet = SheetDBSnapshots
+	case *secretsmanager.SecretListEntry:
+		sheet = SheetSecrets
+	case *sns.Subscription:
+		sheet = SheetSubscriptions
+	case *SnsTopic:
+		sheet = SheetTopics
+	case *ssm.ParameterMetadata:
+		sheet = SheetParameters
+	default:
+		log.Printf("Unknown sheet type: %T", val)
+		return "", errors.New("unknown type")
+	}
+	return sheet, nil
 }
