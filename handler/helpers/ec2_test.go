@@ -79,6 +79,10 @@ func TestInstances(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Instances() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func Images() ([]*ec2.Image, error)
@@ -91,6 +95,10 @@ func TestImages(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Images() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
+	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -105,6 +113,10 @@ func TestVolumes(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Volumes() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func Snapshots() ([]*ec2.Snapshot, error)
@@ -117,6 +129,10 @@ func TestSnapshots(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Snapshots() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
+	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -131,6 +147,10 @@ func TestVpcs(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Vpcs() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func Subnets() ([]*ec2.Subnet, error)
@@ -143,6 +163,10 @@ func TestSubnets(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Subnets() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
+	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
@@ -157,6 +181,10 @@ func TestSecurityGroups(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("SecurityGroups() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func Addresses() ([]*ec2.Address, error)
@@ -170,6 +198,10 @@ func TestAddresses(t *testing.T) {
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("Addresses() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
 	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
+	}
 }
 
 // func KeyPairs() ([]*ec2.KeyPairInfo, error)
@@ -182,6 +214,10 @@ func TestKeyPairs(t *testing.T) {
 	}
 	if !reflect.DeepEqual(expected, got) {
 		t.Errorf("KeyPairs() failed. Expected: %#v (%T)\nGot: %#v (%T)", expected, expected, got, got)
+	}
+	_, err = TypeToSheet(expected)
+	if err != nil {
+		t.Fatalf("TypeToSheet failed: %v", err)
 	}
 }
 
