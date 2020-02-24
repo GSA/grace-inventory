@@ -28,7 +28,7 @@ else
 	ghr -u $(CIRCLE_PROJECT_USERNAME) -r $(CIRCLE_PROJECT_REPONAME) -c $(CIRCLE_SHA1) -delete $(CIRCLE_TAG) $(RELEASEDIR)
 endif
 
-clean:
+clean: precommit
 	rm -rf $(RELEASEDIR)
 
 test: lint
@@ -47,7 +47,7 @@ ifeq (,$(wildcard go.mod))
 	go mod init
 endif
 
-dependencies: $(GOLANGCILINT) $(GOSEC) $(GHR)
+dependencies: precommit $(GOLANGCILINT) $(GOSEC) $(GHR)
 
 $(GOLANGCILINT):
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.22.2
@@ -57,3 +57,8 @@ $(GOSEC):
 
 $(GHR):
 	go get -u github.com/tcnksm/ghr
+
+precommit:
+ifneq ($(strip $(hooksPath)),.github/hooks)
+	@git config --add core.hooksPath .github/hooks
+endif

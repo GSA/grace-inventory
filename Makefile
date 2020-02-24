@@ -9,12 +9,12 @@ endif
 export appenv := $(shell echo "$(environment)" | tr '[:upper:]' '[:lower:]')
 export TF_VAR_appenv := $(appenv)
 
-.PHONY: test deploy check lint_handler test_handler build_handler release_handler integration_test plan_terraform validate_terraform init_terraform apply_terraform apply_terraform_tests destroy_terraform_tests clean
+.PHONY: precommit test deploy check lint_handler test_handler build_handler release_handler integration_test plan_terraform validate_terraform init_terraform apply_terraform apply_terraform_tests destroy_terraform_tests clean
 test: test_handler plan_terraform
 
 deploy: build_handler apply_terraform
 
-check:
+check: precommit
 ifeq ($(strip $(backend_bucket)),)
 	@echo "backend_bucket must be provided"
 	@exit 1
@@ -30,19 +30,19 @@ ifeq ($(strip $(backend_key)),)
 	@exit 1
 endif
 
-lint_handler:
+lint_handler: precommit
 	make -C handler lint
 
-test_handler:
+test_handler: precommit
 	make -C handler test
 
-build_handler:
+build_handler: precommit
 	make -C handler build
 
-release_handler:
+release_handler: precommit
 	make -C handler release
 
-integration_test:
+integration_test: precommit
 	make -C handler integration_test
 
 plan_terraform: validate_terraform
@@ -65,5 +65,10 @@ apply_terraform_tests:
 destroy_terraform_tests:
 	make -C tests destroy
 
-clean:
+clean: precommit
 	make -C handler clean
+
+precommit:
+ifneq ($(strip $(hooksPath)),.github/hooks)
+	@git config --add core.hooksPath .github/hooks
+endif
