@@ -54,6 +54,10 @@ jobs:
       - run:
           name: Release handler
           command: make release_handler
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./release/*
   tfsec:
     docker:
       - image: circleci/golang:latest
