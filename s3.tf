@@ -1,3 +1,7 @@
+locals {
+  useAccessLogging = length(var.access_logging_bucket) > 0 ? [1] : []
+}
+
 resource "aws_s3_bucket" "bucket" {
   bucket        = local.app_name
   acl           = "private"
@@ -7,9 +11,13 @@ resource "aws_s3_bucket" "bucket" {
     enabled = true
   }
 
-  logging {
-    target_bucket = local.logging_bucket
-    target_prefix = "${local.app_name}-logs/"
+  #tfsec:ignore:AWS002
+  dynamic "logging" {
+    for_each = local.useAccessLogging
+    content {
+      target_bucket = var.access_logging_bucket
+      target_prefix = "${local.app_name}-logs/"
+    }
   }
 
   server_side_encryption_configuration {

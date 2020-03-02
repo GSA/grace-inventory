@@ -43,7 +43,8 @@ release_handler: precommit
 	make -C handler release
 
 integration_test: precommit
-	make -C handler integration_test
+	terraform -version
+	make -C tests integration_test
 
 plan_terraform: validate_terraform
 	terraform plan

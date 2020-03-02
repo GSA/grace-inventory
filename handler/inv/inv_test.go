@@ -97,7 +97,7 @@ func TestNew(t *testing.T) {
 		expected    Inv
 		expectedErr string
 	}{
-		"environment variables not set": {
+		"environment variables.tf not set": {
 			expectedErr: `required environment variable "s3_bucket" is not set`,
 		},
 		"no credentials": {
@@ -116,10 +116,10 @@ func TestNew(t *testing.T) {
 			},
 		},
 	}
-	// Remove test cases that would fail during integration testing because environment variables are set
+	// Remove test cases that would fail during integration testing because environment variables.tf are set
 	if os.Getenv("s3_bucket") != "" {
-		t.Log("deleting test case for environment variables not set")
-		delete(tt, "environment variables not set")
+		t.Log("deleting test case for environment variables.tf not set")
+		delete(tt, "environment variables.tf not set")
 	}
 	if os.Getenv("AWS_ACCESS_KEY_ID") != "" {
 		t.Log("deleting test case for no credentials")
@@ -137,11 +137,23 @@ func TestNew(t *testing.T) {
 					t.Fatalf("error setting environment variable: %v", err)
 				}
 			}
+
+			envBucket := os.Getenv("s3_bucket")
+			envKmsKey := os.Getenv("kms_key_id")
+			// maps are dynamically randomized in memory
+			// we must cleanup the ENV before running the
+			// next test
+			for k := range tc.env {
+				err := os.Unsetenv(k)
+				if err != nil {
+					t.Fatalf("error removing environment variable: %v", err)
+				}
+			}
 			actual, err := New()
 			if tc.expectedErr == "" {
 				assert.NilError(t, err)
-				assert.Equal(t, actual.bucketID, os.Getenv("s3_bucket"))
-				assert.Equal(t, actual.kmsKeyID, os.Getenv("kms_key_id"))
+				assert.Equal(t, actual.bucketID, envBucket)
+				assert.Equal(t, actual.kmsKeyID, envKmsKey)
 			} else {
 				assert.ErrorContains(t, err, tc.expectedErr)
 			}

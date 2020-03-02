@@ -38,7 +38,7 @@ import (
 	"github.com/GSA/grace-inventory/handler/spreadsheet"
 )
 
-// config ... struct for holding environment variables
+// config ... struct for holding environment variables.tf
 type config struct {
 	BucketID        string   `env:"s3_bucket,required"`
 	KmsKeyID        string   `env:"kms_key_id,required"`

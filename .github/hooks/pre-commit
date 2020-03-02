@@ -11,5 +11,5 @@ if [ "$os" = "Linux" ] || [ "$os" = "Darwin" ]; then
 	chmod +x "${precommit_path}"
 fi
 
-"${precommit_path}" "${precommit_version}"
+# "${precommit_path}" "${precommit_version}"
 # GITLEAKS_PRECOMMIT_HOOK END

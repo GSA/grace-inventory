@@ -36,6 +36,56 @@ jobs:
       - run:
           name: Lint Handler
           command: make lint_handler
+  integration_test:
+    environment:
+      AWS_REGION: us-east-1
+    machine:
+      # https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run:
+          name: Install make, curl, unzip
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y make curl unzip software-properties-common
+      - run:
+          name: Install Terraform
+          command: |
+            TERRAFORM_LATEST_URL=$(curl --silent --location --head --output /dev/null --write-out '%{url_effective}' -- https://github.com/hashicorp/terraform/releases/latest)
+            TERRAFORM_VERSION=${TERRAFORM_LATEST_URL##*/}
+            TERRAFORM_VERSION=${TERRAFORM_VERSION:1:${#TERRAFORM_VERSION}}
+            curl -o terraform.zip -sSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+            sudo unzip terraform.zip -d /bin
+            sudo chmod +x /bin/terraform
+      - run:
+          name: Install Moto Server
+          command: |
+            sudo add-apt-repository ppa:deadsnakes/ppa
+            sudo apt-get update
+            sudo apt install -y python3.7-dev python3.7-distutils python3-pip
+            sudo python3.7 -m pip install --upgrade pip setuptools flask requests six distro
+            git clone https://github.com/brady-gsa/moto.git
+            cd moto
+            git pull origin fix_lambda_config
+            git checkout fix_lambda_config
+            cd ..
+            sudo python3.7 -m pip install -e moto --ignore-installed PyYAML
+      - run:
+          name: Install golang
+          command: |
+            curl -o go.tar.gz -sSL https://dl.google.com/go/go1.14.linux-amd64.tar.gz
+            sudo tar -xvf go.tar.gz
+            sudo rm -rf /usr/local/go
+            sudo mv -f go /usr/local
+            mkdir ~/go
+            echo 'export GOROOT=/usr/local/go' >> $BASH_ENV
+            echo 'export GOPATH=$HOME/go' >> $BASH_ENV
+            echo 'export PATH=$GOPATH/bin:$GOROOT/bin:$PATH' >> $BASH_ENV
+      - run:
+          name: Test Terraform
+          command: |
+            make integration_test
   test_handler:
     docker:
       - image: circleci/golang:latest
@@ -77,6 +127,7 @@ workflows:
       - tfsec
       - lint_handler
       - test_handler
+      - integration_test
       - release_handler:
           filters:
             tags:
