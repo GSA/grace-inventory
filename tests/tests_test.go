@@ -7,7 +7,7 @@ import (
 )
 
 func TestNow(t *testing.T) {
-	zipFile := "../../../release/grace-inventory-lambda.zip"
+	zipFile := "../release/grace-inventory-lambda.zip"
 	err := tester.Run("integration", map[string]string{
 		"TF_VAR_source_file": zipFile,
 	}, nil)
