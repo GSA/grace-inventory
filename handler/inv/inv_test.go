@@ -138,6 +138,8 @@ func TestNew(t *testing.T) {
 				}
 			}
 
+			actual, err := New()
+
 			envBucket := os.Getenv("s3_bucket")
 			envKmsKey := os.Getenv("kms_key_id")
 			// maps are dynamically randomized in memory
@@ -149,7 +151,7 @@ func TestNew(t *testing.T) {
 					t.Fatalf("error removing environment variable: %v", err)
 				}
 			}
-			actual, err := New()
+
 			if tc.expectedErr == "" {
 				assert.NilError(t, err)
 				assert.Equal(t, actual.bucketID, envBucket)
