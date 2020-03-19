@@ -208,6 +208,7 @@ provider "aws" {
 | source\_file | \(optional\) full or relative path to zipped binary of lambda handler | string | `"../release/grace-inventory-lambda.zip"` | no |
 | appenv | \(optional\) The environment in which the script is running \(development \| test \| production\) | string | `"development"` | no |
 | project_name | \(required\) project name \(e.g. grace, fcs, fas, etc.\). Used as prefix for AWS S3 bucket name | string | `"grace"` | yes |
+| access\_logging\_bucket | \(optional\) the S3 bucket that will receiving on-access logs for the inventory bucket | string | `""` | no |
 | accounts\_info | \(optional\) Determines which accounts to parse.  Can be "self", comma delimited list of Account IDs or an S3 URI containing JSON output of `aws organizations list-accounts`.  If empty, tries to query accounts with `organizations:ListAccounts` | string | `"self"` | no |
 | master\_account\_id | \(optional\) Account ID of AWS Master Payer Account | string | `""` | no |
 | master\_role\_name | \(optional\) Role assumed by lambda function to query organizations in Master Payer account | string | `""` | no |

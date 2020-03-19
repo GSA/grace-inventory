@@ -58,3 +58,9 @@ variable "project_name" {
   default     = "grace"
 }
 
+variable "access_logging_bucket" {
+  type        = string
+  description = "(optional) the S3 bucket that will receiving on-access logs for the inventory bucket"
+  default     = ""
+}
+
