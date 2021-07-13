@@ -50,13 +50,13 @@ endif
 dependencies: precommit $(GOLANGCILINT) $(GOSEC) $(GHR)
 
 $(GOLANGCILINT):
-	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.22.2
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 $(GOSEC):
-	go get -u github.com/securego/gosec/cmd/gosec
+	go install github.com/securego/gosec/cmd/gosec@latest
 
 $(GHR):
-	go get -u github.com/tcnksm/ghr
+	go install github.com/tcnksm/ghr@latest
 
 precommit:
 ifneq ($(strip $(hooksPath)),.github/hooks)

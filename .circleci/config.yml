@@ -67,7 +67,6 @@ jobs:
             sudo python3.7 -m pip install --upgrade pip setuptools flask requests six distro
             git clone https://github.com/brady-gsa/moto.git
             cd moto
-            git pull origin fix_lambda_config
             git checkout fix_lambda_config
             cd ..
             sudo python3.7 -m pip install -e moto --ignore-installed PyYAML
@@ -115,7 +114,7 @@ jobs:
       - checkout
       - run:
           name: Install tfsec
-          command: env GO111MODULE=on go get -u github.com/tfsec/tfsec/cmd/tfsec
+          command: env GO111MODULE=on go install github.com/tfsec/tfsec/cmd/tfsec@latest
       - run:
           name: Terraform static code analysis with tfsec
           command: tfsec
