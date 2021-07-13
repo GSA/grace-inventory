@@ -114,7 +114,7 @@ jobs:
       - checkout
       - run:
           name: Install tfsec
-          command: env GO111MODULE=on go install github.com/tfsec/tfsec/cmd/tfsec@latest
+          command: env GO111MODULE=on go install github.com/aquasecurity/tfsec/cmd/tfsec@latest
       - run:
           name: Terraform static code analysis with tfsec
           command: tfsec
