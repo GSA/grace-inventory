@@ -21,7 +21,7 @@ jobs:
           command: if [[ -n "$(terraform fmt -write=false)" ]]; then echo "Some terraform files need be formatted, run 'terraform fmt' to fix"; exit 1; fi
       - run:
           name: Install tflint
-          command: curl -L -o /tmp/tflint.zip https://github.com/terraform-linters/tflint/releases/download/v0.13.2/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
+          command: curl -L -o /tmp/tflint.zip https://github.com/terraform-linters/tflint/releases/download/v0.29.1/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
       - run:
           name: Check Terraform configurations with tflint
           command: find . -name ".terraform" -prune -o -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && tflint && echo "√ $m") || exit 1 ; done
@@ -73,7 +73,7 @@ jobs:
       - run:
           name: Install golang
           command: |
-            curl -o go.tar.gz -sSL https://dl.google.com/go/go1.14.linux-amd64.tar.gz
+            curl -o go.tar.gz -sSL https://dl.google.com/go/go1.16.linux-amd64.tar.gz
             sudo tar -xvf go.tar.gz
             sudo rm -rf /usr/local/go
             sudo mv -f go /usr/local
