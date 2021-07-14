@@ -9,7 +9,7 @@ lint: dependencies
 dependencies: golangci go.sum init
 
 golangci:
-	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 go.sum: go.mod
 	go mod tidy

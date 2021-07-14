@@ -21,7 +21,7 @@ jobs:
           command: if [[ -n "$(terraform fmt -write=false)" ]]; then echo "Some terraform files need be formatted, run 'terraform fmt' to fix"; exit 1; fi
       - run:
           name: Install tflint
-          command: curl -L -o /tmp/tflint.zip https://github.com/terraform-linters/tflint/releases/download/v0.13.2/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
+          command: curl -L -o /tmp/tflint.zip https://github.com/terraform-linters/tflint/releases/download/v0.29.1/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
       - run:
           name: Check Terraform configurations with tflint
           command: find . -name ".terraform" -prune -o -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && tflint && echo "√ $m") || exit 1 ; done
@@ -67,14 +67,13 @@ jobs:
             sudo python3.7 -m pip install --upgrade pip setuptools flask requests six distro
             git clone https://github.com/brady-gsa/moto.git
             cd moto
-            git pull origin fix_lambda_config
             git checkout fix_lambda_config
             cd ..
             sudo python3.7 -m pip install -e moto --ignore-installed PyYAML
       - run:
           name: Install golang
           command: |
-            curl -o go.tar.gz -sSL https://dl.google.com/go/go1.14.linux-amd64.tar.gz
+            curl -o go.tar.gz -sSL https://dl.google.com/go/go1.16.linux-amd64.tar.gz
             sudo tar -xvf go.tar.gz
             sudo rm -rf /usr/local/go
             sudo mv -f go /usr/local
@@ -115,7 +114,7 @@ jobs:
       - checkout
       - run:
           name: Install tfsec
-          command: env GO111MODULE=on go get -u github.com/tfsec/tfsec/cmd/tfsec
+          command: env GO111MODULE=on go install github.com/aquasecurity/tfsec/cmd/tfsec@latest
       - run:
           name: Terraform static code analysis with tfsec
           command: tfsec
