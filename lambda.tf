@@ -20,6 +20,7 @@ resource "aws_lambda_function" "lambda_function" {
       regions          = var.regions
       s3_bucket        = aws_s3_bucket.bucket.bucket
       tenant_role_name = var.tenant_role_name
+      sheets           = var.sheets
     }
   }
 }
