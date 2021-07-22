@@ -4,6 +4,7 @@ resource "aws_lambda_function" "lambda_function" {
   description      = "Creates report of AWS Services in Organization accounts and saves to Excel spreadsheet in S3 bucket"
   role             = aws_iam_role.iam_role.arn
   handler          = "grace-inventory-lambda"
+  memory_size      = var.lambda_memory
   source_code_hash = filebase64sha256(var.source_file)
   kms_key_arn      = aws_kms_key.kms_key.arn
   runtime          = "go1.x"

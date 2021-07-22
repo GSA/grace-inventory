@@ -107,6 +107,8 @@ jobs:
           root: .
           paths:
             - ./release/*
+      - store_artifacts:
+          path: release/
   tfsec:
     docker:
       - image: circleci/golang:latest

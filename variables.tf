@@ -64,3 +64,14 @@ variable "access_logging_bucket" {
   default     = ""
 }
 
+variable "sheets" {
+  type        = string
+  description = "(optional) a comma delimited list of sheets"
+  default     = ""
+}
+
+variable "lambda_memory" {
+  type        = number
+  description = "(optional) The number of megabytes of RAM to use for the inventory lambda"
+  default     = 2048
+}
