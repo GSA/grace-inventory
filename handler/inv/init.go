@@ -77,6 +77,7 @@ func init() {
 			{FriendlyName: "Region", FieldName: ""},
 			{FriendlyName: "Name", FieldName: "Tags"},
 			{FriendlyName: "InstanceId", FieldName: "InstanceId"},
+			{FriendlyName: "InstanceType", FieldName: "InstanceType"},
 			{FriendlyName: "PrivateIpAddress", FieldName: "PrivateIpAddress"},
 			{FriendlyName: "PublicIpAddress", FieldName: "PublicIpAddress"},
 			{FriendlyName: "State", FieldName: "State"},
