@@ -216,6 +216,8 @@ provider "aws" {
 | regions | \(optional\) Comma delimited list of AWS regions to inventory.  **Note:** The first region listed will be used by the lambda function as the `DEFAULT_REGION`. | string | `"us-east-1,us-east-2,us-west-1,us-west-2"` | no |
 | schedule\_expression | \(optional\) Cloudwatch schedule expression for when to run inventory | string | `"cron(5 3 ? * MON-FRI *)"` | no |
 | tenant\_role\_name | \(optional\) Role assumed by lambda function to query tenant accounts | string | `"OrganizationAccountAccessRole"` | no |
+| lambda_memory | \(optional\) The number of megabytes of RAM for the lambda | number | 2048 | no |
+| sheets | \(optional\) A comma delimited list of sheets | string | `""` | no |
 
 [top](#top)
 
