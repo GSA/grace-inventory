@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
@@ -106,6 +107,22 @@ type mockStsSvc struct {
 }
 
 func (s mockStsSvc) AssumeRole(input *sts.AssumeRoleInput) (*sts.AssumeRoleOutput, error) {
+	if s.TestInput != nil {
+		s.TestInput(input)
+	}
+	expiry := time.Now().Add(60 * time.Minute)
+	return &sts.AssumeRoleOutput{
+		Credentials: &sts.Credentials{
+			// Just reflect the role arn to the provider.
+			AccessKeyId:     input.RoleArn,
+			SecretAccessKey: aws.String("assumedSecretAccessKey"),
+			SessionToken:    aws.String("assumedSessionToken"),
+			Expiration:      &expiry,
+		},
+	}, nil
+}
+
+func (s mockStsSvc) AssumeRoleWithContext(context credentials.Context, input *sts.AssumeRoleInput, option ...request.Option) (*sts.AssumeRoleOutput, error) {
 	if s.TestInput != nil {
 		s.TestInput(input)
 	}
@@ -265,44 +282,44 @@ func TestAccountsList(t *testing.T) {
 	})
 }
 
-// func TestQueryAccounts(t *testing.T) {
-// 	sess := newStubSession(t)
-// 	// test case table
-// 	tt := map[string]struct {
-// 		opt         Options
-// 		expectedErr string
-// 		expected    []*organizations.Account
-// 	}{
-// 		"stub AccountsSvc nil Options": {},
-// 		"stub AccountsSvc master account set": {
-// 			opt: Options{
-// 				MasterAccountID: "test_master",
-// 				MgmtAccountID:   "test_mgmt",
-// 				MasterRoleName:  "test_master_role",
-// 			},
-// 		},
-// 		"stub AccountsSvc OrgUnits set": {
-// 			opt: Options{
-// 				OrgUnits: []string{"test_ou"},
-// 			},
-// 		},
-// 	}
-// 	// loop through test cases
-// 	for name, tc := range tt {
-// 		tc := tc
-// 		t.Run(name, func(t *testing.T) {
-// 			svc, err := NewAccountsSvc(sess)
-// 			if err != nil {
-// 				t.Fatal(err)
-// 			}
-// 			svc.stsSvc = mockStsSvc{}
-// 			actual, err := svc.queryAccounts(tc.opt)
-// 			if tc.expectedErr == "" {
-// 				assert.NilError(t, err)
-// 			} else {
-// 				assert.Error(t, err, tc.expectedErr)
-// 			}
-// 			assert.DeepEqual(t, tc.expected, actual)
-// 		})
-// 	}
-// }
+func TestQueryAccounts(t *testing.T) {
+	sess := newStubSession(t)
+	// test case table
+	tt := map[string]struct {
+		opt         Options
+		expectedErr string
+		expected    []*organizations.Account
+	}{
+		"stub AccountsSvc nil Options": {},
+		"stub AccountsSvc master account set": {
+			opt: Options{
+				MasterAccountID: "test_master",
+				MgmtAccountID:   "test_mgmt",
+				MasterRoleName:  "test_master_role",
+			},
+		},
+		"stub AccountsSvc OrgUnits set": {
+			opt: Options{
+				OrgUnits: []string{"test_ou"},
+			},
+		},
+	}
+	// loop through test cases
+	for name, tc := range tt {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			svc, err := NewAccountsSvc(sess)
+			if err != nil {
+				t.Fatal(err)
+			}
+			svc.stsSvc = mockStsSvc{}
+			actual, err := svc.queryAccounts(tc.opt)
+			if tc.expectedErr == "" {
+				assert.NilError(t, err)
+			} else {
+				assert.Error(t, err, tc.expectedErr)
+			}
+			assert.DeepEqual(t, tc.expected, actual)
+		})
+	}
+}
