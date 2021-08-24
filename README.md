@@ -264,6 +264,7 @@ provider "aws" {
 | Volumes | ec2:DescribeVolumes | queries EC2 Volumes |
 | Snapshots | ec2:DescribeSnapshots | queries EC2 Snapshots |
 | VPCs | ec2:DescribeVpcs | queries EC2 VPCs |
+| VpcPeers | ec2:DescribeVpcPeeringConnectionsPages | queries EC2 Vpc Peers |
 | Subnets | ec2:DescribeSubnets | queries EC2 Subnets |
 | SecurityGroups | ec2:DescribeSecurityGroups | queries EC2 Security Groups |
 | Addresses | ec2:DescribeAddresses | queries EC2 Addresses |

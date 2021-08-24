@@ -320,6 +320,7 @@ const (
 	SheetVolumes        = "Volumes"
 	SheetSnapshots      = "Snapshots"
 	SheetVpcs           = "VPCs"
+	SheetVpcPeers       = "VpcPeers"
 	SheetSubnets        = "Subnets"
 	SheetSecurityGroups = "SecurityGroups"
 	SheetAddresses      = "Addresses"
@@ -407,6 +408,8 @@ func TypeToSheet(items interface{}) (string, error) {
 		sheet = SheetTopics
 	case *ssm.ParameterMetadata:
 		sheet = SheetParameters
+	case *VpcPeers:
+		sheet = SheetVpcPeers
 	default:
 		log.Printf("Unknown sheet type: %T", val)
 		return "", errors.New("unknown type")

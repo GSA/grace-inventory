@@ -133,6 +133,20 @@ func init() {
 			{FriendlyName: "DhcpOptionsId", FieldName: "DhcpOptionsId"},
 		}}
 	})
+	spreadsheet.RegisterSheet(helpers.SheetVpcPeers, func() *spreadsheet.Sheet {
+		return &spreadsheet.Sheet{Name: "VpcPeers", Columns: []*spreadsheet.Column{
+			{FriendlyName: "Account", FieldName: ""},
+			{FriendlyName: "Region", FieldName: ""},
+			{FriendlyName: "AccepterAccountID", FieldName: "AccepterAccountID"},
+			{FriendlyName: "AccepterVpcID", FieldName: "AccepterVpcID"},
+			{FriendlyName: "AccepterCidrBlock", FieldName: "AccepterCidrBlock"},
+			{FriendlyName: "RequesterAccountID", FieldName: "RequesterAccountID"},
+			{FriendlyName: "RequesterVpcID", FieldName: "RequesterVpcID"},
+			{FriendlyName: "RequesterCidrBlock", FieldName: "RequesterCidrBlock"},
+			{FriendlyName: "StatusCode", FieldName: "StatusCode"},
+			{FriendlyName: "StatusMessage", FieldName: "StatusMessage"},
+		}}
+	})
 	spreadsheet.RegisterSheet(helpers.SheetSubnets, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "Subnets", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
