@@ -158,6 +158,7 @@ func New() (*Inv, error) {
 		helpers.SheetVolumes:        inv.queryVolumes,
 		helpers.SheetSnapshots:      inv.querySnapshots,
 		helpers.SheetVpcs:           inv.queryVpcs,
+		helpers.SheetVpcPeers:       inv.queryVpcPeers,
 		helpers.SheetSubnets:        inv.querySubnets,
 		helpers.SheetSecurityGroups: inv.querySecurityGroups,
 		helpers.SheetAddresses:      inv.queryAddresses,
@@ -622,6 +623,27 @@ func (inv *Inv) queryVpcs() ([]*spreadsheet.Payload, error) {
 		}
 		var items []interface{}
 		for _, v := range vpcs {
+			items = append(items, v)
+		}
+		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil
+	})
+}
+
+// queryVpcPeers ... queries VpcPeerss for all organization accounts and
+// all sessions/regions in SessionMgr, pushes them onto a slice of interface
+// then returns a slice of *spreadsheet.Payload
+func (inv *Inv) queryVpcPeers() ([]*spreadsheet.Payload, error) {
+	defer logDuration()()
+	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
+		svc := helpers.Ec2Svc{
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
+		}
+		peers, err := svc.VpcPeers()
+		if err != nil {
+			return nil, newQueryErrorf(err, "failed to get VpcPeers for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
+		}
+		var items []interface{}
+		for _, v := range peers {
 			items = append(items, v)
 		}
 		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil

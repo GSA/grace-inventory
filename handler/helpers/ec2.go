@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 )
@@ -73,6 +74,44 @@ func (svc *Ec2Svc) Vpcs() ([]*ec2.Vpc, error) {
 	err := svc.Client.DescribeVpcsPages(&ec2.DescribeVpcsInput{},
 		func(page *ec2.DescribeVpcsOutput, lastPage bool) bool {
 			results = append(results, page.Vpcs...)
+			return !lastPage
+		})
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+type VpcPeer struct {
+	AccepterAccountID  string
+	AccepterVpcID      string
+	AccepterCidrBlock  string
+	RequesterAccountID string
+	RequesterVpcID     string
+	RequesterCidrBlock string
+	StatusCode         string
+	StatusMessage      string
+}
+
+//
+// VpcPeers ... pages through DescribeVpcPeeringConnectionsPages and returns all VPC Peers
+func (svc *Ec2Svc) VpcPeers() ([]*VpcPeer, error) {
+	var results []*VpcPeer
+	err := svc.Client.DescribeVpcPeeringConnectionsPages(&ec2.DescribeVpcPeeringConnectionsInput{},
+		func(page *ec2.DescribeVpcPeeringConnectionsOutput, lastPage bool) bool {
+			for _, conn := range page.VpcPeeringConnections {
+				peer := &VpcPeer{
+					AccepterVpcID:      aws.StringValue(conn.AccepterVpcInfo.VpcId),
+					AccepterAccountID:  aws.StringValue(conn.AccepterVpcInfo.OwnerId),
+					AccepterCidrBlock:  aws.StringValue(conn.AccepterVpcInfo.CidrBlock),
+					RequesterVpcID:     aws.StringValue(conn.RequesterVpcInfo.VpcId),
+					RequesterAccountID: aws.StringValue(conn.RequesterVpcInfo.OwnerId),
+					RequesterCidrBlock: aws.StringValue(conn.RequesterVpcInfo.CidrBlock),
+					StatusCode:         aws.StringValue(conn.Status.Code),
+					StatusMessage:      aws.StringValue(conn.Status.Message),
+				}
+				results = append(results, peer)
+			}
 			return !lastPage
 		})
 	if err != nil {
