@@ -408,7 +408,7 @@ func TypeToSheet(items interface{}) (string, error) {
 		sheet = SheetTopics
 	case *ssm.ParameterMetadata:
 		sheet = SheetParameters
-	case *VpcPeers:
+	case *VpcPeer:
 		sheet = SheetVpcPeers
 	default:
 		log.Printf("Unknown sheet type: %T", val)

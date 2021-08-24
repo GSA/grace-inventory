@@ -2,6 +2,7 @@ locals {
   useAccessLogging = length(var.access_logging_bucket) > 0 ? [1] : []
 }
 
+#tfsec:ignore:AWS002
 resource "aws_s3_bucket" "bucket" {
   bucket        = local.app_name
   acl           = "private"
@@ -11,7 +12,6 @@ resource "aws_s3_bucket" "bucket" {
     enabled = true
   }
 
-  #tfsec:ignore:AWS002
   dynamic "logging" {
     for_each = local.useAccessLogging
     content {
