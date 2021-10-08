@@ -319,6 +319,7 @@ const (
 	SheetImages         = "Images"
 	SheetVolumes        = "Volumes"
 	SheetSnapshots      = "Snapshots"
+	SheetIgws           = "IGWs"
 	SheetVpcs           = "VPCs"
 	SheetVpcPeers       = "VpcPeers"
 	SheetSubnets        = "Subnets"
@@ -374,6 +375,8 @@ func TypeToSheet(items interface{}) (string, error) {
 		sheet = SheetVolumes
 	case *ec2.Snapshot:
 		sheet = SheetSnapshots
+	case *ec2.InternetGateway:
+		sheet = SheetIgws
 	case *ec2.Vpc:
 		sheet = SheetVpcs
 	case *ec2.Subnet:

@@ -55,6 +55,7 @@ Control    | CSP/AWS | HOST/OS | App/DB | How is it implemented?
     - S3 Buckets
     - Glacier Vaults
     - EC2 Instances
+    - EC2 Internet Gateways
     - Amazon Machine Images (AMI)
     - EBS Volumes
     - Snapshots
@@ -263,6 +264,7 @@ provider "aws" {
 | Images | ec2:DescribeImages | queries EC2 Images |
 | Volumes | ec2:DescribeVolumes | queries EC2 Volumes |
 | Snapshots | ec2:DescribeSnapshots | queries EC2 Snapshots |
+| IGWs | ec2:DescribeInternetGatewaysPages | queries EC2 IGWs |
 | VPCs | ec2:DescribeVpcs | queries EC2 VPCs |
 | VpcPeers | ec2:DescribeVpcPeeringConnectionsPages | queries EC2 Vpc Peers |
 | Subnets | ec2:DescribeSubnets | queries EC2 Subnets |

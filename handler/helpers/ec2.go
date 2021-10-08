@@ -134,6 +134,36 @@ func (svc *Ec2Svc) Subnets() ([]*ec2.Subnet, error) {
 	return results, nil
 }
 
+type Igw struct {
+	ID      string
+	OwnerID string
+	VpcID   string
+	Status  string
+}
+
+// Igws ... pages through DescribeInternetGatewaysPages and returns all VPC Internet Gateways
+func (svc *Ec2Svc) Igws() ([]*Igw, error) {
+	var results []*Igw
+	err := svc.Client.DescribeInternetGatewaysPages(&ec2.DescribeInternetGatewaysInput{},
+		func(page *ec2.DescribeInternetGatewaysOutput, lastPage bool) bool {
+			for _, igw := range page.InternetGateways {
+				for _, att := range igw.Attachments {
+					results = append(results, &Igw{
+						ID:      aws.StringValue(igw.InternetGatewayId),
+						OwnerID: aws.StringValue(igw.OwnerId),
+						VpcID:   aws.StringValue(att.VpcId),
+						Status:  aws.StringValue(att.State),
+					})
+				}
+			}
+			return !lastPage
+		})
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
 // SecurityGroups ... pages through DescribeSecurityGroupsPages and returns all SecurityGroups
 func (svc *Ec2Svc) SecurityGroups() ([]*ec2.SecurityGroup, error) {
 	var results []*ec2.SecurityGroup

@@ -82,6 +82,7 @@ var knownErrors = map[string]interface{}{
 	"AccessDeniedException": nil,
 	"AuthorizationError":    nil,
 	"UnauthorizedOperation": nil,
+	"ThrottlingException":   nil,
 }
 
 func isKnownError(err error) bool {
@@ -157,6 +158,7 @@ func New() (*Inv, error) {
 		helpers.SheetImages:         inv.queryImages,
 		helpers.SheetVolumes:        inv.queryVolumes,
 		helpers.SheetSnapshots:      inv.querySnapshots,
+		helpers.SheetIgws:           inv.queryIgws,
 		helpers.SheetVpcs:           inv.queryVpcs,
 		helpers.SheetVpcPeers:       inv.queryVpcPeers,
 		helpers.SheetSubnets:        inv.querySubnets,
@@ -216,6 +218,7 @@ func (inv *Inv) Run(s *spreadsheet.Spreadsheet) error {
 // all sheets have been completed successfully
 func (inv *Inv) query(funcs map[string]queryFunc) {
 	for name, fn := range funcs {
+		time.Sleep(3 * time.Second) // offset to avoid throttling
 		inv.running = append(inv.running, name)
 		go func(fn queryFunc, name string, out chan interface{}, errc chan error) {
 			payloads, err := fn()
@@ -603,6 +606,27 @@ func (inv *Inv) querySnapshots() ([]*spreadsheet.Payload, error) {
 		var items []interface{}
 		for _, s := range snapshots {
 			items = append(items, s)
+		}
+		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil
+	})
+}
+
+// queryIgws ... queries Igws for all organization accounts and
+// all sessions/regions in SessionMgr, pushes them onto a slice of interface
+// then returns a slice of *spreadsheet.Payload
+func (inv *Inv) queryIgws() ([]*spreadsheet.Payload, error) {
+	defer logDuration()()
+	return inv.walkSessions(func(account string, cred *credentials.Credentials, sess *session.Session) (*spreadsheet.Payload, error) {
+		svc := helpers.Ec2Svc{
+			Client: ec2Creator(sess, &aws.Config{Credentials: cred}),
+		}
+		peers, err := svc.Igws()
+		if err != nil {
+			return nil, newQueryErrorf(err, "failed to get VpcPeers for account: %s, region: %s -> %v", account, *sess.Config.Region, err)
+		}
+		var items []interface{}
+		for _, v := range peers {
+			items = append(items, v)
 		}
 		return &spreadsheet.Payload{Static: []string{account, *sess.Config.Region}, Items: items}, nil
 	})
