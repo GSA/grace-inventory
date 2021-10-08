@@ -375,7 +375,7 @@ func TypeToSheet(items interface{}) (string, error) {
 		sheet = SheetVolumes
 	case *ec2.Snapshot:
 		sheet = SheetSnapshots
-	case *ec2.InternetGateway:
+	case *Igw:
 		sheet = SheetIgws
 	case *ec2.Vpc:
 		sheet = SheetVpcs
