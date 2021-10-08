@@ -122,6 +122,16 @@ func init() {
 			{FriendlyName: "StartTime", FieldName: "StartTime"},
 		}}
 	})
+	spreadsheet.RegisterSheet(helpers.SheetIgws, func() *spreadsheet.Sheet {
+		return &spreadsheet.Sheet{Name: "IGWs", Columns: []*spreadsheet.Column{
+			{FriendlyName: "Account", FieldName: ""},
+			{FriendlyName: "Region", FieldName: ""},
+			{FriendlyName: "Id", FieldName: "ID"},
+			{FriendlyName: "VpcId", FieldName: "VpcID"},
+			{FriendlyName: "OwnerId", FieldName: "OwnerID"},
+			{FriendlyName: "Status", FieldName: "Status"},
+		}}
+	})
 	spreadsheet.RegisterSheet(helpers.SheetVpcs, func() *spreadsheet.Sheet {
 		return &spreadsheet.Sheet{Name: "VPCs", Columns: []*spreadsheet.Column{
 			{FriendlyName: "Account", FieldName: ""},
