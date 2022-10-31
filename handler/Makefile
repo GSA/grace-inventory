@@ -53,7 +53,7 @@ $(GOLANGCILINT):
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 
 $(GOSEC):
-	go install github.com/securego/gosec/cmd/gosec@v2.14.0
+	go install github.com/securego/gosec/v2/cmd/gosec@v2.14.0
 
 $(GHR):
 	go install github.com/tcnksm/ghr@v0.16.0
