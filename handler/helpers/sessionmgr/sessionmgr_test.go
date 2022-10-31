@@ -55,7 +55,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-//func (mgr *SessionMgr) All() []*session.Session
+// func (mgr *SessionMgr) All() []*session.Session
 func TestAll(t *testing.T) {
 	s := New(genericRegions[0], genericRegions)
 	s.Sessioner(mockNewSession)
@@ -69,7 +69,7 @@ func TestAll(t *testing.T) {
 	}
 }
 
-//func (mgr *SessionMgr) Default() (*session.Session, error)
+// func (mgr *SessionMgr) Default() (*session.Session, error)
 func TestDefault(t *testing.T) {
 	s := New(genericRegions[0], genericRegions)
 	s.Sessioner(mockNewSession)
@@ -121,7 +121,7 @@ func TestDefaultErr(t *testing.T) {
 	}
 }
 
-//func (mgr *SessionMgr) Region(region string) (*session.Session, error)
+// func (mgr *SessionMgr) Region(region string) (*session.Session, error)
 func TestRegion(t *testing.T) {
 	tests := []struct {
 		name    string
