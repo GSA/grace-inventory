@@ -32,7 +32,7 @@ jobs:
     environment:
       AWS_DEFAULT_REGION: us-east-1
     docker:
-      - image: circleci/golang:latest
+      - image: cimg/go:1.19.2
     working_directory: /go/src/github.com/GSA/grace-inventory
     steps:
       - checkout
@@ -43,8 +43,7 @@ jobs:
     environment:
       AWS_REGION: us-east-1
     machine:
-      # https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
-      image: ubuntu-1604:201903-01
+      image: cimg/base #ubuntu base image
     steps:
       - checkout
       - run:
@@ -76,7 +75,7 @@ jobs:
       - run:
           name: Install golang
           command: |
-            curl -o go.tar.gz -sSL https://dl.google.com/go/go1.16.linux-amd64.tar.gz
+            curl -o go.tar.gz -sSL https://dl.google.com/go/go1.19.2.linux-amd64.tar.gz
             sudo tar -xvf go.tar.gz
             sudo rm -rf /usr/local/go
             sudo mv -f go /usr/local
@@ -90,7 +89,7 @@ jobs:
             make integration_test
   test_handler:
     docker:
-      - image: circleci/golang:latest
+      - image: cimg/go:1.19.2
     working_directory: /go/src/github.com/GSA/grace-inventory
     steps:
       - checkout
@@ -99,7 +98,7 @@ jobs:
           command: make test_handler
   release_handler:
     docker:
-      - image: circleci/golang:latest
+      - image: cimg/go:1.19.2
     working_directory: /go/src/github.com/GSA/grace-inventory
     steps:
       - checkout
@@ -114,7 +113,7 @@ jobs:
           path: release/
   tfsec:
     docker:
-      - image: circleci/golang:latest
+      - image: cimg/go:1.19.2
     steps:
       - checkout
       - run:
