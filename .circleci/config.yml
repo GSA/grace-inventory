@@ -127,7 +127,7 @@ workflows:
       - tfsec
       - lint_handler
       - test_handler
-      - integration_test
+      #- integration_test
       - release_handler:
           filters:
             tags:
