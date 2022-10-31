@@ -171,7 +171,7 @@ func TestNewAccountsSvc(t *testing.T) {
 	}
 }
 
-//nolint: gocyclo
+// nolint: gocyclo
 func TestAccountsList(t *testing.T) {
 	t.Run("queryAccounts", func(t *testing.T) {
 		options := Options{
