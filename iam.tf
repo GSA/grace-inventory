@@ -20,6 +20,7 @@ EOF
 
 }
 
+#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "iam_policy" {
   name        = local.app_name
   description = "Policy to allow creating GRACE service inventory report"

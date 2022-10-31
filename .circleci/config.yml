@@ -33,7 +33,6 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
     docker:
       - image: cimg/go:1.19.2
-    working_directory: /go/src/github.com/GSA/grace-inventory
     steps:
       - checkout
       - run:
@@ -90,7 +89,6 @@ jobs:
   test_handler:
     docker:
       - image: cimg/go:1.19.2
-    working_directory: /go/src/github.com/GSA/grace-inventory
     steps:
       - checkout
       - run:
@@ -99,7 +97,6 @@ jobs:
   release_handler:
     docker:
       - image: cimg/go:1.19.2
-    working_directory: /go/src/github.com/GSA/grace-inventory
     steps:
       - checkout
       - run:
