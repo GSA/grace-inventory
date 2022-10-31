@@ -1,4 +1,4 @@
-module github.com/GSA/grace-inventory/handler
+module github.com/GSA/grace-inventory
 
 go 1.19
 
