@@ -93,7 +93,6 @@ type VpcPeer struct {
 	StatusMessage      string
 }
 
-//
 // VpcPeers ... pages through DescribeVpcPeeringConnectionsPages and returns all VPC Peers
 func (svc *Ec2Svc) VpcPeers() ([]*VpcPeer, error) {
 	var results []*VpcPeer
