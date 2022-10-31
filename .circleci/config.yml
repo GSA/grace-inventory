@@ -11,6 +11,9 @@ jobs:
           name: Install curl
           command: apk add --update curl && apk upgrade
       - run:
+          name: terraform providers
+          command: terraform providers
+      - run:
           name: terraform init
           command: find . -type f -name "*.tf" -exec dirname {} \;|sort -u | while read m; do (cd "$m" && terraform init -input=false -backend=false) || exit 1; done
       - run:
