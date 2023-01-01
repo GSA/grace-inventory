@@ -41,3 +41,4 @@ release/
 
 # vi/vim/GVim/MacVim backup files
 *.swp
+.git/
