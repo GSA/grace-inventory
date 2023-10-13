@@ -28,6 +28,9 @@ linters-settings:
     lines: 100
     statements: 50
 
+run:
+  timeout: 5m
+
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
   # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
