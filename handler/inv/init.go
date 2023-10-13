@@ -167,6 +167,7 @@ func init() {
 			{FriendlyName: "State", FieldName: "State"},
 			{FriendlyName: "CidrBlock", FieldName: "CidrBlock"},
 			{FriendlyName: "AvailabilityZone", FieldName: "AvailabilityZone"},
+			{FriendlyName: "AvailabilityZoneId", FieldName: "AvailabilityZoneId"},
 		}}
 	})
 	spreadsheet.RegisterSheet(helpers.SheetSecurityGroups, func() *spreadsheet.Sheet {
